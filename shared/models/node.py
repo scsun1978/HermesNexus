@@ -3,7 +3,7 @@ HermesNexus Phase 3 - 节点身份模型
 节点身份、认证和生命周期管理
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, Optional, List
 from enum import Enum
 from pydantic import BaseModel, Field, validator
@@ -144,7 +144,7 @@ class NodeIdentity(BaseModel):
         """检查Token是否有效"""
         if not self.auth_token or not self.token_expires_at:
             return False
-        return datetime.utcnow() < self.token_expires_at
+        return datetime.now(timezone.utc) < self.token_expires_at
 
     def is_active(self) -> bool:
         """检查节点是否活跃"""
@@ -154,7 +154,7 @@ class NodeIdentity(BaseModel):
             return False
         # 心跳超时时间：5分钟
         heartbeat_timeout = timedelta(minutes=5)
-        return datetime.utcnow() - self.last_heartbeat < heartbeat_timeout
+        return datetime.now(timezone.utc) - self.last_heartbeat < heartbeat_timeout
 
     def can_accept_tasks(self) -> bool:
         """检查节点是否可以接受新任务"""

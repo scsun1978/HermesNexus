@@ -4,7 +4,7 @@ HermesNexus Phase 2 - Audit Service (Database Version)
 """
 
 from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 import math
 from shared.models.audit import (
@@ -70,7 +70,7 @@ class AuditService:
             ip_address=request.ip_address,
             user_agent=request.user_agent,
             request_id=request.request_id,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         )
 
         if self.audit_dao:
@@ -198,9 +198,9 @@ class AuditService:
                 level_stats[log.level.value] = level_stats.get(log.level.value, 0) + 1
                 action_stats[log.action.value] = action_stats.get(log.action.value, 0) + 1
 
-        last_hour = datetime.utcnow() - timedelta(hours=1)
-        last_day = datetime.utcnow() - timedelta(days=1)
-        last_week = datetime.utcnow() - timedelta(days=7)
+        last_hour = datetime.now(timezone.utc) - timedelta(hours=1)
+        last_day = datetime.now(timezone.utc) - timedelta(days=1)
+        last_week = datetime.now(timezone.utc) - timedelta(days=7)
         if self.audit_dao:
             events_last_hour = self.audit_dao.count({"start_time": last_hour})
             events_last_day = self.audit_dao.count({"start_time": last_day})
@@ -319,7 +319,7 @@ def log_task_created(task_id: str, actor: str, task_data: Dict[str, Any]) -> Aud
         target_id=task_id,
         message=f"Task created: {task_data.get('name', task_id)}",
         details=task_data,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 def log_task_succeeded(task_id: str, actor: str, result: Dict[str, Any]) -> AuditLog:
@@ -334,7 +334,7 @@ def log_task_succeeded(task_id: str, actor: str, result: Dict[str, Any]) -> Audi
         target_id=task_id,
         message=f"Task succeeded: {task_id}",
         details=result,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 def log_task_failed(task_id: str, actor: str, error: str) -> AuditLog:
@@ -349,7 +349,7 @@ def log_task_failed(task_id: str, actor: str, error: str) -> AuditLog:
         target_id=task_id,
         message=f"Task failed: {task_id}",
         details={"error": error},
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -411,7 +411,7 @@ class SecurityAuditService:
 
         # 确保timestamp存在
         if 'timestamp' not in kwargs:
-            kwargs['timestamp'] = datetime.utcnow()
+            kwargs['timestamp'] = datetime.now(timezone.utc)
 
         # 创建安全审计日志
         audit_log = SecurityAuditLog(**kwargs)
@@ -503,7 +503,7 @@ class SecurityAuditService:
         kwargs['event_id'] = event_id
 
         if 'timestamp' not in kwargs:
-            kwargs['timestamp'] = datetime.utcnow()
+            kwargs['timestamp'] = datetime.now(timezone.utc)
 
         security_event = SecurityEvent(**kwargs)
         self._security_events[event_id] = security_event
@@ -535,7 +535,7 @@ class SecurityAuditService:
     def get_statistics(self) -> 'AuditStatisticsExtended':
         """获取审计统计信息"""
         # 检查缓存
-        if self._statistics_cache and self._cache_expiry and datetime.utcnow() < self._cache_expiry:
+        if self._statistics_cache and self._cache_expiry and datetime.now(timezone.utc) < self._cache_expiry:
             return self._statistics_cache
 
         from shared.models.audit import AuditStatisticsExtended
@@ -630,7 +630,7 @@ class SecurityAuditService:
 
         # 缓存统计结果（5分钟有效期）
         self._statistics_cache = statistics
-        self._cache_expiry = datetime.utcnow() + timedelta(minutes=5)
+        self._cache_expiry = datetime.now(timezone.utc) + timedelta(minutes=5)
 
         return statistics
 

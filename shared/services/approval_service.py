@@ -5,7 +5,7 @@ HermesNexus Phase 3 - 审批服务
 
 import uuid
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from shared.models.approval import (
     ApprovalRequest, ApprovalDecision, ApprovalComment, ApprovalStatus,
@@ -78,7 +78,7 @@ class ApprovalService:
 
         # 计算过期时间
         timeout = timeout_seconds or self.config.default_timeout_seconds
-        expires_at = datetime.utcnow() + timedelta(seconds=timeout)
+        expires_at = datetime.now(timezone.utc) + timedelta(seconds=timeout)
 
         # 创建审批请求
         request = ApprovalRequest(
@@ -126,8 +126,8 @@ class ApprovalService:
 
         # 更新状态
         request.status = ApprovalStatus.PENDING
-        request.submitted_at = datetime.utcnow()
-        request.updated_at = datetime.utcnow()
+        request.submitted_at = datetime.now(timezone.utc)
+        request.updated_at = datetime.now(timezone.utc)
 
         # 保存更新
         self._requests[request_id] = request
@@ -181,8 +181,8 @@ class ApprovalService:
         request.decision_reason = reason
         request.approver_id = approver_id
         request.approver_name = approver_name
-        request.decided_at = datetime.utcnow()
-        request.updated_at = datetime.utcnow()
+        request.decided_at = datetime.now(timezone.utc)
+        request.updated_at = datetime.now(timezone.utc)
 
         # 保存更新
         self._requests[request_id] = request
@@ -195,7 +195,7 @@ class ApprovalService:
             reason=reason,
             approver_id=approver_id,
             approver_name=approver_name,
-            decided_at=datetime.utcnow()
+            decided_at=datetime.now(timezone.utc)
         )
 
         # 保存决策
@@ -239,7 +239,7 @@ class ApprovalService:
         # 更新状态
         request.status = ApprovalStatus.WITHDRAWN
         request.decision_reason = f"撤回理由: {reason}"
-        request.updated_at = datetime.utcnow()
+        request.updated_at = datetime.now(timezone.utc)
 
         # 保存更新
         self._requests[request_id] = request
@@ -270,7 +270,7 @@ class ApprovalService:
 
         # 更新状态
         request.status = ApprovalStatus.CANCELLED
-        request.updated_at = datetime.utcnow()
+        request.updated_at = datetime.now(timezone.utc)
 
         # 保存更新
         self._requests[request_id] = request
@@ -287,7 +287,7 @@ class ApprovalService:
         if not self.config.auto_expire_enabled:
             return []
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         timeout_requests = []
 
         for request_id, request in self._requests.items():
@@ -337,7 +337,7 @@ class ApprovalService:
             author_id=author_id,
             author_name=author_name,
             is_internal=is_internal,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
 
         # 保存评论

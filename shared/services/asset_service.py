@@ -4,7 +4,7 @@ HermesNexus Phase 2 - Asset Service (Database Version)
 """
 
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import math
 from shared.models.asset import (
@@ -72,8 +72,8 @@ class AssetService:
                 metadata=getattr(request, "metadata", None),
                 description=request.description,
                 created_by=created_by,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc)
             )
 
         # 检查ID是否已存在
@@ -164,7 +164,7 @@ class AssetService:
                 existing_asset.asset_type = asset.asset_type
                 existing_asset.status = asset.status
                 existing_asset.metadata = asset.metadata
-                existing_asset.updated_at = datetime.utcnow()
+                existing_asset.updated_at = datetime.now(timezone.utc)
                 return self.asset_dao.update(existing_asset)
             else:
                 # 使用AssetUpdateRequest更新
@@ -187,7 +187,7 @@ class AssetService:
                 if request.metadata is not None:
                     existing_asset.metadata = request.metadata
 
-                existing_asset.updated_at = datetime.utcnow()
+                existing_asset.updated_at = datetime.now(timezone.utc)
 
                 # 保存更新
                 return self.asset_dao.update(existing_asset)
@@ -206,7 +206,7 @@ class AssetService:
                             f"Invalid state transition: {existing_asset.status} -> {asset.status}"
                         )
                 # 直接替换整个对象
-                asset.updated_at = datetime.utcnow()
+                asset.updated_at = datetime.now(timezone.utc)
                 self._assets[asset_id] = asset
                 return asset
             else:
@@ -230,7 +230,7 @@ class AssetService:
                 if request.metadata is not None:
                     existing_asset.metadata = request.metadata
 
-                existing_asset.updated_at = datetime.utcnow()
+                existing_asset.updated_at = datetime.now(timezone.utc)
 
                 return existing_asset
 
@@ -251,7 +251,7 @@ class AssetService:
                 return False
 
             asset.status = AssetStatus.DECOMMISSIONED
-            asset.updated_at = datetime.utcnow()
+            asset.updated_at = datetime.now(timezone.utc)
             self.asset_dao.update(asset)
 
             return True
@@ -262,7 +262,7 @@ class AssetService:
 
             # 标记为退役
             self._assets[asset_id].status = AssetStatus.DECOMMISSIONED
-            self._assets[asset_id].updated_at = datetime.utcnow()
+            self._assets[asset_id].updated_at = datetime.now(timezone.utc)
 
             return True
 
@@ -366,9 +366,9 @@ class AssetService:
             if not asset:
                 return False
 
-            asset.last_heartbeat = datetime.utcnow()
+            asset.last_heartbeat = datetime.now(timezone.utc)
             asset.status = AssetStatus.ACTIVE
-            asset.updated_at = datetime.utcnow()
+            asset.updated_at = datetime.now(timezone.utc)
 
             self.asset_dao.update(asset)
             return True
@@ -377,9 +377,9 @@ class AssetService:
             if not asset:
                 return False
 
-            asset.last_heartbeat = datetime.utcnow()
+            asset.last_heartbeat = datetime.now(timezone.utc)
             asset.status = AssetStatus.ACTIVE
-            asset.updated_at = datetime.utcnow()
+            asset.updated_at = datetime.now(timezone.utc)
 
             return True
 
@@ -405,7 +405,7 @@ class AssetService:
 
             asset.associated_node_id = node_id
             asset.status = AssetStatus.ACTIVE
-            asset.updated_at = datetime.utcnow()
+            asset.updated_at = datetime.now(timezone.utc)
 
             self.asset_dao.update(asset)
             return True
@@ -416,7 +416,7 @@ class AssetService:
 
             asset.associated_node_id = node_id
             asset.status = AssetStatus.ACTIVE
-            asset.updated_at = datetime.utcnow()
+            asset.updated_at = datetime.now(timezone.utc)
 
             return True
 
@@ -437,7 +437,7 @@ class AssetService:
 
             asset.associated_node_id = None
             asset.status = AssetStatus.INACTIVE
-            asset.updated_at = datetime.utcnow()
+            asset.updated_at = datetime.now(timezone.utc)
 
             self.asset_dao.update(asset)
             return True
@@ -448,7 +448,7 @@ class AssetService:
 
             asset.associated_node_id = None
             asset.status = AssetStatus.INACTIVE
-            asset.updated_at = datetime.utcnow()
+            asset.updated_at = datetime.now(timezone.utc)
 
             return True
 

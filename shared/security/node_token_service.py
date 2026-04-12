@@ -5,7 +5,7 @@ JWT Token的生成、验证和管理
 
 import jwt
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, List, Optional
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -78,7 +78,7 @@ class NodeTokenService:
             Token信息
         """
         # 计算Token过期时间
-        issued_at = datetime.utcnow()
+        issued_at = datetime.now(timezone.utc)
         expires_at = issued_at + timedelta(hours=self.token_expiry_hours)
 
         # 生成Token payload
@@ -130,7 +130,7 @@ class NodeTokenService:
 
             # 检查Token是否过期
             exp_time = datetime.fromtimestamp(payload["exp"])
-            if datetime.utcnow() > exp_time:
+            if datetime.now(timezone.utc) > exp_time:
                 return None
 
             return payload

@@ -6,7 +6,7 @@ HermesNexus Phase 3 - 故障恢复服务
 import asyncio
 import logging
 from typing import List, Dict, Any, Optional, Callable
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from shared.models.rollback import (
     FailureRecord, RecoveryPlan, RecoveryAction,
@@ -302,7 +302,7 @@ class RecoveryService:
         try:
             # 更新恢复计划状态
             recovery_plan.status = "executing"
-            recovery_plan.started_at = datetime.utcnow()
+            recovery_plan.started_at = datetime.now(timezone.utc)
 
             # 获取对应的恢复处理器
             handler = self._recovery_handlers.get(recovery_plan.recovery_action)
@@ -314,21 +314,21 @@ class RecoveryService:
 
             # 更新恢复计划状态
             recovery_plan.status = "completed"
-            recovery_plan.completed_at = datetime.utcnow()
+            recovery_plan.completed_at = datetime.now(timezone.utc)
             recovery_plan.success = result.get("success", False)
             recovery_plan.result_message = result.get("message", "")
 
             # 更新故障记录
             failure.recovery_status = "completed"
             failure.recovery_result = recovery_plan.result_message
-            failure.recovered_at = datetime.utcnow()
+            failure.recovered_at = datetime.now(timezone.utc)
 
             logger.info(f"恢复计划完成: {plan_id}, 成功: {recovery_plan.success}")
 
         except Exception as e:
             # 恢复失败
             recovery_plan.status = "failed"
-            recovery_plan.completed_at = datetime.utcnow()
+            recovery_plan.completed_at = datetime.now(timezone.utc)
             recovery_plan.success = False
             recovery_plan.result_message = f"恢复失败: {str(e)}"
 

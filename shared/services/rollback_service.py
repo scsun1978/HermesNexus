@@ -7,7 +7,7 @@ import uuid
 import json
 import asyncio
 from typing import List, Dict, Any, Optional, Callable
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from shared.models.rollback import (
@@ -142,7 +142,7 @@ class RollbackService:
             trigger_reason=trigger_reason,
             trigger_type=trigger_type,
             triggered_by=triggered_by,
-            triggered_at=datetime.utcnow(),
+            triggered_at=datetime.now(timezone.utc),
             steps=steps,
             status=RollbackStatus.PLANNED,
             current_step=0,
@@ -237,7 +237,7 @@ class RollbackService:
         params = {}
 
         if "backup" in operation:
-            params["backup_path"] = f"/backup/{rollback_type.value}/{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+            params["backup_path"] = f"/backup/{rollback_type.value}/{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
         elif "restore" in operation:
             params["backup_path"] = f"/backup/{rollback_type.value}/latest"
         elif "stop" in operation or "start" in operation:
@@ -305,7 +305,7 @@ class RollbackService:
 
         # 开始执行
         plan.status = RollbackStatus.EXECUTING
-        plan.started_at = datetime.utcnow()
+        plan.started_at = datetime.now(timezone.utc)
         plan.current_step = 0
         self._plans[plan_id] = plan
 
@@ -331,14 +331,14 @@ class RollbackService:
 
             # 所有步骤成功完成
             plan.status = RollbackStatus.COMPLETED
-            plan.completed_at = datetime.utcnow()
+            plan.completed_at = datetime.now(timezone.utc)
             plan.final_status = "success"
             plan.rollback_summary = f"成功执行 {len(plan.steps)} 个回滚步骤"
 
         except Exception as e:
             # 回滚执行失败
             plan.status = RollbackStatus.FAILED
-            plan.completed_at = datetime.utcnow()
+            plan.completed_at = datetime.now(timezone.utc)
             plan.final_status = "failed"
             plan.failure_reason = str(e)
             plan.rollback_summary = f"回滚执行失败: {str(e)}"
@@ -360,7 +360,7 @@ class RollbackService:
             Exception: 步骤执行失败
         """
         step.status = RollbackStatus.EXECUTING
-        step.executed_at = datetime.utcnow()
+        step.executed_at = datetime.now(timezone.utc)
 
         try:
             # 模拟执行步骤
@@ -432,7 +432,7 @@ class RollbackService:
             raise ValueError(f"当前状态 {plan.status.name} 不允许取消")
 
         plan.status = RollbackStatus.CANCELLED
-        plan.completed_at = datetime.utcnow()
+        plan.completed_at = datetime.now(timezone.utc)
         plan.final_status = "cancelled"
         plan.rollback_summary = "回滚计划已取消"
 
@@ -524,7 +524,7 @@ class RollbackService:
             severity=severity,
             error_message=error_message,
             stack_trace=stack_trace,
-            occurred_at=datetime.utcnow(),
+            occurred_at=datetime.now(timezone.utc),
             recovery_action=recovery_action,
             recovery_status="pending",
             context=context or {},
@@ -590,7 +590,7 @@ class RollbackService:
             steps=steps,
             validation_criteria=validation_criteria,
             status="pending",
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
 
         self._recovery_plans[plan_id] = plan
