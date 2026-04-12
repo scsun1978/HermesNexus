@@ -20,7 +20,7 @@ jobs:
       - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: 安装依赖
         run: |
@@ -60,7 +60,7 @@ jobs:
       - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: 安装依赖
         run: |
@@ -97,7 +97,7 @@ jobs:
       - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: 安装依赖
         run: |
@@ -122,7 +122,7 @@ jobs:
       - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: 安装依赖
         run: |
@@ -147,7 +147,7 @@ jobs:
       - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: 安装依赖
         run: |
@@ -177,7 +177,7 @@ jobs:
       - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: 安装依赖
         run: |
@@ -208,7 +208,7 @@ jobs:
       - name: 设置Python环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.14'
 
       - name: 安装构建依赖
         run: |
