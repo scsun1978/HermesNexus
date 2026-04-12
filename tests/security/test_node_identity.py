@@ -6,7 +6,6 @@ Phase 3 节点身份认证测试
 import unittest
 import tempfile
 import os
-import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -22,7 +21,6 @@ from shared.models.node import (
     NodeRegistrationRequest,
     NodeStatus,
     NodeType,
-    NodeTokenInfo,
     NodePermission,
 )
 from shared.security.node_token_service import NodeTokenService

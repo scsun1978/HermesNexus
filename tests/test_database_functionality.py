@@ -18,21 +18,18 @@ from shared.database import SQLiteBackend
 from shared.dao import AssetDAO, TaskDAO, AuditDAO
 from shared.models.asset import (
     Asset,
-    AssetCreateRequest,
     AssetType,
     AssetStatus,
     AssetMetadata,
 )
 from shared.models.task import (
     Task,
-    TaskCreateRequest,
     TaskType,
     TaskStatus,
     TaskPriority,
 )
 from shared.models.audit import (
     AuditLog,
-    AuditLogCreateRequest,
     AuditCategory,
     EventLevel,
 )

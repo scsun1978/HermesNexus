@@ -25,7 +25,7 @@ from shared.services.audit_service import AuditService
 from shared.security.auth_manager import AuthManager
 from shared.models.asset import Asset, AssetType, AssetStatus
 from shared.models.task import Task, TaskType, TaskStatus, TaskPriority
-from shared.models.audit import AuditLog, AuditAction, AuditCategory, EventLevel
+from shared.models.audit import AuditAction, AuditCategory, EventLevel
 
 
 class TestSmokeHealthCheck(unittest.TestCase):

@@ -7,10 +7,8 @@
 import asyncio
 import sys
 import time
-import json
 import logging
 from pathlib import Path
-from datetime import datetime
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
@@ -401,7 +399,7 @@ class FinalE2ETest:
             jobs = db.list_jobs()
             events = db.list_events()
 
-            logger.info(f"📊 数据一致性检查:")
+            logger.info("📊 数据一致性检查:")
             logger.info(f"   节点数: {len(nodes)}")
             logger.info(f"   任务数: {len(jobs)}")
             logger.info(f"   事件数: {len(events)}")

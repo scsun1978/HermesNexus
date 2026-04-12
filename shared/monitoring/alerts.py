@@ -5,8 +5,8 @@ HermesNexus 告警规则定义
 
 from enum import Enum
 from dataclasses import dataclass
-from typing import Dict, Any, List, Optional, Callable
-from datetime import datetime, timedelta
+from typing import Dict, Any, List, Optional
+from datetime import datetime
 
 
 class AlertSeverity(str, Enum):

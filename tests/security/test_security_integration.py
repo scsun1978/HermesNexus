@@ -5,8 +5,7 @@ HermesNexus Phase 3 - 安全链路集成测试
 
 import pytest
 import asyncio
-from datetime import datetime, timedelta
-from unittest.mock import Mock, AsyncMock, patch
+from datetime import datetime
 import uuid
 
 from shared.models.node import NodeIdentity, NodeStatus, NodeType
@@ -17,16 +16,12 @@ from shared.models.permission import (
     PermissionContext,
 )
 from shared.models.approval import (
-    ApprovalRequest,
     ApprovalStatus,
-    ApprovalDecision,
     ApprovalPriority,
 )
 from shared.models.rollback import (
-    RollbackPlan,
     RollbackType,
     RollbackStatus,
-    FailureRecord,
     RecoveryAction,
     FailureType,
     FailureSeverity,
@@ -223,7 +218,7 @@ class TestSecurityIntegration:
             SecurityEventType,
         )
 
-        request = approval_service._requests[approved_request.request_id]
+        approval_service._requests[approved_request.request_id]
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
             action=AuditAction.USER_ACTION,
@@ -611,7 +606,7 @@ class TestSecurityIntegration:
         permission_checker = get_permission_checker()
 
         # 创建不同租户的上下文
-        tenant_a_context = PermissionContext(
+        PermissionContext(
             user_id="user-a",
             role="operator",
             tenant_id="tenant-a",
@@ -620,7 +615,7 @@ class TestSecurityIntegration:
             resource_id="asset-a",
         )
 
-        tenant_b_context = PermissionContext(
+        PermissionContext(
             user_id="user-b",
             role="operator",
             tenant_id="tenant-b",

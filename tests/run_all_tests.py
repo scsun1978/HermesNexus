@@ -7,7 +7,6 @@
 import subprocess
 import sys
 import time
-from pathlib import Path
 
 
 def run_command(command, description, timeout=300):

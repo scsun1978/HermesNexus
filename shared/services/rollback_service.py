@@ -6,8 +6,8 @@ HermesNexus Phase 3 - 回滚服务
 import uuid
 import json
 import asyncio
-from typing import List, Dict, Any, Optional, Callable
-from datetime import datetime, timedelta, timezone
+from typing import List, Dict, Any, Optional
+from datetime import datetime, timezone
 from pathlib import Path
 
 from shared.models.rollback import (
@@ -248,9 +248,10 @@ class RollbackService:
         params = {}
 
         if "backup" in operation:
-            params[
-                "backup_path"
-            ] = f"/backup/{rollback_type.value}/{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
+            params["backup_path"] = (
+                f"/backup/{rollback_type.value}/"
+                f"{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
+            )
         elif "restore" in operation:
             params["backup_path"] = f"/backup/{rollback_type.value}/latest"
         elif "stop" in operation or "start" in operation:

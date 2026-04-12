@@ -3,18 +3,16 @@ HermesNexus Phase 2 - Task Service (Database Version)
 任务编排业务逻辑层 - 数据库版本
 """
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 from datetime import datetime
 import uuid
 import math
 from shared.models.task import (
     Task,
-    TaskCreateRequest,
     TaskUpdateRequest,
     TaskQueryParams,
     TaskListResponse,
     TaskStats,
-    TaskType,
     TaskStatus,
     TaskPriority,
 )

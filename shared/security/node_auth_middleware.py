@@ -9,7 +9,6 @@ from functools import wraps
 import logging
 
 from shared.security.node_token_service import get_node_token_service
-from shared.models.node import NodeIdentity
 from shared.models.enums import ErrorCode, create_error_response
 
 logger = logging.getLogger(__name__)
@@ -44,7 +43,7 @@ class NodeAuthMiddleware:
             return None
 
         # 3. 检查节点状态
-        node_id = payload.get("node_id")
+        payload.get("node_id")
         # 这里可以添加节点状态检查，比如查询数据库验证节点是否处于活跃状态
 
         return payload

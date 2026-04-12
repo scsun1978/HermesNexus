@@ -3,7 +3,7 @@ HermesNexus Phase 2 - Task Service
 任务编排业务逻辑层
 """
 
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 from datetime import datetime
 import uuid
 from shared.models.task import (

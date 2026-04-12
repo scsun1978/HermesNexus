@@ -7,7 +7,6 @@
 import asyncio
 import sys
 import time
-import random
 import argparse
 import logging
 from datetime import datetime

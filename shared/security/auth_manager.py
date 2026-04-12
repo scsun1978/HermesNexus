@@ -7,10 +7,6 @@ import os
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List
-from hashlib import sha256
-import json
-
-from shared.models.enums import ErrorCode
 
 
 class AuthManager:

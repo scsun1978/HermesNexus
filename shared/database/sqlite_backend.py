@@ -4,7 +4,6 @@ SQLite数据库后端实现
 """
 
 import os
-from typing import Optional
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -69,10 +68,6 @@ class SQLiteBackend(DatabaseBackend):
         # 延迟导入避免循环依赖
         from shared.database.models import (
             Base,
-            AssetModel,
-            TaskModel,
-            AuditLogModel,
-            NodeModel,
         )
 
         # 创建所有表

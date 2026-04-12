@@ -12,7 +12,6 @@ import sys
 import time
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, List, Dict, Any
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -31,7 +30,7 @@ from shared.models.task import (
     TaskPriority,
     TaskExecutionResult,
 )
-from shared.models.audit import AuditLog, AuditAction, AuditCategory, EventLevel
+from shared.models.audit import AuditAction, EventLevel
 
 
 class E2ETestResult:

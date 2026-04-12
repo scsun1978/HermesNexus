@@ -15,6 +15,7 @@ from shared.models.audit import (
     AuditAction,
     AuditCategory,
     EventLevel,
+    AuditExportRequest,
 )
 
 
@@ -288,7 +289,7 @@ class AuditService:
             critical_events=critical_events,
         )
 
-    def export_logs(self, params: AuditLogExportRequest) -> str:
+    def export_logs(self, params: AuditExportRequest) -> str:
         """
         导出审计日志
 

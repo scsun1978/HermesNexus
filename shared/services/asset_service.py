@@ -9,7 +9,6 @@ import uuid
 import math
 from shared.models.asset import (
     Asset,
-    AssetCreateRequest,
     AssetUpdateRequest,
     AssetQueryParams,
     AssetListResponse,
@@ -17,7 +16,6 @@ from shared.models.asset import (
     AssetType,
     AssetStatus,
 )
-from shared.models.enums import validate_state_transition
 from shared.dao.asset_dao import AssetDAO
 from shared.models.audit import (
     AuditAction,

@@ -50,7 +50,7 @@ class TestCompleteWorkflow(unittest.TestCase):
                 self.skipTest(f"云端API未运行: {e}")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
     def test_node_registration_to_task_completion(self):
         """测试从节点注册到任务完成的完整流程"""
@@ -171,7 +171,7 @@ class TestCompleteWorkflow(unittest.TestCase):
                 self.skipTest(f"端到端测试失败: {e}")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
 
 class TestAPIEndpoints(unittest.TestCase):
@@ -207,7 +207,7 @@ class TestAPIEndpoints(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
     def test_jobs_endpoint(self):
         """测试任务管理端点"""
@@ -229,7 +229,7 @@ class TestAPIEndpoints(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
     def test_events_endpoint(self):
         """测试事件查询端点"""
@@ -251,7 +251,7 @@ class TestAPIEndpoints(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
     def test_stats_endpoint(self):
         """测试统计信息端点"""
@@ -274,7 +274,7 @@ class TestAPIEndpoints(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
 
 class TestErrorHandling(unittest.TestCase):
@@ -308,7 +308,7 @@ class TestErrorHandling(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
     def test_invalid_job_request(self):
         """测试无效任务请求"""
@@ -328,7 +328,7 @@ class TestErrorHandling(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
     def test_malformed_job_creation(self):
         """测试格式错误的任务创建"""
@@ -352,7 +352,7 @@ class TestErrorHandling(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
 
 class TestDataIntegrity(unittest.TestCase):
@@ -388,7 +388,7 @@ class TestDataIntegrity(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
     def test_event_consistency(self):
         """测试事件一致性"""
@@ -423,7 +423,7 @@ class TestDataIntegrity(unittest.TestCase):
                 self.skipTest("云端API未运行")
                 return False
 
-        result = self.loop.run_until_complete(run_test())
+        self.loop.run_until_complete(run_test())
 
 
 if __name__ == "__main__":

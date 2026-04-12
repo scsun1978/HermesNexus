@@ -4,10 +4,11 @@ FastAPI 应用主入口
 提供云端 REST API 服务
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+import threading
 import uvicorn
 from contextlib import asynccontextmanager
 import logging
@@ -15,19 +16,13 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime, timezone
 import uuid
 import os
-from pathlib import Path
 
 from shared.schemas.models import (
-    Node,
     Device,
-    Job,
-    Event,
     JobStatus,
     JobType,
     NodeStatus,
 )
-from shared.protocol.messages import MessageType
-from shared.protocol.error_codes import ErrorCode
 from cloud.database.db import db
 
 # 导入新的 API 路由
@@ -40,17 +35,7 @@ from cloud.api import approval_api
 from cloud.api import rollback_api
 
 # Phase 3: 导入节点认证相关模块
-from shared.models.node import (
-    NodeRegistrationRequest,
-    NodeHeartbeatRequest,
-    NodeIdentity,
-    NodeStatus,
-)
 from shared.security.node_token_service import get_node_token_service
-from shared.security.node_auth_middleware import (
-    get_node_auth_middleware,
-    require_node_auth,
-)
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -58,8 +43,6 @@ logger = logging.getLogger(__name__)
 audit_logs_db: List[Dict] = []
 
 # 锁和线程安全
-import threading
-
 db_lock = threading.Lock()
 
 
@@ -91,7 +74,6 @@ app.add_middleware(
 )
 
 # 挂载静态文件
-import os
 
 # 获取项目根目录
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))

@@ -4,7 +4,7 @@ HermesNexus Phase 2 - Permission Checker
 """
 
 from enum import Enum
-from typing import List, Set
+from typing import List
 
 
 class Permission(str, Enum):

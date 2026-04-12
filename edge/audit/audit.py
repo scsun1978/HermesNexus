@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 from threading import Lock
 
-from shared.schemas.models import AuditAction
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +122,7 @@ class AuditLogger:
                 try:
                     audit = json.loads(line.strip())
                     audits.append(audit)
-                except:
+                except Exception:
                     continue
 
             return audits

@@ -5,12 +5,11 @@ HermesNexus Phase 2 - Asset DAO
 
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
+from sqlalchemy import or_
 
 from shared.dao.base_dao import BaseDAO
 from shared.database.models import AssetModel
-from shared.models.asset import Asset, AssetCreateRequest, AssetUpdateRequest
+from shared.models.asset import Asset
 
 
 class AssetDAO(BaseDAO):

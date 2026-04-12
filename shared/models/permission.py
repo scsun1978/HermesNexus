@@ -4,7 +4,7 @@ HermesNexus Phase 3 - 权限模型
 """
 
 from enum import Enum
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
 

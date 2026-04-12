@@ -169,9 +169,9 @@ class Database:
             logs = list(reversed(self.audit_logs))  # 最新的在前
 
             if action:
-                logs = [l for l in logs if l.get("action") == action]
+                logs = [log for log in logs if log.get("action") == action]
             if actor:
-                logs = [l for l in logs if l.get("actor") == actor]
+                logs = [log for log in logs if log.get("actor") == actor]
 
             return logs[:limit]
 

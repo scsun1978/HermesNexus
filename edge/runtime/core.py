@@ -7,24 +7,19 @@
 import asyncio
 import logging
 import psutil
-from typing import Optional, List, Dict, Any
+from typing import Optional, Dict, Any
 from datetime import datetime, timezone
-import os
 
 from shared.protocol.messages import (
-    MessageType,
-    HeartbeatMessage,
     TaskMessage,
     ResultMessage,
-    ErrorMessage,
 )
 from shared.protocol.error_codes import ErrorCode
 from shared.schemas.models import NodeStatus, JobStatus, TaskType
-from shared.schemas.enums import TaskPriority
 
 from ..cloud.client import CloudClient
 from ..storage.storage import EdgeStorage
-from ..executors.ssh_executor import SSHExecutor, SSHExecutorPool
+from ..executors.ssh_executor import SSHExecutorPool
 from ..audit.audit import AuditLogger
 
 logger = logging.getLogger(__name__)

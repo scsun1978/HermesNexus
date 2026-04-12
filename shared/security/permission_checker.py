@@ -3,7 +3,7 @@ HermesNexus Phase 3 - 权限检查器
 实现权限检查的核心逻辑，结合身份、权限矩阵和风险评估
 """
 
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional
 from datetime import datetime
 import fnmatch
 import re

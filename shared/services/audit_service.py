@@ -16,6 +16,9 @@ from shared.models.audit import (
     AuditAction,
     AuditCategory,
     EventLevel,
+    SecurityAuditLog,
+    SecurityEvent,
+    AuditStatisticsExtended,
 )
 from shared.dao.audit_dao import AuditDAO
 

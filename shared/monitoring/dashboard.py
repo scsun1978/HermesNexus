@@ -3,17 +3,13 @@ HermesNexus 监控面板
 提供系统状态可视化和告警展示
 """
 
-from typing import Dict, Any, List
-from datetime import datetime, timedelta
-from collections import defaultdict
+from typing import Dict, Any
+from datetime import datetime
 
 from shared.monitoring.metrics import (
-    MetricsCollector,
-    MetricType,
-    MetricCategory,
     get_metrics_collector,
 )
-from shared.monitoring.alerts import AlertManager, AlertSeverity, get_alert_manager
+from shared.monitoring.alerts import AlertSeverity, get_alert_manager
 
 
 class MonitoringDashboard:

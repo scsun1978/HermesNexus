@@ -4,15 +4,9 @@ HermesNexus Phase 3 - 回滚服务测试
 """
 
 import pytest
-import asyncio
-from datetime import datetime
 from shared.models.rollback import (
-    RollbackPlan,
-    RollbackStep,
     RollbackType,
     RollbackStatus,
-    FailureRecord,
-    RecoveryPlan,
     RecoveryAction,
     FailureType,
     FailureSeverity,
@@ -260,7 +254,7 @@ class TestRollbackService:
     ):
         """测试按状态过滤回滚计划"""
         # 创建计划
-        plan = rollback_service.create_rollback_plan(**sample_config_plan_data)
+        rollback_service.create_rollback_plan(**sample_config_plan_data)
 
         # 按状态过滤
         plans = rollback_service.list_rollback_plans(status=RollbackStatus.PLANNED)

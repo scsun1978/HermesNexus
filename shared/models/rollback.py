@@ -4,7 +4,7 @@ HermesNexus Phase 3 - 回滚模型
 """
 
 from enum import Enum
-from typing import List, Dict, Any, Optional, Callable
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime, timezone
 

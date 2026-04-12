@@ -26,32 +26,37 @@ async def test_simulator_modules():
     try:
         # 测试SSH模拟器
         logger.info("1️⃣ 测试SSH模拟器模块...")
-        from tests.simulators.ssh_host_simulator import SSHHostSimulator
+        import importlib
 
+        importlib.import_module("tests.simulators.ssh_host_simulator")
         logger.info("   ✅ SSH模拟器模块导入成功")
 
         # 测试简单SSH服务器
         logger.info("2️⃣ 测试简单SSH服务器模块...")
-        from tests.simulators.simple_ssh_server import SSHTestServer
+        import importlib
 
+        importlib.import_module("tests.simulators.simple_ssh_server")
         logger.info("   ✅ 简单SSH服务器模块导入成功")
 
         # 测试集成脚本
         logger.info("3️⃣ 测试边缘节点集成脚本...")
-        from tests.scripts.deploy_edge_node import EdgeNodeIntegrator
+        import importlib
 
+        importlib.import_module("tests.scripts.deploy_edge_node")
         logger.info("   ✅ 边缘节点集成脚本导入成功")
 
         # 测试任务分发器
         logger.info("4️⃣ 测试任务分发器...")
-        from tests.scripts.task_dispatcher import TaskDispatcher
+        import importlib
 
+        importlib.import_module("tests.scripts.task_dispatcher")
         logger.info("   ✅ 任务分发器导入成功")
 
         # 测试失败场景
         logger.info("5️⃣ 测试失败场景脚本...")
-        from tests.scripts.failure_scenarios import FailureScenarios
+        import importlib
 
+        importlib.import_module("tests.scripts.failure_scenarios")
         logger.info("   ✅ 失败场景脚本导入成功")
 
         logger.info("✅ 所有模拟器模块导入成功")
@@ -107,12 +112,12 @@ async def test_script_instances():
 
         # 测试任务分发器
         logger.info("2️⃣ 创建任务分发器...")
-        dispatcher = TaskDispatcher(cloud_url="http://localhost:8080")
+        TaskDispatcher(cloud_url="http://localhost:8080")
         logger.info("   ✅ 任务分发器创建成功")
 
         # 测试失败场景测试器
         logger.info("3️⃣ 创建失败场景测试器...")
-        failure_tester = FailureScenarios(cloud_url="http://localhost:8080")
+        FailureScenarios(cloud_url="http://localhost:8080")
         logger.info("   ✅ 失败场景测试器创建成功")
 
         logger.info("✅ 所有脚本实例创建成功")

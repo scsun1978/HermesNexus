@@ -17,7 +17,6 @@ from shared.models.approval import (
     ApprovalConfig,
     ApprovalStateTransition,
 )
-from shared.models.permission import RiskLevel, ActionType, ResourceType
 
 
 class ApprovalService:

@@ -16,7 +16,6 @@ sys.path.insert(0, str(project_root))
 
 from shared.security.auth_manager import AuthManager
 from shared.security.permissions import Permission, PermissionChecker
-from shared.security.middleware import AuthMiddleware
 from shared.models.audit import AuditAction, AuditCategory, EventLevel
 from shared.services.audit_service import AuditService
 from shared.database.sqlite_backend import SQLiteBackend

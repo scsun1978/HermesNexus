@@ -5,12 +5,10 @@ HermesNexus Phase 3 - 故障恢复服务测试
 
 import pytest
 import asyncio
-from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
 from shared.models.rollback import (
     FailureRecord,
-    RecoveryPlan,
     RecoveryAction,
     FailureType,
     FailureSeverity,
@@ -500,7 +498,7 @@ class TestRecoveryServiceIntegration:
 
         # 4. 检查恢复计划已创建
         rollback_service = get_rollback_service()
-        recovery_plans = [
+        [
             p
             for p in rollback_service._recovery_plans.values()
             if p.failure_id == failure.failure_id

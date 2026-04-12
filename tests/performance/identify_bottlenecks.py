@@ -4,9 +4,7 @@
 """
 
 import os
-import re
 from pathlib import Path
-from typing import Dict, List, Any
 from datetime import datetime
 
 
@@ -207,8 +205,6 @@ class PerformanceBottleneckAnalyzer:
         """识别性能热点"""
         print("🔍 识别性能热点...")
 
-        hotspots = []
-
         # 基于常见的性能问题模式
         common_patterns = [
             {
@@ -302,7 +298,7 @@ class PerformanceBottleneckAnalyzer:
                     f.write(f"### {i}. {issue['component']} - {issue['issue']}\n\n")
                     f.write(f"**描述**: {issue['description']}\n\n")
                     f.write(f"**建议**: {issue['recommendation']}\n\n")
-                    f.write(f"**优先级**: 🔥 HIGH\n\n")
+                    f.write("**优先级**: 🔥 HIGH\n\n")
             else:
                 f.write("✅ 未发现高优先级问题\n\n")
 
@@ -313,7 +309,7 @@ class PerformanceBottleneckAnalyzer:
                     f.write(f"### {i}. {issue['component']} - {issue['issue']}\n\n")
                     f.write(f"**描述**: {issue['description']}\n\n")
                     f.write(f"**建议**: {issue['recommendation']}\n\n")
-                    f.write(f"**优先级**: 🟡 MEDIUM\n\n")
+                    f.write("**优先级**: 🟡 MEDIUM\n\n")
             else:
                 f.write("✅ 未发现中优先级问题\n\n")
 
@@ -324,7 +320,7 @@ class PerformanceBottleneckAnalyzer:
                     f.write(f"### {i}. {issue['component']} - {issue['issue']}\n\n")
                     f.write(f"**描述**: {issue['description']}\n\n")
                     f.write(f"**建议**: {issue['recommendation']}\n\n")
-                    f.write(f"**优先级**: 🟢 LOW\n\n")
+                    f.write("**优先级**: 🟢 LOW\n\n")
             else:
                 f.write("✅ 未发现低优先级问题\n\n")
 

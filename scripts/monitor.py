@@ -4,10 +4,10 @@ HermesNexus 系统监控脚本
 实时监控系统健康状态、性能指标和资源使用情况
 """
 
+import os
 import requests
 import psutil
 import time
-import json
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -20,13 +20,11 @@ LOG_FILE = "./logs/monitor.log"
 # 配置日志
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        logging.StreamHandler()
-    ]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
+
 
 class SystemMonitor:
     """系统监控器"""
@@ -73,22 +71,22 @@ class SystemMonitor:
         try:
             cpu_percent = psutil.cpu_percent(interval=1)
             memory = psutil.virtual_memory()
-            disk = psutil.disk_usage('/')
+            disk = psutil.disk_usage("/")
 
             return {
-                'cpu_percent': cpu_percent,
-                'memory': {
-                    'total': memory.total,
-                    'available': memory.available,
-                    'percent': memory.percent,
-                    'used': memory.used
+                "cpu_percent": cpu_percent,
+                "memory": {
+                    "total": memory.total,
+                    "available": memory.available,
+                    "percent": memory.percent,
+                    "used": memory.used,
                 },
-                'disk': {
-                    'total': disk.total,
-                    'used': disk.used,
-                    'free': disk.free,
-                    'percent': disk.percent
-                }
+                "disk": {
+                    "total": disk.total,
+                    "used": disk.used,
+                    "free": disk.free,
+                    "percent": disk.percent,
+                },
             }
         except Exception as e:
             logger.error(f"获取系统资源失败: {e}")
@@ -96,13 +94,18 @@ class SystemMonitor:
 
     def check_database_status(self):
         """检查数据库状态"""
-        db_path = Path(os.getenv("SQLITE_DB_PATH", str(Path(__file__).resolve().parent.parent / "data" / "hermesnexus.db")))
+        db_path = Path(
+            os.getenv(
+                "SQLITE_DB_PATH",
+                str(Path(__file__).resolve().parent.parent / "data" / "hermesnexus.db"),
+            )
+        )
         try:
             if db_path.exists():
                 size = db_path.stat().st_size
-                return True, {'exists': True, 'size': size, 'path': str(db_path)}
+                return True, {"exists": True, "size": size, "path": str(db_path)}
             else:
-                return False, {'exists': False, 'path': str(db_path)}
+                return False, {"exists": False, "path": str(db_path)}
         except Exception as e:
             return False, str(e)
 
@@ -111,25 +114,27 @@ class SystemMonitor:
         log_dir = Path("./logs")
         try:
             if not log_dir.exists():
-                return {'exists': False, 'files': []}
+                return {"exists": False, "files": []}
 
             log_files = []
             for log_file in log_dir.glob("*.log"):
                 stat = log_file.stat()
-                log_files.append({
-                    'name': log_file.name,
-                    'size': stat.st_size,
-                    'modified': datetime.fromtimestamp(stat.st_mtime).isoformat()
-                })
+                log_files.append(
+                    {
+                        "name": log_file.name,
+                        "size": stat.st_size,
+                        "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                    }
+                )
 
-            return {'exists': True, 'files': log_files, 'count': len(log_files)}
+            return {"exists": True, "files": log_files, "count": len(log_files)}
         except Exception as e:
             logger.error(f"检查日志文件失败: {e}")
-            return {'exists': False, 'error': str(e)}
+            return {"exists": False, "error": str(e)}
 
     def format_bytes(self, bytes_value):
         """格式化字节数"""
-        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+        for unit in ["B", "KB", "MB", "GB", "TB"]:
             if bytes_value < 1024.0:
                 return f"{bytes_value:.2f} {unit}"
             bytes_value /= 1024.0
@@ -137,9 +142,9 @@ class SystemMonitor:
 
     def display_status(self):
         """显示系统状态"""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print(f"🔍 HermesNexus 系统监控报告 - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print("="*80)
+        print("=" * 80)
 
         # API健康状态
         api_healthy, api_result = self.check_api_health()
@@ -166,26 +171,32 @@ class SystemMonitor:
         nodes_healthy, nodes_result = self.get_nodes_status()
         print(f"\n🖥️  节点状态: {'✅ 正常' if nodes_healthy else '❌ 异常'}")
         if nodes_healthy:
-            for node in nodes_result.get('nodes', []):
-                status_icon = "🟢" if node.get('status') == 'online' else "🔴"
+            for node in nodes_result.get("nodes", []):
+                status_icon = "🟢" if node.get("status") == "online" else "🔴"
                 print(f"   {status_icon} {node.get('node_id')}: {node.get('name')}")
-                print(f"      CPU: {node.get('cpu_usage', 0):.1f}%, "
-                      f"内存: {node.get('memory_usage', 0):.1f}%, "
-                      f"任务: {node.get('active_tasks', 0)}")
+                print(
+                    f"      CPU: {node.get('cpu_usage', 0):.1f}%, "
+                    f"内存: {node.get('memory_usage', 0):.1f}%, "
+                    f"任务: {node.get('active_tasks', 0)}"
+                )
         else:
             print(f"   错误: {nodes_result}")
 
         # 系统资源
         resources = self.get_system_resources()
         if resources:
-            print(f"\n💻 系统资源:")
+            print("\n💻 系统资源:")
             print(f"   CPU使用: {resources['cpu_percent']:.1f}%")
-            print(f"   内存使用: {resources['memory']['percent']:.1f}% "
-                  f"({self.format_bytes(resources['memory']['used'])} / "
-                  f"{self.format_bytes(resources['memory']['total'])})")
-            print(f"   磁盘使用: {resources['disk']['percent']:.1f}% "
-                  f"({self.format_bytes(resources['disk']['used'])} / "
-                  f"{self.format_bytes(resources['disk']['total'])})")
+            print(
+                f"   内存使用: {resources['memory']['percent']:.1f}% "
+                f"({self.format_bytes(resources['memory']['used'])} / "
+                f"{self.format_bytes(resources['memory']['total'])})"
+            )
+            print(
+                f"   磁盘使用: {resources['disk']['percent']:.1f}% "
+                f"({self.format_bytes(resources['disk']['used'])} / "
+                f"{self.format_bytes(resources['disk']['total'])})"
+            )
 
         # 数据库状态
         db_healthy, db_result = self.check_database_status()
@@ -198,17 +209,17 @@ class SystemMonitor:
 
         # 日志文件状态
         logs_result = self.check_log_files()
-        print(f"\n📝 日志文件:")
-        if logs_result.get('exists'):
-            print(f"   日志目录: ./logs")
+        print("\n📝 日志文件:")
+        if logs_result.get("exists"):
+            print("   日志目录: ./logs")
             print(f"   文件数量: {logs_result['count']}")
-            total_size = sum(f['size'] for f in logs_result['files'])
+            total_size = sum(f["size"] for f in logs_result["files"])
             print(f"   总大小: {self.format_bytes(total_size)}")
         else:
-            print(f"   日志目录不存在")
+            print("   日志目录不存在")
 
         # 系统健康评估
-        print(f"\n🏥 系统健康评估:")
+        print("\n🏥 系统健康评估:")
         health_score = 0
         if api_healthy:
             health_score += 25
@@ -216,7 +227,7 @@ class SystemMonitor:
         if stats_healthy:
             health_score += 25
             print("   ✅ 系统统计 (25%)")
-        if resources and resources['memory']['percent'] < 80:
+        if resources and resources["memory"]["percent"] < 80:
             health_score += 25
             print("   ✅ 资源使用 (25%)")
         if db_healthy:
@@ -232,7 +243,7 @@ class SystemMonitor:
         else:
             print("   状态: 🔴 需要关注")
 
-        print("="*80 + "\n")
+        print("=" * 80 + "\n")
 
         return health_score >= 70
 
@@ -260,6 +271,7 @@ class SystemMonitor:
         except Exception as e:
             logger.error(f"❌ 监控程序异常: {e}")
 
+
 def main():
     """主函数"""
     import sys
@@ -284,6 +296,7 @@ def main():
         # 默认单次检查
         healthy = monitor.run_once()
         sys.exit(0 if healthy else 1)
+
 
 if __name__ == "__main__":
     main()

@@ -5,8 +5,6 @@ HermesNexus Phase 3 - 节点身份DAO
 
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_
 
 from shared.dao.base_dao import BaseDAO
 from shared.database.models import NodeModel

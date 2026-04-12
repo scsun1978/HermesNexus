@@ -5,7 +5,6 @@ HermesNexus Phase 2 - Task API Endpoints
 
 from fastapi import APIRouter, HTTPException, Query, status, Header
 from typing import List, Optional
-from datetime import datetime
 
 from shared.models.task import (
     Task,

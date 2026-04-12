@@ -4,7 +4,6 @@
 提供本地状态存储和任务管理
 """
 
-import asyncio
 import json
 import logging
 from typing import Dict, List, Optional, Any
@@ -12,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from shared.protocol.messages import TaskMessage, ResultMessage
-from shared.schemas.models import JobStatus, JobType
+from shared.schemas.models import JobStatus
 
 logger = logging.getLogger(__name__)
 

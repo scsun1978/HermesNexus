@@ -4,7 +4,6 @@ HermesNexus Phase 3 - 权限矩阵管理
 """
 
 import json
-import os
 from typing import Dict, List, Any, Optional
 from pathlib import Path
 from datetime import datetime
@@ -15,7 +14,6 @@ from shared.models.permission import (
     ActionType,
     ResourceType,
     RiskLevel,
-    BuiltInRoles,
 )
 
 

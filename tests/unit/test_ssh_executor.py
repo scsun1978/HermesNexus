@@ -5,10 +5,8 @@ SSH执行器单元测试
 """
 
 import unittest
-import asyncio
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
@@ -26,8 +24,9 @@ class TestSSHExecutor(unittest.TestCase):
     def test_module_import(self):
         """测试模块导入"""
         try:
-            from edge.executors.ssh_executor import SSHExecutor, SSHExecutorPool
+            import importlib
 
+            importlib.import_module("edge.executors.ssh_executor")
             self.assertTrue(True, "SSH执行器模块导入成功")
         except ImportError as e:
             self.fail(f"SSH执行器模块导入失败: {e}")
@@ -86,7 +85,7 @@ class TestSSHExecutorMock(unittest.TestCase):
         """测试模拟命令执行"""
         from edge.executors.ssh_executor import SSHExecutor
 
-        executor = SSHExecutor(host="localhost", username="testuser")
+        SSHExecutor(host="localhost", username="testuser")
 
         # 模拟命令执行结果
         mock_result = {
@@ -105,7 +104,7 @@ class TestSSHExecutorMock(unittest.TestCase):
         """测试模拟错误处理"""
         from edge.executors.ssh_executor import SSHExecutor
 
-        executor = SSHExecutor(host="localhost", username="testuser")
+        SSHExecutor(host="localhost", username="testuser")
 
         # 模拟执行失败
         mock_error_result = {
@@ -126,8 +125,9 @@ class TestAuditLogger(unittest.TestCase):
     def test_audit_logger_import(self):
         """测试审计日志模块导入"""
         try:
-            from edge.audit.audit import AuditLogger
+            import importlib
 
+            importlib.import_module("edge.audit.audit")
             self.assertTrue(True, "审计日志模块导入成功")
         except ImportError as e:
             self.fail(f"审计日志模块导入失败: {e}")

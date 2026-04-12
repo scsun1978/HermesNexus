@@ -14,7 +14,6 @@ sys.path.insert(0, str(project_root))
 
 from shared.protocol.messages import MessageType
 from shared.protocol.error_codes import ErrorCode
-from shared.schemas.models import Node, Device, Job, Event
 from shared.schemas.enums import JobStatus, JobType, NodeStatus
 
 

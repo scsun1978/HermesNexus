@@ -53,7 +53,7 @@ async def test_api_performance():
                 min_time = min(response_times)
                 max_time = max(response_times)
 
-                print(f"\n   响应时间统计:")
+                print("\n   响应时间统计:")
                 print(f"   平均: {avg_time:.2f}ms")
                 print(f"   中位数: {median_time:.2f}ms")
                 print(f"   最小: {min_time:.2f}ms")

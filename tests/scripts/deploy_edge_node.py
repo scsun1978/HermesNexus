@@ -6,10 +6,8 @@
 
 import asyncio
 import sys
-import os
 import argparse
 import logging
-import signal
 from pathlib import Path
 from datetime import datetime
 
@@ -170,7 +168,7 @@ class EdgeNodeIntegrator:
             result = await self.runtime.execute_task(test_task)
 
             if result.get("success"):
-                logger.info(f"✅ 测试任务成功")
+                logger.info("✅ 测试任务成功")
                 logger.info(f"输出: {result.get('stdout', '')[:200]}")
                 return True
             else:

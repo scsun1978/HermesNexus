@@ -4,8 +4,7 @@ HermesNexus Phase 3 - 审批API
 """
 
 from fastapi import APIRouter, HTTPException, Query, Depends, Header
-from typing import List, Optional
-from datetime import datetime
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field
 
 # 导入审批相关模型和服务
@@ -25,10 +24,6 @@ from shared.models.approval import (
     ApprovalStatistics,
 )
 from shared.services.approval_service import get_approval_service
-from shared.security.node_auth_middleware import require_node_auth
-from shared.security.permission_checker import require_permission
-from shared.models.permission import ActionType, ResourceType, PermissionContext
-from shared.models.node import NodeIdentity
 
 # 创建API路由器
 router = APIRouter(prefix="/api/v1/approvals", tags=["approvals"])
@@ -62,9 +57,9 @@ async def get_current_user(
     try:
         # 去掉Bearer前缀
         if authorization.startswith("Bearer "):
-            token = authorization[7:]
+            authorization[7:]
         else:
-            token = authorization
+            pass
 
         # 这里应该验证Token并返回用户信息
         # 暂时返回模拟用户信息
@@ -125,23 +120,6 @@ def check_approval_permission(action: str):
         return current_user
 
     return permission_dependency
-    # 检查用户是否有审批权限
-    allowed_roles = ["tenant_admin", "super_admin", "operator"]
-
-    # 对于查看操作，允许所有已认证用户
-    if action == "view":
-        return current_user
-
-    # 对于审批操作，需要特定角色
-    if action == "approve":
-        if not any(role in current_user.get("roles", []) for role in allowed_roles):
-            raise HTTPException(status_code=403, detail="权限不足：需要审批权限")
-
-    # 对于创建请求，所有已认证用户都可以
-    if action == "create":
-        return current_user
-
-    return current_user
 
 
 # 请求/响应模型

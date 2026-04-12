@@ -3,11 +3,8 @@ HermesNexus Phase 2 - SQLAlchemy ORM Models
 数据库ORM模型定义
 """
 
-from datetime import datetime
-from typing import Optional
 from sqlalchemy import Column, String, Integer, Text, DateTime, JSON, ForeignKey, Index
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.ext.declarative import AbstractConcreteBase
 
 # 创建基础模型类
 Base = declarative_base()

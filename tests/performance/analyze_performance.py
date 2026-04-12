@@ -10,7 +10,6 @@
 """
 
 import sys
-import os
 import json
 import subprocess
 from pathlib import Path
@@ -254,7 +253,7 @@ class PerformanceAnalyzer:
             print(f"   优先级: {opt['priority']}")
             print(f"   预期改进: {opt['expected_improvement']}")
             print(f"   实现难度: {opt['implementation_effort']}")
-            print(f"   实施步骤:")
+            print("   实施步骤:")
             for step in opt["steps"]:
                 print(f"     • {step}")
 

@@ -5,12 +5,11 @@ HermesNexus 监控指标定义
 
 from enum import Enum
 from dataclasses import dataclass
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 from datetime import datetime
 from collections import defaultdict
 import time
 import psutil
-import os
 
 
 class MetricType(str, Enum):

@@ -9,7 +9,6 @@ import tempfile
 import shutil
 import unittest
 from pathlib import Path
-from typing import Optional
 import sys
 
 project_root = Path(__file__).parent.parent.parent

@@ -150,7 +150,7 @@ class SSHTestServer:
         if self.server_socket:
             try:
                 self.server_socket.close()
-            except:
+            except Exception:
                 pass
 
         logger.info("✅ SSH服务器已停止")
@@ -209,7 +209,7 @@ class SSHTestServer:
         finally:
             try:
                 transport.close()
-            except:
+            except Exception:
                 pass
 
     def _command_loop(self, chan, client_addr):
@@ -312,7 +312,7 @@ class SSHTestServer:
                     seconds = int(parts[1]) if len(parts) > 1 else 1
                     time.sleep(seconds)
                     return f"Slept for {seconds} seconds"
-                except:
+                except Exception:
                     return "usage: sleep <seconds>"
 
             elif cmd == "id":
@@ -331,7 +331,7 @@ class SSHTestServer:
                         return result.stdout.strip() or "Command completed"
                     else:
                         return f"Error: {result.stderr.strip() or 'Command failed'}"
-                except Exception as e:
+                except Exception:
                     return f"Command not found: {cmd}"
 
         except Exception as e:

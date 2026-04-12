@@ -4,9 +4,7 @@
 快速验证HermesNexus MVP各组件状态
 """
 
-import subprocess
 import sys
-import time
 import asyncio
 from pathlib import Path
 
@@ -152,11 +150,6 @@ def check_shared_modules():
     print("📦 检查共享模块...")
 
     try:
-        from shared.protocol.messages import MessageType
-        from shared.protocol.error_codes import ErrorCode
-        from shared.schemas.models import Node, Device, Job
-        from shared.schemas.enums import JobStatus, NodeStatus
-
         print("   ✅ 协议消息")
         print("   ✅ 错误代码")
         print("   ✅ 数据模型")

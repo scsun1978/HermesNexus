@@ -10,11 +10,10 @@ import os
 import time
 import sys
 import statistics
-import threading
 from pathlib import Path
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
@@ -24,12 +23,7 @@ from shared.database.sqlite_backend import SQLiteBackend
 from shared.dao.asset_dao import AssetDAO
 from shared.dao.task_dao import TaskDAO
 from shared.dao.audit_dao import AuditDAO
-from shared.services.asset_service import AssetService
-from shared.services.task_service import TaskService
-from shared.services.audit_service import AuditService
 from shared.models.asset import Asset, AssetType, AssetStatus
-from shared.models.task import Task, TaskType, TaskStatus, TaskPriority
-from shared.models.audit import AuditLog, AuditAction, AuditCategory, EventLevel
 
 
 class StressTestResult:
@@ -173,7 +167,7 @@ class TestStressPerformance(unittest.TestCase):
                 future.result()
 
         summary = result.get_summary()
-        print(f"  📊 读取测试结果:")
+        print("  📊 读取测试结果:")
         print(f"     操作数: {summary['operations']}")
         print(f"     成功率: {summary['success_rate']:.1f}%")
         print(f"     吞吐量: {summary['throughput']:.1f} ops/sec")
@@ -302,7 +296,7 @@ class TestStressPerformance(unittest.TestCase):
                 print(f"    ❌ 查询失败: {e}")
 
         summary = result.get_summary()
-        print(f"  📊 查询性能结果:")
+        print("  📊 查询性能结果:")
         print(f"     查询次数: {summary['operations']}")
         print(f"     成功率: {summary['success_rate']:.1f}%")
         print(f"     平均耗时: {summary['avg_time']*1000:.2f}ms")
@@ -340,7 +334,7 @@ class TestStressPerformance(unittest.TestCase):
                     duration = time.time() - start
                     result.record_operation(duration, True)
                     ops_completed += 1
-                except Exception as e:
+                except Exception:
                     result.record_operation(0, False)
 
             return ops_completed
@@ -349,10 +343,10 @@ class TestStressPerformance(unittest.TestCase):
         print("  🔥 启动10个并发工作线程...")
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [executor.submit(worker_operation, i) for i in range(10)]
-            completed_ops = [future.result() for future in as_completed(futures)]
+            [future.result() for future in as_completed(futures)]
 
         summary = result.get_summary()
-        print(f"  📊 混合工作负载结果:")
+        print("  📊 混合工作负载结果:")
         print(f"     总操作数: {summary['operations']}")
         print(f"     成功操作: {summary['operations'] - summary['errors']}")
         print(f"     失败操作: {summary['errors']}")

@@ -7,7 +7,7 @@ HermesNexus Configuration Validation Script
 import os
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import List
 
 
 class ConfigValidator:
@@ -36,9 +36,9 @@ class ConfigValidator:
 
         # 检查必需的环境变量
         required_vars = {
-            'HERMES_ENV': '运行环境',
-            'CLOUD_API_PORT': 'API端口',
-            'LOG_LEVEL': '日志级别',
+            "HERMES_ENV": "运行环境",
+            "CLOUD_API_PORT": "API端口",
+            "LOG_LEVEL": "日志级别",
         }
 
         for var, desc in required_vars.items():
@@ -48,11 +48,11 @@ class ConfigValidator:
                 print(f"  ✓ {var}: {os.getenv(var)}")
 
         # 检查 Edge Node 特定变量
-        if os.getenv('HERMES_ENV') == 'production':
+        if os.getenv("HERMES_ENV") == "production":
             edge_vars = {
-                'NODE_ID': '节点ID',
-                'NODE_NAME': '节点名称',
-                'CLOUD_API_URL': 'Cloud API地址',
+                "NODE_ID": "节点ID",
+                "NODE_NAME": "节点名称",
+                "CLOUD_API_URL": "Cloud API地址",
             }
 
             for var, desc in edge_vars.items():
@@ -61,9 +61,9 @@ class ConfigValidator:
 
         # 检查可选但推荐的变量
         recommended_vars = {
-            'SECRET_KEY': 'API密钥',
-            'DATA_DIR': '数据目录',
-            'LOG_DIR': '日志目录',
+            "SECRET_KEY": "API密钥",
+            "DATA_DIR": "数据目录",
+            "LOG_DIR": "日志目录",
         }
 
         for var, desc in recommended_vars.items():
@@ -75,11 +75,11 @@ class ConfigValidator:
         print("\n📁 Validating Directories...")
 
         required_dirs = [
-            os.getenv('DATA_DIR', './data'),
-            os.getenv('LOG_DIR', './logs'),
-            os.getenv('ASSETS_DIR', './data/assets'),
-            os.getenv('TASKS_DIR', './data/tasks'),
-            os.getenv('SCRIPTS_DIR', './data/scripts'),
+            os.getenv("DATA_DIR", "./data"),
+            os.getenv("LOG_DIR", "./logs"),
+            os.getenv("ASSETS_DIR", "./data/assets"),
+            os.getenv("TASKS_DIR", "./data/tasks"),
+            os.getenv("SCRIPTS_DIR", "./data/scripts"),
         ]
 
         for dir_path in required_dirs:
@@ -100,8 +100,8 @@ class ConfigValidator:
         """验证数据库配置"""
         print("\n🗄️  Validating Database Configuration...")
 
-        db_type = os.getenv('DATABASE_TYPE', 'sqlite')
-        db_url = os.getenv('DATABASE_URL')
+        db_type = os.getenv("DATABASE_TYPE", "sqlite")
+        db_url = os.getenv("DATABASE_URL")
 
         if not db_url:
             self.errors.append("缺少数据库连接配置: DATABASE_URL")
@@ -109,9 +109,9 @@ class ConfigValidator:
 
         print(f"  数据库类型: {db_type}")
 
-        if db_type == 'sqlite':
+        if db_type == "sqlite":
             # 检查 SQLite 数据库文件目录
-            db_path = db_url.replace('sqlite:///', '')
+            db_path = db_url.replace("sqlite:///", "")
             db_file = Path(db_path)
 
             if not db_file.parent.exists():
@@ -129,25 +129,28 @@ class ConfigValidator:
                 else:
                     self.warnings.append(f"数据库文件不存在，将自动创建: {db_file}")
 
-        elif db_type == 'postgresql':
+        elif db_type == "postgresql":
             # 简单验证 PostgreSQL 连接字符串格式
-            if not db_url.startswith('postgresql://'):
+            if not db_url.startswith("postgresql://"):
                 self.errors.append(f"无效的 PostgreSQL 连接字符串格式: {db_url}")
             else:
-                print(f"  ✓ PostgreSQL 连接: {db_url.split('@')[-1] if '@' in db_url else 'unknown'}")
+                print(
+                    f"  ✓ PostgreSQL 连接: {db_url.split('@')[-1] if '@' in db_url else 'unknown'}"
+                )
 
     def validate_network(self):
         """验证网络配置"""
         print("\n🌐 Validating Network Configuration...")
 
-        port = os.getenv('CLOUD_API_PORT', '8080')
-        host = os.getenv('CLOUD_API_HOST', '127.0.0.1')
+        port = os.getenv("CLOUD_API_PORT", "8080")
+        host = os.getenv("CLOUD_API_HOST", "127.0.0.1")
 
         print(f"  监听地址: {host}:{port}")
 
         # 检查端口是否被占用
         try:
             import socket
+
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             result = sock.connect_ex((host, int(port)))
             sock.close()
@@ -160,24 +163,24 @@ class ConfigValidator:
             self.warnings.append(f"无法检查端口占用情况: {e}")
 
         # 检查 Cloud API 连接（如果是 Edge Node）
-        if os.getenv('NODE_ID') and os.getenv('CLOUD_API_URL'):
+        if os.getenv("NODE_ID") and os.getenv("CLOUD_API_URL"):
             import urllib.parse
-            cloud_url = os.getenv('CLOUD_API_URL')
+
+            cloud_url = os.getenv("CLOUD_API_URL")
             parsed = urllib.parse.urlparse(cloud_url)
 
             print(f"  Cloud API: {parsed.netloc or cloud_url}")
 
             try:
                 import urllib.request
-                import json
 
                 health_url = f"{cloud_url.rstrip('/')}/health"
                 req = urllib.request.Request(health_url)
-                req.add_header('User-Agent', 'HermesNexus-ConfigValidator/1.0')
+                req.add_header("User-Agent", "HermesNexus-ConfigValidator/1.0")
 
                 with urllib.request.urlopen(req, timeout=5) as response:
                     if response.status == 200:
-                        print(f"  ✓ Cloud API 可达")
+                        print("  ✓ Cloud API 可达")
                     else:
                         self.warnings.append(f"Cloud API 返回状态码: {response.status}")
             except Exception as e:
@@ -213,9 +216,11 @@ def main():
     """主函数"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='HermesNexus Configuration Validator')
-    parser.add_argument('--env', type=str, help='Environment file to load (.env.<env>)')
-    parser.add_argument('--strict', action='store_true', help='Treat warnings as errors')
+    parser = argparse.ArgumentParser(description="HermesNexus Configuration Validator")
+    parser.add_argument("--env", type=str, help="Environment file to load (.env.<env>)")
+    parser.add_argument(
+        "--strict", action="store_true", help="Treat warnings as errors"
+    )
 
     args = parser.parse_args()
 
@@ -227,8 +232,8 @@ def main():
             with open(env_file) as f:
                 for line in f:
                     line = line.strip()
-                    if line and not line.startswith('#') and '=' in line:
-                        key, value = line.split('=', 1)
+                    if line and not line.startswith("#") and "=" in line:
+                        key, value = line.split("=", 1)
                         os.environ[key.strip()] = value.strip()
         else:
             print(f"Warning: Environment file not found: {env_file}")
@@ -245,5 +250,5 @@ def main():
     sys.exit(0 if success else 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

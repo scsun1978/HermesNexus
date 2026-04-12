@@ -11,7 +11,6 @@ import logging
 import uuid
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timezone
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -511,9 +510,9 @@ class SQLiteDatabase:
             with self.lock:
                 with sqlite3.connect(self.db_path) as conn:
                     # 如果没有提供log_id，自动生成一个
-                    log_id = (
-                        log_data.get("log_id")
-                        or f"audit-{int(datetime.now(timezone.utc).timestamp())}-{str(uuid.uuid4())[:8]}"
+                    log_id = log_data.get("log_id") or (
+                        f"audit-{int(datetime.now(timezone.utc).timestamp())}-"
+                        f"{str(uuid.uuid4())[:8]}"
                     )
 
                     conn.execute(
@@ -630,7 +629,7 @@ class SQLiteDatabase:
                         result[key] = json.loads(value)
                     else:
                         result[key] = {}
-                except:
+                except Exception:
                     result[key] = value
             # 处理布尔字段
             elif key == "enabled":

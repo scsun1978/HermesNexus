@@ -9,7 +9,6 @@ import sys
 import time
 import statistics
 from pathlib import Path
-from datetime import datetime
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent
@@ -52,7 +51,7 @@ class PerformanceTester:
                     max_time = max(response_times)
                     median_time = statistics.median(response_times)
 
-                    print(f"\n   📊 响应时间统计:")
+                    print("\n   📊 响应时间统计:")
                     print(f"      平均: {avg_time:.2f}ms")
                     print(f"      中位数: {median_time:.2f}ms")
                     print(f"      最小: {min_time:.2f}ms")
@@ -125,7 +124,7 @@ class PerformanceTester:
                 for result in results:
                     all_times.extend(result[1])
 
-                print(f"\n   📊 并发测试结果:")
+                print("\n   📊 并发测试结果:")
                 print(f"      总时间: {total_time:.2f}s")
                 print(
                     f"      成功率: {total_success}/{total_requests} ({total_success/total_requests*100:.1f}%)"
@@ -174,7 +173,7 @@ class PerformanceTester:
             read_times = []
             for i in range(operations):
                 start = time.time()
-                node = db.get_node(f"perf-test-{i}")
+                db.get_node(f"perf-test-{i}")
                 end = time.time()
                 read_times.append((end - start) * 1000)  # 毫秒
 
@@ -184,7 +183,7 @@ class PerformanceTester:
             end = time.time()
             query_time = (end - start) * 1000
 
-            print(f"\n   📊 数据库性能统计:")
+            print("\n   📊 数据库性能统计:")
             print(f"      写入平均: {statistics.mean(write_times):.3f}ms")
             print(f"      读取平均: {statistics.mean(read_times):.3f}ms")
             print(f"      查询时间: {query_time:.3f}ms ({len(nodes)} 条记录)")
@@ -226,7 +225,7 @@ class PerformanceTester:
             memory_info = process.memory_info()
             memory_mb = memory_info.rss / 1024 / 1024
 
-            print(f"   📊 内存使用:")
+            print("   📊 内存使用:")
             print(f"      RSS: {memory_mb:.2f}MB")
             print(f"      VMS: {memory_info.vms / 1024 / 1024:.2f}MB")
 
@@ -304,7 +303,7 @@ class PerformanceTester:
         good_count = sum(1 for result in self.results.values() if result == "good")
         total_count = len(self.results)
 
-        print(f"\n📈 总体评分:")
+        print("\n📈 总体评分:")
         if excellent_count + good_count >= total_count * 0.8:
             print("🎉 性能表现优秀，达到MVP发布标准")
             return 0

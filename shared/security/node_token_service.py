@@ -7,8 +7,8 @@ import jwt
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, List, Optional
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
 
 from shared.models.node import NodeIdentity, NodeTokenInfo, NodePermission

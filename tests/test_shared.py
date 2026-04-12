@@ -7,7 +7,6 @@ from shared.schemas.models import (
     Node,
     Device,
     Job,
-    EventType,
     JobType,
     DeviceType,
     DeviceProtocol,

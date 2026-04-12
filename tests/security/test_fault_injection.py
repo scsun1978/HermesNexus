@@ -5,14 +5,12 @@ HermesNexus Phase 3 - 故障注入测试
 
 import pytest
 import asyncio
-from datetime import datetime, timedelta
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
+from datetime import datetime
 import uuid
 import random
 import time
 
 from shared.models.rollback import (
-    RollbackPlan,
     RollbackType,
     RollbackStatus,
     FailureRecord,

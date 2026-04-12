@@ -20,7 +20,6 @@ sys.path.insert(0, str(project_root))
 
 from shared.models.rollback import (
     RollbackPlan,
-    RollbackStep,
     RollbackType,
     RollbackStatus,
     FailureRecord,
@@ -30,8 +29,8 @@ from shared.models.rollback import (
     FailureSeverity,
     RollbackStatistics,
 )
-from shared.services.rollback_service import get_rollback_service, RollbackServiceConfig
-from shared.services.recovery_service import get_recovery_service, RecoveryServiceConfig
+from shared.services.rollback_service import get_rollback_service
+from shared.services.recovery_service import get_recovery_service
 
 # 创建API路由器
 router = APIRouter(prefix="/api/v1/rollback", tags=["rollback"])
@@ -62,9 +61,9 @@ async def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
     try:
         # 去掉Bearer前缀
         if authorization.startswith("Bearer "):
-            token = authorization[7:]
+            authorization[7:]
         else:
-            token = authorization
+            pass
 
         # 这里应该验证Token并返回用户信息
         # 暂时返回模拟用户信息

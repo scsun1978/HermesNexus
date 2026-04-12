@@ -6,13 +6,11 @@ HermesNexus Phase 3 - 回滚API测试
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, AsyncMock, MagicMock
-import json
 from datetime import datetime
 
 from cloud.api.main import app
 from shared.models.rollback import (
     RollbackPlan,
-    RollbackType,
     RollbackStatus,
     FailureRecord,
     RecoveryPlan,
@@ -594,7 +592,7 @@ class TestRollbackAPIIntegration:
 
             assert failure_response.status_code == 200
             failure = failure_response.json()
-            failure_id = failure["failure_id"]
+            failure["failure_id"]
 
             # 2. 创建回滚计划
             rollback_data = {

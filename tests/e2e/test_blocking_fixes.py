@@ -5,7 +5,6 @@
 
 import asyncio
 import sys
-import time
 from pathlib import Path
 import httpx
 import logging
@@ -166,7 +165,7 @@ class BlockingFixesE2ETest:
                 self.created_assets.append(asset.asset_id)
                 return True
             else:
-                logger.error(f"❌ Asset 模型缺少 created_by 字段")
+                logger.error("❌ Asset 模型缺少 created_by 字段")
                 return False
 
         except Exception as e:
@@ -193,7 +192,7 @@ class BlockingFixesE2ETest:
                 logger.info(f"   - 返回数量: {len(pending_tasks)}")
                 return True
             else:
-                logger.error(f"❌ get_pending_tasks_for_node 方法返回 None")
+                logger.error("❌ get_pending_tasks_for_node 方法返回 None")
                 return False
 
         except Exception as e:

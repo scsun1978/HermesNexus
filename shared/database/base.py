@@ -4,7 +4,6 @@ HermesNexus Phase 2 - Database Backend Interface
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class DatabaseBackend(ABC):

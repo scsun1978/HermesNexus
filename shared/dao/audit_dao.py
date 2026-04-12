@@ -4,13 +4,11 @@ HermesNexus Phase 2 - AuditLog DAO
 """
 
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
-from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_, desc
+from sqlalchemy import or_, desc
 
 from shared.dao.base_dao import BaseDAO
 from shared.database.models import AuditLogModel
-from shared.models.audit import AuditLog, AuditLogCreateRequest
+from shared.models.audit import AuditLog
 
 
 class AuditDAO(BaseDAO):

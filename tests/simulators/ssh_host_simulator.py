@@ -11,7 +11,6 @@ import subprocess
 import logging
 import random
 from datetime import datetime
-from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -87,14 +86,14 @@ class SSHHostSimulator:
         for client in self.connected_clients:
             try:
                 client.close()
-            except:
+            except Exception:
                 pass
 
         # 关闭服务器套接字
         if self.server_socket:
             try:
                 self.server_socket.close()
-            except:
+            except Exception:
                 pass
 
         logger.info("✅ SSH模拟器已停止")
@@ -154,7 +153,7 @@ class SSHHostSimulator:
                 if client_socket in self.connected_clients:
                     self.connected_clients.remove(client_socket)
                 logger.info(f"🔌 客户端 {address} 断开连接")
-            except:
+            except Exception:
                 pass
 
     def _command_loop(self, client_socket, address):
@@ -215,7 +214,7 @@ class SSHHostSimulator:
                     sleep_time = int(args[0]) if args else 1
                     time.sleep(sleep_time)
                     return f"slept for {sleep_time} seconds"
-                except:
+                except Exception:
                     return "usage: sleep <seconds>"
             elif cmd == "cat":
                 return self._cmd_cat(args)

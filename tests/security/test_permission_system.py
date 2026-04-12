@@ -6,8 +6,7 @@ Phase 3 权限系统测试
 import unittest
 import tempfile
 import os
-import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 import sys
@@ -19,24 +18,18 @@ sys.path.insert(0, str(project_root))
 from shared.models.permission import (
     Permission,
     PermissionContext,
-    PermissionCheckResult,
-    PermissionMatrix,
     ActionType,
     ResourceType,
     RiskLevel,
     BuiltInRoles,
-    CommonPermissions,
 )
-from shared.security.risk_assessor import RiskAssessor, get_risk_assessor
+from shared.security.risk_assessor import RiskAssessor
 from shared.security.permission_checker import (
     PermissionChecker,
-    get_permission_checker,
-    require_permission,
 )
 from shared.security.permission_matrix import (
     PermissionMatrixManager,
     initialize_default_permissions,
-    get_matrix_manager,
 )
 
 
@@ -271,7 +264,7 @@ class TestPermissionChecker(unittest.TestCase):
         print("\n[4/8] 测试黑名单和白名单...")
 
         # 创建普通用户上下文
-        context = PermissionContext(
+        PermissionContext(
             user_id="user-001", user_type="human", roles=[BuiltInRoles.VIEWER]
         )
 
@@ -470,9 +463,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
         print("\n[2/5] 测试角色权限管理...")
 
         # 创建矩阵
-        matrix = self.manager.create_matrix(
-            matrix_id="role-test-matrix", name="角色权限测试矩阵"
-        )
+        self.manager.create_matrix(matrix_id="role-test-matrix", name="角色权限测试矩阵")
 
         # 添加角色权限
         permission = Permission(
@@ -559,7 +550,6 @@ class TestPermissionMatrixManager(unittest.TestCase):
             matrix_id="version-test-matrix", name="版本测试矩阵"
         )
 
-        original_version = matrix.version
         original_updated_at = matrix.updated_at
 
         # 等待一秒确保时间戳变化

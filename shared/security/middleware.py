@@ -3,9 +3,9 @@ HermesNexus Phase 2 - Authentication Middleware
 认证中间件 - FastAPI依赖注入
 """
 
-from typing import Optional, List
+from typing import Optional
 from fastapi import Header, HTTPException, Request, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer
 
 from shared.security.auth_manager import auth_manager
 from shared.security.permissions import (
@@ -133,7 +133,10 @@ class AuthMiddleware:
                     "error": {
                         "code": ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS,
                         "message": "Insufficient permissions",
-                        "details": f"Required permissions: {[p.value for p in required_permissions]}",
+                        "details": (
+                            "Required permissions: "
+                            f"{[p.value for p in required_permissions]}"
+                        ),
                     }
                 },
             )
@@ -286,7 +289,7 @@ async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
                 "error": {
                     "code": ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS,
                     "message": "Insufficient role privileges",
-                    "details": f"Required role: admin",
+                    "details": "Required role: admin",
                 }
             },
         )

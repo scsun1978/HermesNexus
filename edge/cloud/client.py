@@ -4,22 +4,18 @@
 实现与云端API的通信功能
 """
 
-import asyncio
 import logging
 from typing import Optional, Dict, Any, List
 import aiohttp
 from datetime import datetime, timezone
 
 from shared.protocol.messages import (
-    MessageType,
     RegisterMessage,
     HeartbeatMessage,
     TaskMessage,
     ResultMessage,
     ErrorMessage,
 )
-from shared.protocol.error_codes import ErrorCode, ErrorDetail
-from shared.schemas.models import NodeStatus, JobStatus
 
 logger = logging.getLogger(__name__)
 

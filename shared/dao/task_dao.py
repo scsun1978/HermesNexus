@@ -5,15 +5,12 @@ HermesNexus Phase 2 - Task DAO
 
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
+from sqlalchemy import or_
 
 from shared.dao.base_dao import BaseDAO
 from shared.database.models import TaskModel
 from shared.models.task import (
     Task,
-    TaskCreateRequest,
-    TaskUpdateRequest,
     TaskExecutionResult,
 )
 

@@ -9,14 +9,12 @@ import asyncio
 import logging
 import threading
 import time
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional
 from datetime import datetime, timezone
-from pathlib import Path
 import paramiko
 from socket import timeout as socket_timeout
 
 from shared.protocol.error_codes import ErrorCode
-from shared.schemas.models import AuditAction
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +121,7 @@ class SSHExecutor:
                         time.sleep(30)  # 每30秒发送一次
                     else:
                         break
-                except:
+                except Exception:
                     break
 
         thread = threading.Thread(target=keep_alive_thread, daemon=True)
@@ -165,7 +163,7 @@ class SSHExecutor:
 
             # 异步读取输出
             def read_output():
-                nonlocal stdout_str, stderr_str
+                nonlocal stdout_str
                 try:
                     while True:
                         line = stdout.readline()
@@ -181,7 +179,7 @@ class SSHExecutor:
                                 "pkill -f -f '{command[:20]}'"
                             )  # 终止命令
                             break
-                except:
+                except Exception:
                     pass
 
             def read_stderr():
@@ -194,7 +192,7 @@ class SSHExecutor:
                         stderr_str += line
                         if len(stderr_str) > self.max_output_size:
                             break
-                except:
+                except Exception:
                     pass
 
             # 启动读取线程
@@ -293,7 +291,7 @@ class SSHExecutor:
                 sftp = self.client.open_sftp()
                 sftp.remove(temp_script_path)
                 sftp.close()
-            except:
+            except Exception:
                 pass
 
             return result
@@ -354,7 +352,7 @@ class SSHExecutor:
                 asyncio.create_task(self.close())
             else:
                 loop.run_until_complete(self.close())
-        except:
+        except Exception:
             pass
 
 

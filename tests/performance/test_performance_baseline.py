@@ -16,16 +16,13 @@ import sys
 import statistics
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 # 添加项目根目录到路径
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from shared.database.sqlite_backend import SQLiteBackend
-from shared.services.asset_service import AssetService
-from shared.services.task_service import TaskService
-from shared.services.audit_service import AuditService
 from shared.dao.asset_dao import AssetDAO
 from shared.dao.task_dao import TaskDAO
 from shared.dao.audit_dao import AuditDAO
@@ -182,7 +179,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for _ in range(20):
             start = metric.start()
             try:
-                assets = self.asset_dao.list(limit=50)
+                self.asset_dao.list(limit=50)
                 metric.end(start, True)
                 list_times.append(time.time() - start)
             except Exception as e:
@@ -290,7 +287,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for _ in range(20):
             start = metric.start()
             try:
-                tasks = self.task_dao.list(limit=50)
+                self.task_dao.list(limit=50)
                 metric.end(start, True)
                 list_times.append(time.time() - start)
             except Exception as e:
@@ -371,7 +368,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for _ in range(20):
             start = metric.start()
             try:
-                audits = self.audit_dao.list(limit=100)
+                self.audit_dao.list(limit=100)
                 metric.end(start, True)
                 list_times.append(time.time() - start)
             except Exception as e:
@@ -383,9 +380,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for i in range(20):
             start = metric.start()
             try:
-                audits = self.audit_dao.query_by_asset(
-                    f"perf-audit-asset-{i}", limit=10
-                )
+                self.audit_dao.query_by_asset(f"perf-audit-asset-{i}", limit=10)
                 metric.end(start, True)
                 target_query_times.append(time.time() - start)
             except Exception as e:
@@ -435,7 +430,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for _ in range(30):
             start = metric.start()
             try:
-                assets = self.asset_dao.list(
+                self.asset_dao.list(
                     filters={"asset_type": AssetType.LINUX_HOST}, limit=50
                 )
                 metric.end(start, True)
@@ -449,7 +444,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for _ in range(30):
             start = metric.start()
             try:
-                assets = self.asset_dao.list(order_by="-created_at", limit=50)
+                self.asset_dao.list(order_by="-created_at", limit=50)
                 metric.end(start, True)
                 sort_times.append(time.time() - start)
             except Exception as e:
@@ -461,7 +456,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for offset in range(0, 100, 10):
             start = metric.start()
             try:
-                assets = self.asset_dao.list(limit=10, offset=offset)
+                self.asset_dao.list(limit=10, offset=offset)
                 metric.end(start, True)
                 pagination_times.append(time.time() - start)
             except Exception as e:
@@ -473,7 +468,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for _ in range(20):
             start = metric.start()
             try:
-                count = self.asset_dao.count()
+                self.asset_dao.count()
                 metric.end(start, True)
                 count_times.append(time.time() - start)
             except Exception as e:
@@ -554,7 +549,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 self.asset_dao.insert(asset)
                 metric.end(start, True)
                 write_times.append(time.time() - start)
-            except Exception as e:
+            except Exception:
                 metric.end(start, False)
 
             # 读取
@@ -564,7 +559,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 self.assertIsNotNone(asset)
                 metric.end(start, True)
                 read_times.append(time.time() - start)
-            except Exception as e:
+            except Exception:
                 metric.end(start, False)
 
         print(f"   写入性能: {statistics.mean(write_times)*1000:.2f}ms (平均)")

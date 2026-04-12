@@ -15,8 +15,6 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from cloud.database.db import Database
-from edge.runtime.core import EdgeRuntime
-from edge.cloud.client import CloudClient
 from edge.storage.storage import EdgeStorage
 
 
@@ -38,7 +36,7 @@ class TestCloudEdgeIntegration(unittest.TestCase):
 
         async def run_test():
             # 创建边缘存储
-            storage = EdgeStorage()
+            EdgeStorage()
 
             # 模拟节点注册
             node_id = "test-node-1"

@@ -4,9 +4,7 @@ Phase 3 审批流系统测试
 """
 
 import unittest
-import tempfile
 import time
-from datetime import datetime, timedelta
 from pathlib import Path
 
 import sys
@@ -24,7 +22,7 @@ from shared.models.approval import (
     ApprovalConfig,
     ApprovalStateTransition,
 )
-from shared.services.approval_service import ApprovalService, get_approval_service
+from shared.services.approval_service import ApprovalService
 
 
 class TestApprovalModels(unittest.TestCase):
@@ -384,14 +382,14 @@ class TestApprovalService(unittest.TestCase):
         )
 
         # 添加评论
-        comment1 = self.service.add_comment(
+        self.service.add_comment(
             request_id=request.request_id,
             content="请确认操作安全性",
             author_id="user-002",
             author_name="审批人A",
         )
 
-        comment2 = self.service.add_comment(
+        self.service.add_comment(
             request_id=request.request_id,
             content="已经做好安全检查",
             author_id="user-001",
@@ -425,7 +423,7 @@ class TestApprovalService(unittest.TestCase):
             priority=ApprovalPriority.HIGH,
         )
 
-        request2 = self.service.create_request(
+        self.service.create_request(
             title="待审批请求2",
             description="测试过滤",
             requester_id="user-001",

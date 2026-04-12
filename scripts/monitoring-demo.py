@@ -7,7 +7,7 @@
 import sys
 import time
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 # 添加项目根目录到路径
@@ -15,8 +15,8 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from shared.monitoring.metrics import MetricsCollector, get_metrics_collector
-from shared.monitoring.alerts import AlertManager, get_alert_manager
-from shared.monitoring.dashboard import MonitoringDashboard, get_monitoring_dashboard
+from shared.monitoring.alerts import get_alert_manager
+from shared.monitoring.dashboard import get_monitoring_dashboard
 
 
 def simulate_api_traffic(collector: MetricsCollector, duration: int = 60):
@@ -69,7 +69,7 @@ def simulate_system_metrics(collector: MetricsCollector):
     print("📊 模拟系统指标...")
 
     # 记录系统指标
-    system_metrics = collector.collect_system_metrics()
+    collector.collect_system_metrics()
 
     # 记录业务指标
     collector.record_gauge("asset_total_count", 150.0)
@@ -84,9 +84,9 @@ def simulate_system_metrics(collector: MetricsCollector):
 
 def demonstrate_monitoring():
     """演示监控功能"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🚀 HermesNexus 监控系统演示")
-    print("="*70)
+    print("=" * 70)
 
     # 初始化监控组件
     dashboard = get_monitoring_dashboard()
@@ -127,26 +127,26 @@ def demonstrate_monitoring():
     print(f"\n系统健康度: {overview['system_health']}")
 
     print("\n资源使用详情:")
-    for resource_name, resource_data in overview['resource_usage'].items():
+    for resource_name, resource_data in overview["resource_usage"].items():
         print(f"  {resource_name.upper()}:")
         print(f"    使用率: {resource_data['usage_percent']:.1f}%")
         print(f"    状态: {resource_data['status']}")
 
     app_perf = dashboard.get_application_performance()
-    print(f"\n应用性能:")
+    print("\n应用性能:")
     print(f"  总请求数: {app_perf['total_requests']}")
     print(f"  总错误数: {app_perf['total_errors']}")
     print(f"  错误率: {app_perf['error_rate']:.2f}%")
 
     alerts_panel = dashboard.get_alerts_panel()
-    print(f"\n告警状态:")
+    print("\n告警状态:")
     print(f"  活跃告警数: {alerts_panel['total_count']}")
     print(f"  严重告警: {alerts_panel['summary']['critical_count']}")
     print(f"  高级告警: {alerts_panel['summary']['high_count']}")
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("✅ 监控系统演示完成")
-    print("="*70)
+    print("=" * 70)
     print("\n💡 监控系统功能:")
     print("  - 实时指标采集")
     print("  - 智能告警规则")
@@ -164,6 +164,7 @@ def create_monitoring_report():
     print("\n📝 生成监控报告...")
 
     dashboard = get_monitoring_dashboard()
+    alert_manager = get_alert_manager()
 
     # 生成监控面板报告
     report = dashboard.generate_dashboard_report()
@@ -171,6 +172,7 @@ def create_monitoring_report():
     # 保存报告到文件
     report_path = "docs/monitoring/monitoring-report.md"
     import os
+
     os.makedirs(os.path.dirname(report_path), exist_ok=True)
 
     with open(report_path, "w", encoding="utf-8") as f:
@@ -191,7 +193,9 @@ def create_monitoring_report():
         f.write("| 规则名称 | 阈值 | 时间窗口 | 严重级别 |\n")
         f.write("|----------|------|----------|----------|\n")
         for rule in alert_manager.rules[:3]:  # 只显示前3个规则
-            f.write(f"| {rule.name} | {rule.threshold} | {rule.time_window}s | {rule.severity.value} |\n")
+            f.write(
+                f"| {rule.name} | {rule.threshold} | {rule.time_window}s | {rule.severity.value} |\n"
+            )
 
     print(f"  ✅ 告警规则文档已生成: {alert_rules_path}")
 

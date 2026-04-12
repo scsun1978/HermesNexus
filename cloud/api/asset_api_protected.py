@@ -14,7 +14,7 @@ from shared.models.asset import (
     AssetListResponse,
 )
 from shared.services.asset_service import AssetService
-from shared.security.middleware import require_auth, require_admin, AuthMiddleware
+from shared.security.middleware import require_auth, AuthMiddleware
 from shared.security.permissions import Permission
 
 # 创建路由器

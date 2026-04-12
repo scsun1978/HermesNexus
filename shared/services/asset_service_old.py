@@ -3,7 +3,7 @@ HermesNexus Phase 2 - Asset Service
 资产管理业务逻辑层
 """
 
-from typing import List, Optional, Dict, Any
+from typing import Optional, Dict
 from datetime import datetime
 import uuid
 from shared.models.asset import (

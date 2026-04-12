@@ -21,7 +21,7 @@ from shared.services.task_service import TaskService
 from shared.services.audit_service import AuditService
 from shared.models.asset import Asset, AssetType, AssetStatus
 from shared.models.task import Task, TaskType, TaskStatus, TaskPriority
-from shared.models.audit import AuditLog, AuditAction, AuditCategory, EventLevel
+from shared.models.audit import AuditAction, EventLevel
 
 
 class TestAssetTaskAuditIntegration(unittest.TestCase):
