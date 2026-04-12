@@ -64,6 +64,79 @@ class AssetModel(Base):
         }
 
 
+class NodeModel(Base):
+    """节点表ORM模型 - Phase 3: 节点身份管理"""
+    __tablename__ = "nodes"
+
+    # 主键
+    node_id = Column(String(64), primary_key=True)
+
+    # 基本字段
+    node_name = Column(String(255), nullable=False)
+    node_type = Column(String(50), nullable=False)
+    status = Column(String(50), nullable=False)
+    description = Column(Text, nullable=True)
+
+    # 认证信息
+    auth_token = Column(Text, nullable=True)
+    token_expires_at = Column(DateTime, nullable=True)
+    public_key = Column(Text, nullable=True)
+
+    # 能力信息
+    capabilities = Column(JSON, nullable=True)
+    max_concurrent_tasks = Column(Integer, nullable=False, default=3)
+
+    # 关联关系
+    managed_devices = Column(Text, nullable=True)  # 逗号分隔的设备ID列表
+    assigned_tasks = Column(Text, nullable=True)     # 逗号分隔的任务ID列表
+
+    # 位置和标签
+    location = Column(String(255), nullable=True)
+    tags = Column(Text, nullable=True)  # 逗号分隔的标签列表
+
+    # 元数据
+    node_metadata = Column("metadata", JSON, nullable=True)
+
+    # 创建信息
+    created_by = Column(String(128), nullable=True)
+
+    # 时间字段
+    registered_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=False)
+    last_heartbeat = Column(DateTime, nullable=True)
+
+    # 索引
+    __table_args__ = (
+        Index("idx_nodes_type", "node_type"),
+        Index("idx_nodes_status", "status"),
+        Index("nodes_registered_at", "registered_at"),
+        Index("idx_nodes_last_heartbeat", "last_heartbeat"),
+        Index("idx_nodes_type_status", "node_type", "status"),
+    )
+
+    def to_dict(self) -> dict:
+        """转换为字典"""
+        return {
+            "node_id": self.node_id,
+            "node_name": self.node_name,
+            "node_type": self.node_type,
+            "status": self.status,
+            "description": self.description,
+            "auth_token": self.auth_token,
+            "token_expires_at": self.token_expires_at.isoformat() if self.token_expires_at else None,
+            "capabilities": self.capabilities,
+            "max_concurrent_tasks": self.max_concurrent_tasks,
+            "managed_devices": self.managed_devices.split(",") if self.managed_devices else [],
+            "assigned_tasks": self.assigned_tasks.split(",") if self.assigned_tasks else [],
+            "location": self.location,
+            "tags": self.tags.split(",") if self.tags else [],
+            "created_by": self.created_by,
+            "registered_at": self.registered_at.isoformat() if self.registered_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "last_heartbeat": self.last_heartbeat.isoformat() if self.last_heartbeat else None,
+        }
+
+
 class TaskModel(Base):
     """任务表ORM模型"""
     __tablename__ = "tasks"

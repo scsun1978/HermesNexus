@@ -25,6 +25,11 @@ from cloud.database.db import db
 # 导入新的 API 路由
 from cloud.api import task_api, asset_api
 
+# Phase 3: 导入节点认证相关模块
+from shared.models.node import NodeRegistrationRequest, NodeHeartbeatRequest, NodeIdentity, NodeStatus
+from shared.security.node_token_service import get_node_token_service
+from shared.security.node_auth_middleware import get_node_auth_middleware, require_node_auth
+
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -130,20 +135,43 @@ async def list_nodes(status: Optional[str] = None):
 
 @app.post("/api/v1/nodes/{node_id}/register")
 async def register_node(node_id: str, registration_data: Dict[str, Any]):
-    """注册新节点"""
+    """注册新节点 - Phase 3: 增强版，支持Token颁发"""
     try:
         logger.info(f"📝 节点注册请求: {node_id}")
 
+        # Phase 3: 创建节点身份对象
+        from shared.models.node import NodeType, NodeIdentity
+
+        node_identity = NodeIdentity(
+            node_id=node_id,
+            node_name=registration_data.get("node_name", node_id),
+            node_type=NodeType(registration_data.get("node_type", "physical")),
+            status=NodeStatus.REGISTERED,
+            capabilities=registration_data.get("capabilities", {}),
+            max_concurrent_tasks=registration_data.get("max_concurrent_tasks", 3),
+            description=registration_data.get("description", ""),
+            location=registration_data.get("location", ""),
+            tags=registration_data.get("tags", []),
+            metadata=registration_data.get("metadata", {}),
+            registered_at=datetime.now(timezone.utc),
+            created_at=datetime.now(timezone.utc())
+        )
+
         # 检查节点是否已存在
-        if db.get_node(node_id):
+        existing_node = db.get_node(node_id)
+        if existing_node:
             # 更新现有节点
             db.update_node(node_id, {
                 "last_heartbeat": datetime.now(timezone.utc).isoformat(),
-                "status": NodeStatus.ONLINE.value,
+                "status": NodeStatus.ACTIVE.value,
                 "cpu_usage": 0.0,
                 "memory_usage": 0.0,
                 "active_tasks": 0
             })
+
+            # Phase 3: 为现有节点重新颁发Token
+            token_service = get_node_token_service()
+            token_info = token_service.generate_token(node_identity)
 
             # 记录审计日志
             db.add_audit_log({
@@ -151,18 +179,27 @@ async def register_node(node_id: str, registration_data: Dict[str, Any]):
                 "actor": node_id,
                 "resource_type": "node",
                 "resource_id": node_id,
-                "details": {"registration_type": "update"},
+                "details": {"registration_type": "update", "token_refreshed": True},
                 "success": True
             })
 
-            logger.info(f"🔄 节点重新注册: {node_id}")
+            logger.info(f"🔄 节点重新注册并刷新Token: {node_id}")
+
+            return {
+                "message": "节点重新注册成功",
+                "node_id": node_id,
+                "status": "active",
+                "token": token_info.token,  # Phase 3: 迷新Token
+                "expires_at": token_info.expires_at.isoformat()
+            }
         else:
             # 创建新节点
             node_data = {
                 "node_id": node_id,
                 "name": registration_data.get("node_name", node_id),
-                "status": NodeStatus.ONLINE.value,
+                "status": NodeStatus.REGISTERED.value,
                 "capabilities": registration_data.get("capabilities", {}),
+                "max_concurrent_tasks": registration_data.get("max_concurrent_tasks", 3),
                 "last_heartbeat": datetime.now(timezone.utc).isoformat(),
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat(),
@@ -174,6 +211,10 @@ async def register_node(node_id: str, registration_data: Dict[str, Any]):
 
             db.add_node(node_id, node_data)
 
+            # Phase 3: 为新节点颁发Token
+            token_service = get_node_token_service()
+            token_info = token_service.generate_token(node_identity)
+
             # 记录事件
             db.add_event({
                 "event_id": str(uuid.uuid4()),
@@ -182,16 +223,40 @@ async def register_node(node_id: str, registration_data: Dict[str, Any]):
                 "source": node_id,
                 "source_type": "node",
                 "message": f"节点 {node_id} 注册成功",
-                "data": node_data
+                "data": {
+                    "node_name": node_identity.node_name,
+                    "node_type": node_identity.node_type.value,
+                    "token_issued": True
+                }
+            })
+
+            # 记录审计
+            db.add_audit_log({
+                "action": "create",
+                "actor": "system",
+                "resource_type": "node",
+                "resource_id": node_id,
+                "details": registration_data,
+                "success": True
             })
 
             logger.info(f"✅ 新节点注册成功: {node_id}")
 
-        return {
-            "message": "节点注册成功",
-            "node_id": node_id,
-            "status": "online"
-        }
+            return {
+                "message": "节点注册成功",
+                "node_id": node_id,
+                "status": "registered",
+                "token": token_info.token,  # Phase 3: 返回Token
+                "expires_at": token_info.expires_at.isoformat(),
+                "permissions": token_info.permissions
+            }
+
+    except Exception as e:
+        logger.error(f"❌ 节点注册失败: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
 
     except Exception as e:
         logger.error(f"❌ 节点注册失败: {e}")

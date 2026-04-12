@@ -67,7 +67,7 @@ class SQLiteBackend(DatabaseBackend):
         根据ORM模型定义创建表结构
         """
         # 延迟导入避免循环依赖
-        from shared.database.models import Base, AssetModel, TaskModel, AuditLogModel
+        from shared.database.models import Base, AssetModel, TaskModel, AuditLogModel, NodeModel
 
         # 创建所有表
         Base.metadata.create_all(self.engine)
