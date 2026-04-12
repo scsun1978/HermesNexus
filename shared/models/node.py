@@ -74,6 +74,10 @@ class NodeIdentity(BaseModel):
     node_name: str = Field(..., description="节点显示名称")
     node_type: NodeType = Field(..., description="节点类型")
 
+    # 多租户信息
+    tenant_id: str = Field(..., description="租户ID")
+    region_id: str = Field(..., description="区域ID")
+
     # 认证信息
     auth_token: Optional[str] = Field(None, description="当前认证Token")
     token_expires_at: Optional[datetime] = Field(None, description="Token过期时间")

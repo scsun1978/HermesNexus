@@ -448,7 +448,7 @@ class SecurityAuditLog(BaseModel):
         json_schema_extra = {
             "example": {
                 "audit_id": "audit-20240416-001",
-                "action": AuditAction.APPROVAL_GRANTED,
+                "action": AuditAction.USER_ACTION,
                 "category": AuditCategory.SECURITY,
                 "level": EventLevel.INFO,
                 "security_event_type": SecurityEventType.APPROVAL_GRANTED,
@@ -674,30 +674,30 @@ class AuditFields:
 class AuditPriority:
     """审计事件优先级"""
 
-    # 关键事件（需要实时告警）
+    # 关键事件（需要实时告警）- 使用字符串类型以支持两种枚举
     CRITICAL_EVENTS = [
-        AuditAction.AUTH_DENIED,
-        SecurityEventType.PERMISSION_DENIED,
-        SecurityEventType.APPROVAL_REJECTED,
-        SecurityEventType.ROLLBACK_FAILED,
-        SecurityEventType.RECOVERY_FAILED,
-        SecurityEventType.MANUAL_INTERVENTION_REQUIRED,
-        AuditAction.SYSTEM_ERROR
+        "auth_denied",  # AuditAction.AUTH_DENIED
+        "permission_denied",  # SecurityEventType.PERMISSION_DENIED
+        "approval_rejected",  # SecurityEventType.APPROVAL_REJECTED
+        "rollback_failed",  # SecurityEventType.ROLLBACK_FAILED
+        "recovery_failed",  # SecurityEventType.RECOVERY_FAILED
+        "manual_intervention_required",  # SecurityEventType.MANUAL_INTERVENTION_REQUIRED
+        "system_error"  # AuditAction.SYSTEM_ERROR
     ]
 
-    # 重要事件（需要记录和分析）
+    # 重要事件（需要记录和分析）- 使用字符串类型以支持两种枚举
     IMPORTANT_EVENTS = [
-        AuditAction.USER_LOGIN,
-        SecurityEventType.AUTH_TOKEN_ISSUED,
-        AuditAction.NODE_REGISTERED,
-        SecurityEventType.APPROVAL_GRANTED,
-        SecurityEventType.ROLLBACK_PLAN_CREATED,
-        SecurityEventType.FAILURE_DETECTED
+        "user_login",  # AuditAction.USER_LOGIN
+        "auth_token_issued",  # SecurityEventType.AUTH_TOKEN_ISSUED
+        "node_registered",  # AuditAction.NODE_REGISTERED
+        "approval_granted",  # SecurityEventType.APPROVAL_GRANTED
+        "rollback_plan_created",  # SecurityEventType.ROLLBACK_PLAN_CREATED
+        "failure_detected"  # SecurityEventType.FAILURE_DETECTED
     ]
 
-    # 一般事件（正常记录）
+    # 一般事件（正常记录）- 使用字符串类型以支持两种枚举
     NORMAL_EVENTS = [
-        AuditAction.USER_LOGOUT,
-        SecurityEventType.AUTH_TOKEN_VALIDATED,
-        SecurityEventType.PERMISSION_CHECK
+        "user_logout",  # AuditAction.USER_LOGOUT
+        "auth_token_validated",  # SecurityEventType.AUTH_TOKEN_VALIDATED
+        "permission_check"  # SecurityEventType.PERMISSION_CHECK
     ]

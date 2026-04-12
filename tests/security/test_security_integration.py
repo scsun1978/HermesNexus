@@ -40,12 +40,12 @@ class TestSecurityIntegration:
         return NodeIdentity(
             node_id="node-integration-001",
             node_name="integration-test-node",
-            node_type=NodeType.EDGE,
+            node_type=NodeType.EDGE_DEVICE,
             status=NodeStatus.ACTIVE,
             tenant_id="tenant-001",
             region_id="region-001",
-            capabilities=["ssh", "command_exec"],
-            metadata={"version": "1.0.0"}
+            capabilities={"ssh": True, "command_exec": True},
+            node_metadata={"version": "1.0.0"}
         )
 
     @pytest.fixture
@@ -77,7 +77,7 @@ class TestSecurityIntegration:
         # 验证节点Token
         verified_node = token_service.verify_token(token_info.token)
         assert verified_node is not None
-        assert verified_node.node_id == sample_node.node_id
+        assert verified_node["node_id"] == sample_node.node_id
 
         # 2. 授权测试
         from shared.security.permission_checker import get_permission_checker
@@ -193,12 +193,14 @@ class TestSecurityIntegration:
 
         # 5. 审计日志测试
         # 创建安全审计日志
+        from shared.models.audit import AuditAction, AuditCategory, EventLevel, SecurityEventType
+        request = approval_service._requests[approved_request.request_id]
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
-            action=approval_service._requests[approved_request.request_id].get_action(),
-            category=approval_service._requests[approved_request.request_id].get_category(),
-            level="info",
-            security_event_type=None,  # 可以根据实际情况设置
+            action=AuditAction.USER_ACTION,
+            category=AuditCategory.SECURITY,
+            level=EventLevel.INFO,
+            security_event_type=SecurityEventType.APPROVAL_GRANTED,
             result=ActionResult.SUCCESS,
             risk_level=RiskLevel.MEDIUM,
             actor=sample_user["user_id"],
@@ -210,6 +212,7 @@ class TestSecurityIntegration:
             message=f"审批通过: {approved_request.title}",
             details={
                 "operation_type": "config_change",
+                "resource_type": "config",
                 "risk_level": "high",
                 "approver_id": "admin-001"
             },
@@ -221,9 +224,10 @@ class TestSecurityIntegration:
         assert audit_log.result == ActionResult.SUCCESS
 
         # 6. 安全事件测试（创建告警）
+        from shared.models.audit import SecurityEventType
         security_event = SecurityEvent(
             event_id=f"security-{uuid.uuid4().hex[:8]}",
-            security_event_type=None,  # 根据实际情况设置
+            security_event_type=SecurityEventType.APPROVAL_GRANTED,
             severity=RiskLevel.MEDIUM,
             title="集成测试安全事件",
             description="完整安全链路集成测试",
@@ -258,12 +262,12 @@ class TestSecurityIntegration:
 
         # 3. 权限检查（基于认证结果）
         context = PermissionContext(
-            user_id=verified_node.node_id,
+            user_id=verified_node["node_id"],
             role="node",
-            tenant_id=verified_node.tenant_id,
-            region_id=verified_node.region_id,
+            tenant_id=verified_node["tenant_id"],
+            region_id=verified_node["region_id"],
             resource_type=ResourceType.NODE,
-            resource_id=verified_node.node_id
+            resource_id=verified_node["node_id"]
         )
 
         # 4. 风险评估
@@ -282,15 +286,16 @@ class TestSecurityIntegration:
         assert permission_result.allowed in [True, False]  # 结果应该是明确的
 
         # 6. 创建审计日志
+        from shared.models.audit import AuditAction, AuditCategory, EventLevel
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
-            action=permission_result.get_action(),
-            category=permission_result.get_category(),
-            level="info",
+            action=AuditAction.USER_ACTION,
+            category=AuditCategory.TASK,
+            level=EventLevel.INFO,
             result=ActionResult.SUCCESS if permission_result.allowed else ActionResult.FAILURE,
-            actor=verified_node.node_id,
+            actor=verified_node["node_id"],
             actor_type=ActorType.NODE,
-            tenant_id=verified_node.tenant_id,
+            tenant_id=verified_node["tenant_id"],
             target_type="task",
             target_id="task-001",
             message=f"节点权限检查: {permission_result.allowed}",
@@ -371,11 +376,13 @@ class TestSecurityIntegration:
         assert len(rollback_plan.steps) > 0
 
         # 6. 创建审计日志记录完整流程
+        from shared.models.audit import AuditAction, AuditCategory, EventLevel
+        request = approval_service._requests[rejected_request.request_id]
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
-            action=approval_service._requests[rejected_request.request_id].get_action(),
-            category=approval_service._requests[rejected_request.request_id].get_category(),
-            level="warning",
+            action=AuditAction.USER_ACTION,
+            category=AuditCategory.SECURITY,
+            level=EventLevel.WARNING,
             result=ActionResult.FAILURE,
             risk_level=RiskLevel.HIGH,
             actor="user-001",
@@ -389,6 +396,8 @@ class TestSecurityIntegration:
             details={
                 "decision": "reject",
                 "decision_reason": rejected_request.decision_reason,
+                "operation_type": request.operation_type,
+                "resource_type": request.resource_type,
                 "rollback_plan_created": True,
                 "automatic_recovery_triggered": True
             },
@@ -463,11 +472,12 @@ class TestSecurityIntegration:
         failure.recovered_at = datetime.utcnow()
 
         # 5. 创建审计日志
+        from shared.models.audit import AuditAction, AuditCategory, EventLevel
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
-            action=ActionType.EXECUTE,
-            category="task",
-            level="warning",
+            action=AuditAction.USER_ACTION,
+            category=AuditCategory.TASK,
+            level=EventLevel.WARNING,
             result=ActionResult.SUCCESS,
             risk_level=RiskLevel.MEDIUM,
             actor="system",
@@ -495,11 +505,12 @@ class TestSecurityIntegration:
     def test_audit_log_completeness(self):
         """测试审计日志的完整性"""
         # 创建一个完整的审计日志
+        from shared.models.audit import AuditAction, AuditCategory, EventLevel
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
-            action=ActionType.READ,
-            category="asset",
-            level="info",
+            action=AuditAction.USER_ACTION,
+            category=AuditCategory.ASSET,
+            level=EventLevel.INFO,
             result=ActionResult.SUCCESS,
             risk_level=RiskLevel.LOW,
             actor="user-001",
@@ -531,9 +542,10 @@ class TestSecurityIntegration:
 
     def test_security_event_creation(self):
         """测试安全事件的创建"""
+        from shared.models.audit import SecurityEventType
         security_event = SecurityEvent(
             event_id=f"security-{uuid.uuid4().hex[:8]}",
-            security_event_type=None,  # 可以根据实际情况设置
+            security_event_type=SecurityEventType.PERMISSION_DENIED,
             severity=RiskLevel.HIGH,
             title="检测到异常访问尝试",
             description="用户尝试访问无权限的资源",
@@ -602,11 +614,12 @@ class TestSecurityIntegration:
         assert cross_tenant_result.allowed is False
 
         # 创建审计日志
+        from shared.models.audit import AuditAction, AuditCategory, EventLevel
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
-            action=ActionType.READ,
-            category="security",
-            level="warning",
+            action=AuditAction.USER_ACTION,
+            category=AuditCategory.SECURITY,
+            level=EventLevel.WARNING,
             result=ActionResult.FAILURE,
             risk_level=RiskLevel.HIGH,
             actor="user-a",
@@ -643,11 +656,11 @@ class TestSecurityPerformance:
             node = NodeIdentity(
                 node_id=f"perf-node-{i}",
                 node_name=f"性能测试节点-{i}",
-                node_type=NodeType.EDGE,
+                node_type=NodeType.EDGE_DEVICE,
                 status=NodeStatus.ACTIVE,
                 tenant_id="tenant-perf",
                 region_id="region-perf",
-                capabilities=["ssh"]
+                capabilities={"ssh": True, "command_exec": True}
             )
             test_nodes.append(node)
 

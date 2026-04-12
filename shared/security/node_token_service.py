@@ -86,6 +86,8 @@ class NodeTokenService:
             "node_id": node_identity.node_id,
             "node_name": node_identity.node_name,
             "node_type": node_identity.node_type.value,
+            "tenant_id": node_identity.tenant_id,
+            "region_id": node_identity.region_id,
             "permissions": self._get_node_permissions(node_identity),
             "max_concurrent_tasks": node_identity.max_concurrent_tasks,
             "iat": int(issued_at.timestamp()),
