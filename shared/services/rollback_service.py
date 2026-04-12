@@ -248,9 +248,9 @@ class RollbackService:
         params = {}
 
         if "backup" in operation:
-            params["backup_path"] = (
-                f"/backup/{rollback_type.value}/{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
-            )
+            params[
+                "backup_path"
+            ] = f"/backup/{rollback_type.value}/{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
         elif "restore" in operation:
             params["backup_path"] = f"/backup/{rollback_type.value}/latest"
         elif "stop" in operation or "start" in operation:
@@ -340,9 +340,7 @@ class RollbackService:
                         await self._execute_step(plan, step)
                     else:
                         # 重试次数用完，回滚失败
-                        raise Exception(
-                            f"步骤 {step.step_id} 执行失败: {step.error_message}"
-                        )
+                        raise Exception(f"步骤 {step.step_id} 执行失败: {step.error_message}")
 
             # 所有步骤成功完成
             plan.status = RollbackStatus.COMPLETED

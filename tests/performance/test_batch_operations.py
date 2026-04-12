@@ -328,9 +328,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
         total_time = time.time() - start
 
         print(f"     总耗时: {total_time:.3f}秒")
-        print(
-            f"     创建了: {len(assets)}个资产, {len(tasks)}个任务, {len(audit_logs)}条审计日志"
-        )
+        print(f"     创建了: {len(assets)}个资产, {len(tasks)}个任务, {len(audit_logs)}条审计日志")
 
         # 验证所有数据都创建成功
         queried_assets = self.asset_dao.select_by_ids([a.asset_id for a in assets])

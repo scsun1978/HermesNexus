@@ -108,9 +108,7 @@ class RecoveryService:
                 # 从队列获取恢复任务
                 recovery_plan = await self._recovery_queue.get()
 
-                logger.info(
-                    f"工作协程 {worker_id} 开始处理恢复计划: {recovery_plan.plan_id}"
-                )
+                logger.info(f"工作协程 {worker_id} 开始处理恢复计划: {recovery_plan.plan_id}")
 
                 # 处理恢复计划
                 await self._process_recovery_plan(recovery_plan)

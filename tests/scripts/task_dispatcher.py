@@ -134,9 +134,7 @@ class TaskDispatcher:
                 return job_data
             else:
                 error_detail = response.text
-                logger.error(
-                    f"❌ 创建任务失败: {response.status_code} - {error_detail}"
-                )
+                logger.error(f"❌ 创建任务失败: {response.status_code} - {error_detail}")
                 return None
 
         except Exception as e:

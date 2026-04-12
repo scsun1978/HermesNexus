@@ -81,20 +81,14 @@ class NodeIdentity(BaseModel):
     last_heartbeat: Optional[datetime] = Field(None, description="最后心跳时间")
 
     # 关联关系
-    managed_devices: List[str] = Field(
-        default_factory=list, description="管理的设备ID列表"
-    )
-    assigned_tasks: List[str] = Field(
-        default_factory=list, description="分配的任务ID列表"
-    )
+    managed_devices: List[str] = Field(default_factory=list, description="管理的设备ID列表")
+    assigned_tasks: List[str] = Field(default_factory=list, description="分配的任务ID列表")
 
     # 元数据
     description: Optional[str] = Field(None, description="节点描述")
     location: Optional[str] = Field(None, description="物理位置")
     tags: List[str] = Field(default_factory=list, description="标签列表")
-    node_metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="自定义元数据"
-    )
+    node_metadata: Dict[str, Any] = Field(default_factory=dict, description="自定义元数据")
 
     # 审计信息
     created_by: Optional[str] = Field(None, description="创建者")
@@ -178,9 +172,7 @@ class NodeRegistrationRequest(BaseModel):
     # 位置和元数据
     location: Optional[str] = Field(None, description="物理位置")
     tags: List[str] = Field(default_factory=list, description="标签列表")
-    node_metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="自定义元数据"
-    )
+    node_metadata: Dict[str, Any] = Field(default_factory=dict, description="自定义元数据")
 
     class Config:
         json_schema_extra = {
@@ -273,9 +265,7 @@ class NodeCapabilities(BaseModel):
 
     # 任务执行能力
     max_concurrent_tasks: int = Field(3, ge=1, le=100, description="最大并发任务数")
-    supported_task_types: List[str] = Field(
-        default_factory=list, description="支持的任务类型"
-    )
+    supported_task_types: List[str] = Field(default_factory=list, description="支持的任务类型")
 
     # 系统资源
     cpu_cores: Optional[int] = Field(None, description="CPU核心数")

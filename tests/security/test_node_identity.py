@@ -79,9 +79,7 @@ class TestNodeIdentity(unittest.TestCase):
         self.assertEqual(node_identity.node_id, "test-node-001")
         self.assertEqual(node_identity.node_type, NodeType.PHYSICAL)
         self.assertEqual(node_identity.status, NodeStatus.REGISTERED)
-        self.assertFalse(
-            node_identity.is_token_valid()
-        )  # 初始状态无Token，应该返回False
+        self.assertFalse(node_identity.is_token_valid())  # 初始状态无Token，应该返回False
 
         print("  ✅ 节点身份对象创建成功")
 

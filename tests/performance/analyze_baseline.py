@@ -225,9 +225,7 @@ class PerformanceAnalyzer:
             )
             audit_dao.insert(audit_log)
 
-        results["audit_insert"] = self.measure_operation(
-            "审计日志插入", insert_audit, 100
-        )
+        results["audit_insert"] = self.measure_operation("审计日志插入", insert_audit, 100)
 
         # 8. 批量插入性能测试
         print("  🔍 分析批量插入性能...")

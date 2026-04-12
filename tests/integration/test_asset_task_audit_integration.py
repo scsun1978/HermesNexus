@@ -147,9 +147,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
         audit_actions = [log.action for log in asset_audit_logs]
         print(f"审计操作类型: {audit_actions}")
 
-        self.assertIn(
-            AuditAction.ASSET_REGISTERED, audit_actions, "应该包含资产创建操作"
-        )
+        self.assertIn(AuditAction.ASSET_REGISTERED, audit_actions, "应该包含资产创建操作")
         self.assertIn(AuditAction.TASK_CREATED, audit_actions, "应该包含任务创建操作")
 
         # Step 5: 验证资产状态变更

@@ -78,9 +78,7 @@ class AssetMetadata(BaseModel):
     groups: List[str] = Field(default_factory=list, description="分组列表")
 
     # 自定义属性
-    custom_properties: Dict[str, Any] = Field(
-        default_factory=dict, description="自定义属性"
-    )
+    custom_properties: Dict[str, Any] = Field(default_factory=dict, description="自定义属性")
 
     class Config:
         json_schema_extra = {
@@ -117,9 +115,7 @@ class Asset(BaseModel):
     name: str = Field(..., description="资产名称", min_length=1, max_length=255)
     asset_type: AssetType = Field(..., description="资产类型")
     status: AssetStatus = Field(default=AssetStatus.REGISTERED, description="资产状态")
-    metadata: AssetMetadata = Field(
-        default_factory=AssetMetadata, description="资产元数据"
-    )
+    metadata: AssetMetadata = Field(default_factory=AssetMetadata, description="资产元数据")
 
     # 关联节点（如果存在）
     associated_node_id: Optional[str] = Field(None, description="关联的运行节点ID")
@@ -225,9 +221,7 @@ class AssetCreateRequest(BaseModel):
 class AssetUpdateRequest(BaseModel):
     """资产更新请求"""
 
-    name: Optional[str] = Field(
-        None, description="资产名称", min_length=1, max_length=255
-    )
+    name: Optional[str] = Field(None, description="资产名称", min_length=1, max_length=255)
     description: Optional[str] = Field(None, description="资产描述", max_length=1000)
     status: Optional[AssetStatus] = Field(None, description="资产状态")
     metadata: Optional[AssetMetadata] = Field(None, description="资产元数据")

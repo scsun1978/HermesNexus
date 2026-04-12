@@ -16,9 +16,7 @@ class TokenCreateRequest(BaseModel):
     """Token创建请求"""
 
     username: str = Field(..., description="用户名")
-    password: str = Field(
-        ..., description="密码"
-    )  # 开发环境简化，生产环境应该使用真实密码验证
+    password: str = Field(..., description="密码")  # 开发环境简化，生产环境应该使用真实密码验证
 
 
 class TokenCreateResponse(BaseModel):

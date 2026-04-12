@@ -346,9 +346,7 @@ class PerformanceBottleneckAnalyzer:
 
             if plan["high_priority"]:
                 f.write("### 🔥 必做项\n")
-                for i, issue in enumerate(
-                    plan["high_priority"][:3], 1
-                ):  # 最多3个必做项
+                for i, issue in enumerate(plan["high_priority"][:3], 1):  # 最多3个必做项
                     f.write(
                         f"{i}. **{issue['component']}**: {issue['recommendation']}\n"
                     )
@@ -356,9 +354,7 @@ class PerformanceBottleneckAnalyzer:
 
             if plan["medium_priority"]:
                 f.write("### 🟡 尽量做\n")
-                for i, issue in enumerate(
-                    plan["medium_priority"][:2], 1
-                ):  # 最多2个尽量做项
+                for i, issue in enumerate(plan["medium_priority"][:2], 1):  # 最多2个尽量做项
                     f.write(
                         f"{i}. **{issue['component']}**: {issue['recommendation']}\n"
                     )

@@ -525,12 +525,8 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 metric.end(start, False)
                 self.fail(f"批量查询失败: {e}")
 
-        print(
-            f"   批量插入 (20个): {statistics.mean(bulk_insert_times)*1000:.2f}ms (平均)"
-        )
-        print(
-            f"   批量查询 (100个): {statistics.mean(bulk_query_times)*1000:.2f}ms (平均)"
-        )
+        print(f"   批量插入 (20个): {statistics.mean(bulk_insert_times)*1000:.2f}ms (平均)")
+        print(f"   批量查询 (100个): {statistics.mean(bulk_query_times)*1000:.2f}ms (平均)")
 
         self.__class__.metrics["bulk_operations"] = metric.get_stats()
 

@@ -179,9 +179,7 @@ async def get_asset(asset_id: str):
         )
 
 
-@router.put(
-    "/{asset_id}", response_model=Asset, summary="更新资产", description="更新资产信息"
-)
+@router.put("/{asset_id}", response_model=Asset, summary="更新资产", description="更新资产信息")
 async def update_asset(asset_id: str, request: AssetUpdateRequest):
     """
     更新资产

@@ -393,9 +393,7 @@ class SSHExecutorPool:
         # 检查连接数限制
         current_connections = len(self.executors)
         if current_connections >= self.max_connections:
-            logger.warning(
-                f"⚠️  连接池已满: {current_connections}/{self.max_connections}"
-            )
+            logger.warning(f"⚠️  连接池已满: {current_connections}/{self.max_connections}")
             # 清理最老的连接
             oldest_key = min(self.connection_count.items(), key=lambda x: x[1])[0]
             if oldest_key in self.executors:
