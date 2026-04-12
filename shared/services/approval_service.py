@@ -167,6 +167,11 @@ class ApprovalService:
         if request.status != ApprovalStatus.PENDING:
             raise ValueError(f"当前状态 {request.status} 不允许审批决策")
 
+        # 验证决策值
+        valid_decisions = ["approve", "reject"]
+        if decision not in valid_decisions:
+            raise ValueError(f"无效的决策值: {decision}，必须是: {valid_decisions}")
+
         # 确定目标状态
         target_status = ApprovalStatus.APPROVED if decision == "approve" else ApprovalStatus.REJECTED
 

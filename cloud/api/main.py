@@ -25,6 +25,9 @@ from cloud.database.db import db
 # 导入新的 API 路由
 from cloud.api import task_api, asset_api
 
+# Phase 3 Day 3: 导入审批API
+from cloud.api import approval_api
+
 # Phase 3: 导入节点认证相关模块
 from shared.models.node import NodeRegistrationRequest, NodeHeartbeatRequest, NodeIdentity, NodeStatus
 from shared.security.node_token_service import get_node_token_service
@@ -113,6 +116,9 @@ async def health_check():
 # 注册新的 API 路由
 app.include_router(task_api.router, prefix="")
 app.include_router(asset_api.router, prefix="")
+
+# Phase 3 Day 3: 注册审批API路由
+app.include_router(approval_api.router, prefix="")
 # 也注册兼容的 jobs 路由
 app.include_router(task_api.jobs_router, prefix="")
 
