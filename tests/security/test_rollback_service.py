@@ -22,8 +22,13 @@ class TestRollbackService:
 
     @pytest.fixture
     def rollback_service(self):
-        """创建回滚服务实例"""
-        return RollbackService()
+        """创建回滚服务实例（测试模式：100%成功率）"""
+        # 在测试中使用100%成功率以避免随机失败
+        config = RollbackServiceConfig(
+            simulate_execution_success_rate=1.0,  # 100%执行成功率
+            simulate_validation_success_rate=1.0   # 100%验证成功率
+        )
+        return RollbackService(config=config)
 
     @pytest.fixture
     def sample_config_plan_data(self):
@@ -403,8 +408,13 @@ class TestRollbackServiceIntegration:
 
     @pytest.fixture
     def rollback_service(self):
-        """创建回滚服务实例"""
-        return RollbackService()
+        """创建回滚服务实例（测试模式：100%成功率）"""
+        # 在测试中使用100%成功率以避免随机失败
+        config = RollbackServiceConfig(
+            simulate_execution_success_rate=1.0,  # 100%执行成功率
+            simulate_validation_success_rate=1.0   # 100%验证成功率
+        )
+        return RollbackService(config=config)
 
     @pytest.mark.asyncio
     async def test_full_rollback_workflow(self, rollback_service):

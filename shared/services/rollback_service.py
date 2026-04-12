@@ -27,7 +27,9 @@ class RollbackServiceConfig:
         default_max_retries: int = 3,
         parallel_execution: bool = False,
         auto_rollback_on_failure: bool = True,
-        require_confirmation: bool = True
+        require_confirmation: bool = True,
+        simulate_execution_success_rate: float = 1.0,
+        simulate_validation_success_rate: float = 1.0
     ):
         self.config_dir = Path(config_dir)
         self.default_timeout_seconds = default_timeout_seconds
@@ -35,6 +37,9 @@ class RollbackServiceConfig:
         self.parallel_execution = parallel_execution
         self.auto_rollback_on_failure = auto_rollback_on_failure
         self.require_confirmation = require_confirmation
+        # 模拟执行和验证成功率（用于测试，1.0 = 100%成功）
+        self.simulate_execution_success_rate = simulate_execution_success_rate
+        self.simulate_validation_success_rate = simulate_validation_success_rate
 
 
 class RollbackService:
@@ -395,8 +400,8 @@ class RollbackService:
         base_time = execution_times.get(step.operation.split("_")[0], 2)
         await asyncio.sleep(base_time)
 
-        # 模拟成功率（实际实现中应基于真实执行结果）
-        success_rate = 0.95  # 95%成功率
+        # 使用配置的成功率（实际实现中应基于真实执行结果）
+        success_rate = self.config.simulate_execution_success_rate
         import random
         if random.random() > success_rate:
             raise Exception(f"步骤执行失败（模拟）: {step.operation}")
@@ -406,8 +411,8 @@ class RollbackService:
         # 模拟验证逻辑
         await asyncio.sleep(0.5)
 
-        # 模拟验证成功率
-        success_rate = 0.98  # 98%验证成功率
+        # 使用配置的验证成功率
+        success_rate = self.config.simulate_validation_success_rate
         import random
         if random.random() > success_rate:
             raise Exception(f"步骤验证失败: {step.operation}")
