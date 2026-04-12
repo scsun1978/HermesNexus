@@ -248,10 +248,8 @@ class RollbackService:
         params = {}
 
         if "backup" in operation:
-            params["backup_path"] = (
-                f"/backup/{rollback_type.value}/"
-                f"{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
-            )
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+            params["backup_path"] = f"/backup/{rollback_type.value}/{timestamp}"
         elif "restore" in operation:
             params["backup_path"] = f"/backup/{rollback_type.value}/latest"
         elif "stop" in operation or "start" in operation:
