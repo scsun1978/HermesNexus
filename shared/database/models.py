@@ -77,6 +77,10 @@ class NodeModel(Base):
     status = Column(String(50), nullable=False)
     description = Column(Text, nullable=True)
 
+    # 多租户字段 (Phase 3)
+    tenant_id = Column(String(64), nullable=False)
+    region_id = Column(String(64), nullable=False)
+
     # 认证信息
     auth_token = Column(Text, nullable=True)
     token_expires_at = Column(DateTime, nullable=True)

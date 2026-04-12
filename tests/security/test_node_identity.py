@@ -56,6 +56,8 @@ class TestNodeIdentity(unittest.TestCase):
             node_id="test-node-001",
             node_name="测试节点1",
             node_type=NodeType.PHYSICAL,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.REGISTERED,
             capabilities={
                 "protocols": ["ssh", "http"],
@@ -85,6 +87,8 @@ class TestNodeIdentity(unittest.TestCase):
             node_id="test-node-002",
             node_name="测试节点2",
             node_type=NodeType.VIRTUAL_MACHINE,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.REGISTERED,
             max_concurrent_tasks=5,
             registered_at=datetime.utcnow()
@@ -118,6 +122,8 @@ class TestNodeIdentity(unittest.TestCase):
             node_id="test-node-003",
             node_name="测试节点3",
             node_type=NodeType.PHYSICAL,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.ACTIVE,
             max_concurrent_tasks=3
         )
@@ -153,6 +159,8 @@ class TestNodeIdentity(unittest.TestCase):
             node_id="test-node-004",
             node_name="测试节点4",
             node_type=NodeType.PHYSICAL,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.UNREGISTERED
         )
 
@@ -177,6 +185,8 @@ class TestNodeIdentity(unittest.TestCase):
             node_id="test-node-005",
             node_name="测试节点5",
             node_type=NodeType.PHYSICAL,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.ACTIVE,
             last_heartbeat=datetime.utcnow()
         )
@@ -203,6 +213,8 @@ class TestNodeIdentity(unittest.TestCase):
             node_id="test-node-006",
             node_name="测试节点6",
             node_type=NodeType.PHYSICAL,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.ACTIVE
         )
 
@@ -277,6 +289,8 @@ class TestNodeAuthIntegration(unittest.TestCase):
             node_id=registration_request.node_id,
             node_name=registration_request.node_name,
             node_type=registration_request.node_type,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.REGISTERED,
             capabilities=registration_request.capabilities,
             max_concurrent_tasks=registration_request.max_concurrent_tasks,
@@ -324,6 +338,8 @@ class TestNodeAuthIntegration(unittest.TestCase):
             node_id="auth-node-001",
             node_name="授权测试节点",
             node_type=NodeType.PHYSICAL,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.ACTIVE
         )
 
@@ -354,6 +370,8 @@ class TestNodeAuthIntegration(unittest.TestCase):
             node_id="active-node-001",
             node_name="活跃节点",
             node_type=NodeType.PHYSICAL,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.ACTIVE,
             max_concurrent_tasks=3,
             last_heartbeat=datetime.utcnow()  # 最近的心跳
@@ -363,6 +381,8 @@ class TestNodeAuthIntegration(unittest.TestCase):
             node_id="inactive-node-001",
             node_name="非活跃节点",
             node_type=NodeType.VIRTUAL_MACHINE,
+            tenant_id="tenant-001",
+            region_id="region-001",
             status=NodeStatus.INACTIVE,
             last_heartbeat=datetime.utcnow() - timedelta(minutes=10)  # 10分钟前的心跳
         )
