@@ -1,0 +1,247 @@
+{
+  "version": "1.0.0",
+  "handlers": {
+    "execution_failure": {
+      "description": "执行失败处理",
+      "severity_mapping": {
+        "low": {
+          "action": "retry",
+          "max_attempts": 3,
+          "backoff_seconds": 5,
+          "escalate_after": 3
+        },
+        "medium": {
+          "action": "rollback",
+          "escalation_level": "operator",
+          "notify_stakeholders": true
+        },
+        "high": {
+          "action": "escalate",
+          "escalation_level": "admin",
+          "immediate_notification": true,
+          "pause_related_operations": true
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "escalation_level": "super_admin",
+          "emergency_mode": true,
+          "full_audit": true
+        }
+      }
+    },
+    "validation_failure": {
+      "description": "验证失败处理",
+      "severity_mapping": {
+        "low": {
+          "action": "skip",
+          "log_warning": true,
+          "continue_execution": true
+        },
+        "medium": {
+          "action": "manual_intervention",
+          "require_approval": "continue",
+          "escalation_level": "operator"
+        },
+        "high": {
+          "action": "rollback",
+          "full_validation_required": true,
+          "notify_stakeholders": true
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "emergency_mode": true,
+          "halt_all_operations": true
+        }
+      }
+    },
+    "timeout_failure": {
+      "description": "超时失败处理",
+      "severity_mapping": {
+        "low": {
+          "action": "retry",
+          "max_attempts": 2,
+          "increase_timeout": true,
+          "timeout_multiplier": 1.5
+        },
+        "medium": {
+          "action": "rollback",
+          "investigate_cause": true,
+          "escalation_level": "operator"
+        },
+        "high": {
+          "action": "escalate",
+          "escalation_level": "admin",
+          "pause_similar_operations": true
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "emergency_mode": true,
+          "full_system_check": true
+        }
+      }
+    },
+    "dependency_failure": {
+      "description": "依赖失败处理",
+      "severity_mapping": {
+        "low": {
+          "action": "retry",
+          "max_attempts": 5,
+          "backoff_seconds": 30,
+          "check_dependency_health": true
+        },
+        "medium": {
+          "action": "escalate",
+          "escalation_level": "operator",
+          "check_dependency_status": true
+        },
+        "high": {
+          "action": "rollback",
+          "restore_dependencies": true,
+          "notify_dependency_owners": true
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "emergency_mode": true,
+          "escalate_to_infrastructure": true
+        }
+      }
+    },
+    "configuration_error": {
+      "description": "配置错误处理",
+      "severity_mapping": {
+        "low": {
+          "action": "retry",
+          "use_default_config": true,
+          "log_warning": true
+        },
+        "medium": {
+          "action": "rollback",
+          "restore_last_known_good": true,
+          "require_config_review": true
+        },
+        "high": {
+          "action": "escalate",
+          "escalation_level": "admin",
+          "halt_affected_services": true
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "emergency_mode": true,
+          "full_config_audit": true
+        }
+      }
+    },
+    "network_failure": {
+      "description": "网络故障处理",
+      "severity_mapping": {
+        "low": {
+          "action": "retry",
+          "max_attempts": 3,
+          "backoff_seconds": 10,
+          "check_network_connectivity": true
+        },
+        "medium": {
+          "action": "retry",
+          "max_attempts": 5,
+          "backoff_seconds": 30,
+          "alternative_route": true
+        },
+        "high": {
+          "action": "escalate",
+          "escalation_level": "operator",
+          "check_network_infrastructure": true
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "emergency_mode": true,
+          "escalate_to_network_team": true
+        }
+      }
+    },
+    "resource_exhaustion": {
+      "description": "资源耗尽处理",
+      "severity_mapping": {
+        "low": {
+          "action": "retry",
+          "max_attempts": 2,
+          "backoff_seconds": 60,
+          "cleanup_resources": true
+        },
+        "medium": {
+          "action": "escalate",
+          "escalation_level": "operator",
+          "scale_resources": true,
+          "throttle_operations": true
+        },
+        "high": {
+          "action": "rollback",
+          "release_resources": true,
+          "notify_infrastructure": true
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "emergency_mode": true,
+          "halt_non_critical_operations": true
+        }
+      }
+    },
+    "approval_rejected": {
+      "description": "审批拒绝处理",
+      "severity_mapping": {
+        "low": {
+          "action": "rollback",
+          "automatic_rollback": true,
+          "notify_requester": true
+        },
+        "medium": {
+          "action": "rollback",
+          "require_modification": true,
+          "escalation_level": "operator"
+        },
+        "high": {
+          "action": "manual_intervention",
+          "require_redesign": true,
+          "escalation_level": "admin"
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "halt_all_related_work": true,
+          "full_review_required": true
+        }
+      }
+    },
+    "manual_trigger": {
+      "description": "人工触发处理",
+      "severity_mapping": {
+        "low": {
+          "action": "manual_intervention",
+          "require_reason": true,
+          "log_intervention": true
+        },
+        "medium": {
+          "action": "manual_intervention",
+          "require_approval": "override",
+          "escalation_level": "operator"
+        },
+        "high": {
+          "action": "manual_intervention",
+          "require_approval": "admin",
+          "full_justification": true
+        },
+        "critical": {
+          "action": "manual_intervention",
+          "require_approval": "super_admin",
+          "emergency_mode": true
+        }
+      }
+    }
+  },
+  "global_settings": {
+    "default_max_retries": 3,
+    "default_backoff_seconds": 5,
+    "escalation_timeout_seconds": 300,
+    "notification_channels": ["email", "slack", "pagerduty"],
+    "audit_all_failures": true,
+    "collect_metrics": true
+  }
+}

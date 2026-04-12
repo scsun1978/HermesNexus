@@ -1,0 +1,117 @@
+{
+  "version": "1.0.0",
+  "strategies": {
+    "config": {
+      "description": "配置回滚策略",
+      "rollback_order": [
+        "backup_current_config",
+        "stop_related_services",
+        "restore_backup_config",
+        "validate_config",
+        "start_services",
+        "verify_operations"
+      ],
+      "timeout_seconds": 300,
+      "max_retries": 3,
+      "backup_required": true,
+      "validation_steps": [
+        "config_file_exists",
+        "config_syntax_valid",
+        "config_schema_compliant",
+        "service_can_start"
+      ]
+    },
+    "service": {
+      "description": "服务回滚策略",
+      "rollback_order": [
+        "backup_current_state",
+        "stop_current_service",
+        "restore_previous_version",
+        "update_dependencies",
+        "start_service",
+        "health_check",
+        "verify_operations"
+      ],
+      "timeout_seconds": 600,
+      "max_retries": 2,
+      "backup_required": true,
+      "validation_steps": [
+        "service_stopped",
+        "version_restored",
+        "service_started",
+        "health_check_passed",
+        "api_responding"
+      ]
+    },
+    "device": {
+      "description": "设备回滚策略",
+      "rollback_order": [
+        "backup_device_config",
+        "disconnect_device",
+        "restore_firmware_version",
+        "restore_device_config",
+        "reconnect_device",
+        "verify_connectivity",
+        "test_operations"
+      ],
+      "timeout_seconds": 900,
+      "max_retries": 2,
+      "backup_required": true,
+      "validation_steps": [
+        "device_disconnected",
+        "firmware_restored",
+        "config_restored",
+        "device_connected",
+        "connectivity_verified",
+        "basic_operations_work"
+      ]
+    },
+    "task": {
+      "description": "任务回滚策略",
+      "rollback_order": [
+        "identify_affected_resources",
+        "pause_execution",
+        "compensate_completed_steps",
+        "reset_task_status",
+        "release_resources",
+        "notify_stakeholders",
+        "verify_system_state"
+      ],
+      "timeout_seconds": 180,
+      "max_retries": 1,
+      "backup_required": false,
+      "validation_steps": [
+        "execution_paused",
+        "compensation_completed",
+        "status_reset",
+        "resources_released",
+        "notifications_sent"
+      ]
+    }
+  },
+  "global_settings": {
+    "default_timeout_seconds": 300,
+    "default_max_retries": 3,
+    "parallel_execution": false,
+    "auto_rollback_on_failure": true,
+    "require_confirmation": true,
+    "log_level": "info"
+  },
+  "risk_adjustments": {
+    "low": {
+      "timeout_multiplier": 1.0,
+      "max_retries": 3,
+      "require_confirmation": false
+    },
+    "medium": {
+      "timeout_multiplier": 1.5,
+      "max_retries": 2,
+      "require_confirmation": true
+    },
+    "high": {
+      "timeout_multiplier": 2.0,
+      "max_retries": 1,
+      "require_confirmation": true
+    }
+  }
+}

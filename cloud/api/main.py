@@ -28,6 +28,9 @@ from cloud.api import task_api, asset_api
 # Phase 3 Day 3: 导入审批API
 from cloud.api import approval_api
 
+# Phase 3 Day 4: 导入回滚API
+from cloud.api import rollback_api
+
 # Phase 3: 导入节点认证相关模块
 from shared.models.node import NodeRegistrationRequest, NodeHeartbeatRequest, NodeIdentity, NodeStatus
 from shared.security.node_token_service import get_node_token_service
@@ -119,6 +122,8 @@ app.include_router(asset_api.router, prefix="")
 
 # Phase 3 Day 3: 注册审批API路由
 app.include_router(approval_api.router, prefix="")
+# Phase 3 Day 4: 注册回滚API路由
+app.include_router(rollback_api.router, prefix="")
 # 也注册兼容的 jobs 路由
 app.include_router(task_api.jobs_router, prefix="")
 
