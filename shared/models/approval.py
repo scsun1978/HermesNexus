@@ -6,7 +6,7 @@ HermesNexus Phase 3 - 审批流模型
 from enum import Enum
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class ApprovalStatus(str, Enum):
@@ -62,8 +62,8 @@ class ApprovalRequest(BaseModel):
     status: ApprovalStatus = Field(default=ApprovalStatus.DRAFT, description="审批状态")
 
     # 时间信息
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="创建时间")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="更新时间")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="更新时间")
     submitted_at: Optional[datetime] = Field(None, description="提交时间")
     decided_at: Optional[datetime] = Field(None, description="决策时间")
 
@@ -124,7 +124,7 @@ class ApprovalDecision(BaseModel):
     approver_name: str = Field(..., description="审批人姓名")
 
     # 决策时间
-    decided_at: datetime = Field(default_factory=datetime.utcnow, description="决策时间")
+    decided_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="决策时间")
 
     # 附加信息
     metadata: Dict[str, Any] = Field(default_factory=dict, description="附加元数据")
@@ -156,7 +156,7 @@ class ApprovalComment(BaseModel):
     author_type: str = Field(default="human", description="评论人类型")
 
     # 评论时间
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="评论时间")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="评论时间")
 
     # 附加信息
     is_internal: bool = Field(default=False, description="是否为内部评论")

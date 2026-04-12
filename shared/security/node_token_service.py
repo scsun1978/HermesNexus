@@ -129,7 +129,7 @@ class NodeTokenService:
             )
 
             # 检查Token是否过期
-            exp_time = datetime.fromtimestamp(payload["exp"])
+            exp_time = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
             if datetime.now(timezone.utc) > exp_time:
                 return None
 

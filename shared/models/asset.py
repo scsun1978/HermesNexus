@@ -3,7 +3,7 @@ HermesNexus Phase 2 - Asset Model
 资产管理数据模型
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
 from enum import Enum
 from pydantic import BaseModel, Field, validator, root_validator
@@ -116,8 +116,8 @@ class Asset(BaseModel):
     created_by: Optional[str] = Field(None, description="创建者")
 
     # 时间戳
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="创建时间")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="更新时间")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="更新时间")
     last_heartbeat: Optional[datetime] = Field(None, description="最后心跳时间")
 
     # 描述信息

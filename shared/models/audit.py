@@ -6,7 +6,7 @@ Phase 2: 基础审计日志功能
 Phase 3: 扩展安全审计字段和统一规范
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
 from enum import Enum
 from pydantic import BaseModel, Field, root_validator
@@ -103,8 +103,8 @@ class AuditLog(BaseModel):
     request_id: Optional[str] = Field(None, description="请求ID")
 
     # 时间戳
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="事件时间戳")
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="记录创建时间")
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="事件时间戳")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="记录创建时间")
 
     class Config:
         json_schema_extra = {
@@ -441,8 +441,8 @@ class SecurityAuditLog(BaseModel):
     cpu_usage_percent: Optional[float] = Field(None, description="CPU使用率（%）")
 
     # 时间戳
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="事件时间戳")
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="记录创建时间")
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="事件时间戳")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="记录创建时间")
 
     class Config:
         json_schema_extra = {
@@ -480,7 +480,7 @@ class SecurityEvent(BaseModel):
     event_id: str = Field(..., description="安全事件ID")
     security_event_type: SecurityEventType = Field(..., description="安全事件类型")
     severity: RiskLevel = Field(..., description="严重程度")
-    timestamp: datetime = Field(default_factory=datetime.utcnow, description="事件时间")
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="事件时间")
 
     # 事件详情
     title: str = Field(..., description="事件标题")
@@ -530,7 +530,7 @@ class ComplianceReport(BaseModel):
     report_type: str = Field(..., description="报告类型")
     period_start: datetime = Field(..., description="报告期间开始时间")
     period_end: datetime = Field(..., description="报告期间结束时间")
-    generated_at: datetime = Field(default_factory=datetime.utcnow, description="生成时间")
+    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="生成时间")
 
     # 统计信息
     total_events: int = Field(..., description="总事件数")

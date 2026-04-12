@@ -3,7 +3,7 @@ HermesNexus Phase 2 - Task Model
 任务编排数据模型
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List
 from enum import Enum
 from pydantic import BaseModel, Field, validator
@@ -123,8 +123,8 @@ class Task(BaseModel):
 
     # 创建信息
     created_by: str = Field(..., description="创建者")
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="创建时间")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="更新时间")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="更新时间")
 
     # 描述和标签
     description: Optional[str] = Field(None, description="任务描述", max_length=1000)

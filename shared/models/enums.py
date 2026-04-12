@@ -212,7 +212,7 @@ class ErrorCode(str, Enum):
 
     def to_dict(self, details: Dict[str, Any] = None, request_id: str = None) -> Dict[str, Any]:
         """转换为标准错误响应格式"""
-        from datetime import datetime
+        from datetime import datetime, timezone
 
         return {
             "error": {
@@ -220,7 +220,7 @@ class ErrorCode(str, Enum):
                 "category": self.get_category().value,
                 "message": self._get_default_message(),
                 "details": details or {},
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "request_id": request_id or "N/A"
             }
         }

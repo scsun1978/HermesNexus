@@ -6,7 +6,7 @@ HermesNexus Phase 3 - 回滚模型
 from enum import Enum
 from typing import List, Dict, Any, Optional, Callable
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class RollbackType(str, Enum):
@@ -98,7 +98,7 @@ class RollbackPlan(BaseModel):
     trigger_reason: str = Field(..., description="触发回滚的原因")
     trigger_type: str = Field(..., description="触发类型: auto/manual")
     triggered_by: str = Field(..., description="触发人ID")
-    triggered_at: datetime = Field(default_factory=datetime.utcnow, description="触发时间")
+    triggered_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="触发时间")
 
     # 回滚步骤
     steps: List[RollbackStep] = Field(..., description="回滚步骤列表")
@@ -208,7 +208,7 @@ class FailureRecord(BaseModel):
     stack_trace: Optional[str] = Field(None, description="错误堆栈")
 
     # 发生信息
-    occurred_at: datetime = Field(default_factory=datetime.utcnow, description="发生时间")
+    occurred_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="发生时间")
     detected_by: str = Field(default="system", description="检测方式")
 
     # 处理信息
@@ -256,7 +256,7 @@ class RecoveryPlan(BaseModel):
 
     # 状态信息
     status: str = Field(default="pending", description="恢复状态")
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="创建时间")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
     started_at: Optional[datetime] = Field(None, description="开始时间")
     completed_at: Optional[datetime] = Field(None, description="完成时间")
 

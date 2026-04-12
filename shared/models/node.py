@@ -104,8 +104,8 @@ class NodeIdentity(BaseModel):
 
     # 审计信息
     created_by: Optional[str] = Field(None, description="创建者")
-    created_at: datetime = Field(default_factory=datetime.utcnow, description="创建时间")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="更新时间")
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="更新时间")
 
     class Config:
         json_schema_extra = {
@@ -235,7 +235,7 @@ class NodeTokenInfo(BaseModel):
     node_id: str = Field(..., description="节点ID")
     expires_at: datetime = Field(..., description="过期时间")
     permissions: List[str] = Field(default_factory=list, description="权限列表")
-    issued_at: datetime = Field(default_factory=datetime.utcnow, description="颁发时间")
+    issued_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="颁发时间")
 
     class Config:
         json_schema_extra = {
