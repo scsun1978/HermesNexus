@@ -1,0 +1,9 @@
+docs/50-故障演练与验收清单.md
+docs/56-故障处理Runbook.md
+docs/55-发布回滚与验收流程.md
+docs/54-测试与联调规范.md
+docs/63-本地调试与模拟器.md
+docs/68-技术决策与MVP边界.md
+docs/69-本机Hermes开发隔离方案.md
+docs/70-开发前置条件与启动清单.md
+docs/72-开工前10条清单.md

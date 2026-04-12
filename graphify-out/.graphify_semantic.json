@@ -1,0 +1,4919 @@
+{
+  "nodes": [
+    {
+      "id": "final_edge_node_py",
+      "label": "final-edge-node.py",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "final_edge_node_edgenode",
+      "label": "EdgeNode",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "final_edge_node_edgenode_init",
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "final_edge_node_edgenode_setup_logging",
+      "label": ".setup_logging()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L32"
+    },
+    {
+      "id": "final_edge_node_edgenode_log",
+      "label": ".log()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "final_edge_node_edgenode_register_node",
+      "label": ".register_node()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L45"
+    },
+    {
+      "id": "final_edge_node_edgenode_send_heartbeat",
+      "label": ".send_heartbeat()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L71"
+    },
+    {
+      "id": "final_edge_node_edgenode_get_system_resources",
+      "label": ".get_system_resources()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L95"
+    },
+    {
+      "id": "final_edge_node_edgenode_poll_tasks",
+      "label": ".poll_tasks()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L111"
+    },
+    {
+      "id": "final_edge_node_edgenode_execute_task",
+      "label": ".execute_task()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L139"
+    },
+    {
+      "id": "final_edge_node_edgenode_write_back_result",
+      "label": ".write_back_result()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L176"
+    },
+    {
+      "id": "final_edge_node_edgenode_execute_ssh_command",
+      "label": ".execute_ssh_command()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L208"
+    },
+    {
+      "id": "final_edge_node_edgenode_execute_system_test",
+      "label": ".execute_system_test()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L244"
+    },
+    {
+      "id": "final_edge_node_edgenode_execute_test_task",
+      "label": ".execute_test_task()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L271"
+    },
+    {
+      "id": "final_edge_node_edgenode_run",
+      "label": ".run()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L287"
+    },
+    {
+      "id": "final_edge_node_edgenode_stop",
+      "label": ".stop()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L332"
+    },
+    {
+      "id": "final_edge_node_signal_handler",
+      "label": "signal_handler()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L336"
+    },
+    {
+      "id": "final_edge_node_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "final-edge-node.py",
+      "source_location": "L341"
+    },
+    {
+      "id": "final_edge_node_rationale_177",
+      "label": "\ud83d\udd25 \u5173\u952e\u529f\u80fd\uff1a\u56de\u5199\u4efb\u52a1\u7ed3\u679c\u5230Cloud API",
+      "file_type": "rationale",
+      "source_file": "final-edge-node.py",
+      "source_location": "L177"
+    },
+    {
+      "id": "complete_edge_node_py",
+      "label": "complete-edge-node.py",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "complete_edge_node_edgenode",
+      "label": "EdgeNode",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L20"
+    },
+    {
+      "id": "complete_edge_node_edgenode_init",
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "complete_edge_node_edgenode_setup_logging",
+      "label": ".setup_logging()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "complete_edge_node_edgenode_log",
+      "label": ".log()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L35"
+    },
+    {
+      "id": "complete_edge_node_edgenode_register_node",
+      "label": ".register_node()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L43"
+    },
+    {
+      "id": "complete_edge_node_edgenode_send_heartbeat",
+      "label": ".send_heartbeat()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L69"
+    },
+    {
+      "id": "complete_edge_node_edgenode_get_system_resources",
+      "label": ".get_system_resources()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L93"
+    },
+    {
+      "id": "complete_edge_node_edgenode_poll_tasks",
+      "label": ".poll_tasks()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L109"
+    },
+    {
+      "id": "complete_edge_node_edgenode_execute_task",
+      "label": ".execute_task()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L138"
+    },
+    {
+      "id": "complete_edge_node_edgenode_write_back_result",
+      "label": ".write_back_result()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L174"
+    },
+    {
+      "id": "complete_edge_node_edgenode_execute_ssh_command",
+      "label": ".execute_ssh_command()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L206"
+    },
+    {
+      "id": "complete_edge_node_edgenode_execute_system_test",
+      "label": ".execute_system_test()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L242"
+    },
+    {
+      "id": "complete_edge_node_edgenode_execute_test_task",
+      "label": ".execute_test_task()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L267"
+    },
+    {
+      "id": "complete_edge_node_edgenode_run",
+      "label": ".run()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L283"
+    },
+    {
+      "id": "complete_edge_node_edgenode_stop",
+      "label": ".stop()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L327"
+    },
+    {
+      "id": "complete_edge_node_signal_handler",
+      "label": "signal_handler()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L331"
+    },
+    {
+      "id": "complete_edge_node_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L336"
+    },
+    {
+      "id": "complete_edge_node_rationale_175",
+      "label": "\ud83d\udd25 \u5173\u952e\u529f\u80fd\uff1a\u56de\u5199\u4efb\u52a1\u7ed3\u679c\u5230Cloud API",
+      "file_type": "rationale",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L175"
+    },
+    {
+      "id": "simple_cloud_api_py",
+      "label": "simple-cloud-api.py",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler",
+      "label": "HermesAPIHandler",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_do_get",
+      "label": ".do_GET()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L20"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_do_post",
+      "label": ".do_POST()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L41"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_send_health_check",
+      "label": ".send_health_check()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L60"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_send_stats",
+      "label": ".send_stats()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L70"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_send_nodes",
+      "label": ".send_nodes()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L95"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_create_task",
+      "label": ".create_task()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L120"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_handle_heartbeat",
+      "label": ".handle_heartbeat()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L155"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_send_task_detail",
+      "label": ".send_task_detail()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L183"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_send_tasks_list",
+      "label": ".send_tasks_list()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L211"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_send_json_response",
+      "label": ".send_json_response()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L239"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_send_error_response",
+      "label": ".send_error_response()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L247"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_send_not_found",
+      "label": ".send_not_found()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L256"
+    },
+    {
+      "id": "simple_cloud_api_hermesapihandler_log_message",
+      "label": ".log_message()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L265"
+    },
+    {
+      "id": "simple_cloud_api_init_database",
+      "label": "init_database()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L269"
+    },
+    {
+      "id": "simple_cloud_api_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L311"
+    },
+    {
+      "id": "complete_cloud_api_py",
+      "label": "complete-cloud-api.py",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler",
+      "label": "HermesAPIHandler",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L20"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_do_get",
+      "label": ".do_GET()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_do_post",
+      "label": ".do_POST()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L62"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_health_check",
+      "label": ".send_health_check()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L104"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_stats",
+      "label": ".send_stats()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L114"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_nodes",
+      "label": ".send_nodes()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L147"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_node_tasks",
+      "label": ".send_node_tasks()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L172"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_node_task_detail",
+      "label": ".send_node_task_detail()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L202"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_create_device",
+      "label": ".create_device()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L231"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_create_task",
+      "label": ".create_task()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L273"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_handle_heartbeat",
+      "label": ".handle_heartbeat()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L324"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_handle_task_result",
+      "label": ".handle_task_result()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L352"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_task_detail",
+      "label": ".send_task_detail()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L473"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_tasks_list",
+      "label": ".send_tasks_list()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L502"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_devices_list",
+      "label": ".send_devices_list()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L529"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_jobs_list",
+      "label": ".send_jobs_list()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L557"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_events_list",
+      "label": ".send_events_list()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L561"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_audit_logs",
+      "label": ".send_audit_logs()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L588"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_json_response",
+      "label": ".send_json_response()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L615"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_error_response",
+      "label": ".send_error_response()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L623"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_send_not_found",
+      "label": ".send_not_found()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L632"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_log_message",
+      "label": ".log_message()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L641"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_log_info",
+      "label": ".log_info()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L645"
+    },
+    {
+      "id": "complete_cloud_api_hermesapihandler_log_error",
+      "label": ".log_error()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L649"
+    },
+    {
+      "id": "complete_cloud_api_init_database",
+      "label": "init_database()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L653"
+    },
+    {
+      "id": "complete_cloud_api_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L737"
+    },
+    {
+      "id": "complete_cloud_api_rationale_21",
+      "label": "HermesNexus API\u8bf7\u6c42\u5904\u7406\u5668 - \u5b8c\u6574\u7248",
+      "file_type": "rationale",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "complete_cloud_api_rationale_353",
+      "label": "\u5904\u7406\u4efb\u52a1\u7ed3\u679c\u56de\u5199 - \u5e94\u7528stable\u7248\u672c\u9a8c\u8bc1\u8fc7\u7684\u903b\u8f91",
+      "file_type": "rationale",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L353"
+    },
+    {
+      "id": "complete_cloud_api_rationale_558",
+      "label": "\u83b7\u53d6\u4f5c\u4e1a\u5217\u8868\uff08jobs\u662ftasks\u7684\u522b\u540d\uff09",
+      "file_type": "rationale",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L558"
+    },
+    {
+      "id": "complete_cloud_api_rationale_654",
+      "label": "\u521d\u59cb\u5316\u6570\u636e\u5e93 - \u6dfb\u52a0events\u548caudit_logs\u8868",
+      "file_type": "rationale",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L654"
+    },
+    {
+      "id": "simple_edge_node_py",
+      "label": "simple-edge-node.py",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "simple_edge_node_edgenode",
+      "label": "EdgeNode",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "simple_edge_node_edgenode_init",
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "simple_edge_node_edgenode_setup_logging",
+      "label": ".setup_logging()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L31"
+    },
+    {
+      "id": "simple_edge_node_edgenode_log",
+      "label": ".log()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "simple_edge_node_edgenode_register_node",
+      "label": ".register_node()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L44"
+    },
+    {
+      "id": "simple_edge_node_edgenode_send_heartbeat",
+      "label": ".send_heartbeat()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L70"
+    },
+    {
+      "id": "simple_edge_node_edgenode_get_system_resources",
+      "label": ".get_system_resources()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L94"
+    },
+    {
+      "id": "simple_edge_node_edgenode_poll_tasks",
+      "label": ".poll_tasks()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L110"
+    },
+    {
+      "id": "simple_edge_node_edgenode_execute_task",
+      "label": ".execute_task()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L135"
+    },
+    {
+      "id": "simple_edge_node_edgenode_execute_ssh_command",
+      "label": ".execute_ssh_command()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L168"
+    },
+    {
+      "id": "simple_edge_node_edgenode_execute_system_test",
+      "label": ".execute_system_test()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L204"
+    },
+    {
+      "id": "simple_edge_node_edgenode_execute_test_task",
+      "label": ".execute_test_task()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L228"
+    },
+    {
+      "id": "simple_edge_node_edgenode_update_task_status",
+      "label": ".update_task_status()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L244"
+    },
+    {
+      "id": "simple_edge_node_edgenode_run",
+      "label": ".run()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L259"
+    },
+    {
+      "id": "simple_edge_node_edgenode_stop",
+      "label": ".stop()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L302"
+    },
+    {
+      "id": "simple_edge_node_signal_handler",
+      "label": "signal_handler()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L306"
+    },
+    {
+      "id": "simple_edge_node_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L311"
+    },
+    {
+      "id": "stable_cloud_api_py",
+      "label": "stable-cloud-api.py",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler",
+      "label": "StableAPIHandler",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L18"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_do_get",
+      "label": ".do_GET()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_do_post",
+      "label": ".do_POST()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L51"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_handle_task_result_stable",
+      "label": ".handle_task_result_stable()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L106"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_health_check",
+      "label": ".send_health_check()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L228"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_stats",
+      "label": ".send_stats()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L239"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_nodes",
+      "label": ".send_nodes()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L271"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_create_device",
+      "label": ".create_device()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L296"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_create_task",
+      "label": ".create_task()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L338"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_handle_heartbeat",
+      "label": ".handle_heartbeat()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L419"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_task_detail",
+      "label": ".send_task_detail()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L447"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_tasks_list",
+      "label": ".send_tasks_list()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L476"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_jobs_list",
+      "label": ".send_jobs_list()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L503"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_devices_list",
+      "label": ".send_devices_list()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L507"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_events_list",
+      "label": ".send_events_list()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L535"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_audit_logs",
+      "label": ".send_audit_logs()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L562"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_json_response",
+      "label": ".send_json_response()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L589"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_error_response",
+      "label": ".send_error_response()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L597"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_send_not_found",
+      "label": ".send_not_found()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L606"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_log_message",
+      "label": ".log_message()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L615"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_log_info",
+      "label": ".log_info()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L619"
+    },
+    {
+      "id": "stable_cloud_api_stableapihandler_log_error",
+      "label": ".log_error()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L623"
+    },
+    {
+      "id": "stable_cloud_api_init_database",
+      "label": "init_database()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L627"
+    },
+    {
+      "id": "stable_cloud_api_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L696"
+    },
+    {
+      "id": "stable_cloud_api_rationale_504",
+      "label": "\u83b7\u53d6\u4f5c\u4e1a\u5217\u8868\uff08jobs\u662ftasks\u7684\u522b\u540d\uff09",
+      "file_type": "rationale",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L504"
+    },
+    {
+      "id": "shared_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "shared/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "init_rationale_1",
+      "label": "HermesNexus \u5171\u4eab\u6a21\u5757  \u5305\u542b\u534f\u8bae\u5b9a\u4e49\u3001\u6570\u636e\u6a21\u578b\u548c\u5171\u4eab\u5de5\u5177\u51fd\u6570",
+      "file_type": "rationale",
+      "source_file": "shared/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "edge_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "edge/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "init_rationale_1",
+      "label": "HermesNexus \u8fb9\u7f18\u8282\u70b9\u8fd0\u884c\u65f6  \u63d0\u4f9b\u8fb9\u7f18\u8282\u70b9\u7684\u6838\u5fc3\u529f\u80fd",
+      "file_type": "rationale",
+      "source_file": "edge/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "edge_runtime_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "edge/runtime/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "edge_storage_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "edge/storage/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "edge_executors_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "edge/executors/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "init_rationale_1",
+      "label": "\u4efb\u52a1\u6267\u884c\u5668\u6a21\u5757  \u5305\u542b\u5404\u79cd\u4efb\u52a1\u7c7b\u578b\u7684\u6267\u884c\u5668\u5b9e\u73b0",
+      "file_type": "rationale",
+      "source_file": "edge/executors/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "edge_cloud_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "edge/cloud/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "cloud_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "cloud/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "init_rationale_1",
+      "label": "HermesNexus \u4e91\u7aef\u670d\u52a1  \u63d0\u4f9b\u4e91\u7aef\u63a7\u5236\u5e73\u9762\u7684\u6838\u5fc3\u529f\u80fd",
+      "file_type": "rationale",
+      "source_file": "cloud/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "cloud_database_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "cloud/database/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "cloud_api_init_py",
+      "label": "__init__.py",
+      "file_type": "code",
+      "source_file": "cloud/api/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "init_rationale_1",
+      "label": "\u4e91\u7aef API \u670d\u52a1  \u4f7f\u7528 FastAPI \u63d0\u4f9b REST API \u63a5\u53e3",
+      "file_type": "rationale",
+      "source_file": "cloud/api/__init__.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "console_static_js_app_js",
+      "label": "app.js",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_initializetabs",
+      "label": "initializeTabs()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L22"
+    },
+    {
+      "id": "app_switchtab",
+      "label": "switchTab()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L32"
+    },
+    {
+      "id": "app_initializefilters",
+      "label": "initializeFilters()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L53"
+    },
+    {
+      "id": "app_initializerefreshbuttons",
+      "label": "initializeRefreshButtons()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L68"
+    },
+    {
+      "id": "app_loadalldata",
+      "label": "loadAllData()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L75"
+    },
+    {
+      "id": "app_loadnodes",
+      "label": "loadNodes()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L90"
+    },
+    {
+      "id": "app_loadtasks",
+      "label": "loadTasks()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L105"
+    },
+    {
+      "id": "app_loadevents",
+      "label": "loadEvents()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L120"
+    },
+    {
+      "id": "app_rendernodes",
+      "label": "renderNodes()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L135"
+    },
+    {
+      "id": "app_rendertasks",
+      "label": "renderTasks()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L181"
+    },
+    {
+      "id": "app_renderevents",
+      "label": "renderEvents()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L233"
+    },
+    {
+      "id": "app_updateoverview",
+      "label": "updateOverview()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L263"
+    },
+    {
+      "id": "app_updateheaderstats",
+      "label": "updateHeaderStats()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L345"
+    },
+    {
+      "id": "app_filtertasks",
+      "label": "filterTasks()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L365"
+    },
+    {
+      "id": "app_filterevents",
+      "label": "filterEvents()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L375"
+    },
+    {
+      "id": "app_formattime",
+      "label": "formatTime()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L385"
+    },
+    {
+      "id": "app_getstatustext",
+      "label": "getStatusText()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L398"
+    },
+    {
+      "id": "app_escapehtml",
+      "label": "escapeHtml()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L409"
+    },
+    {
+      "id": "app_showerrormessage",
+      "label": "showErrorMessage()",
+      "file_type": "code",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L416"
+    }
+  ],
+  "edges": [
+    {
+      "source": "final_edge_node_py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "subprocess",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "requests",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "datetime",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "signal",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "final_edge_node_edgenode",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_init",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_setup_logging",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_register_node",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_send_heartbeat",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_get_system_resources",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_poll_tasks",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_execute_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_write_back_result",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L176",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_execute_ssh_command",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L208",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_execute_system_test",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_execute_test_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L271",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_run",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L287",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode",
+      "target": "final_edge_node_edgenode_stop",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L332",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "final_edge_node_signal_handler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_py",
+      "target": "final_edge_node_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L341",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_init",
+      "target": "final_edge_node_edgenode_setup_logging",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_register_node",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_register_node",
+      "target": "final_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_send_heartbeat",
+      "target": "final_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_send_heartbeat",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_poll_tasks",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L129",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_task",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_task",
+      "target": "final_edge_node_edgenode_execute_ssh_command",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_task",
+      "target": "final_edge_node_edgenode_execute_system_test",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L154",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_task",
+      "target": "final_edge_node_edgenode_execute_test_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_task",
+      "target": "final_edge_node_edgenode_write_back_result",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_write_back_result",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_ssh_command",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L214",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_ssh_command",
+      "target": "final_edge_node_edgenode_run",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_system_test",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L248",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_system_test",
+      "target": "final_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L255",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_execute_test_task",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L276",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_run",
+      "target": "final_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_run",
+      "target": "final_edge_node_edgenode_register_node",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L298",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_run",
+      "target": "final_edge_node_edgenode_send_heartbeat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L313",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_run",
+      "target": "final_edge_node_edgenode_poll_tasks",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L319",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_edgenode_run",
+      "target": "final_edge_node_edgenode_execute_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L321",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_main",
+      "target": "final_edge_node_edgenode",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L353",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_main",
+      "target": "final_edge_node_edgenode_run",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L354",
+      "weight": 1.0
+    },
+    {
+      "source": "final_edge_node_rationale_177",
+      "target": "final_edge_node_edgenode_write_back_result",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "final-edge-node.py",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "subprocess",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "requests",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "datetime",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "signal",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "complete_edge_node_edgenode",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_init",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_setup_logging",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_register_node",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_send_heartbeat",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_get_system_resources",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_poll_tasks",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_execute_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L138",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_write_back_result",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L174",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_execute_ssh_command",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L206",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_execute_system_test",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L242",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_execute_test_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L267",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_run",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L283",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode",
+      "target": "complete_edge_node_edgenode_stop",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L327",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "complete_edge_node_signal_handler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L331",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_py",
+      "target": "complete_edge_node_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_init",
+      "target": "complete_edge_node_edgenode_setup_logging",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_register_node",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_register_node",
+      "target": "complete_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_send_heartbeat",
+      "target": "complete_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_send_heartbeat",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_poll_tasks",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_task",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L144",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_task",
+      "target": "complete_edge_node_edgenode_execute_ssh_command",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_task",
+      "target": "complete_edge_node_edgenode_execute_system_test",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_task",
+      "target": "complete_edge_node_edgenode_execute_test_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_task",
+      "target": "complete_edge_node_edgenode_write_back_result",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_write_back_result",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L176",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_ssh_command",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L212",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_ssh_command",
+      "target": "complete_edge_node_edgenode_run",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L216",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_system_test",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L246",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_system_test",
+      "target": "complete_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L253",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_execute_test_task",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L272",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_run",
+      "target": "complete_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L285",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_run",
+      "target": "complete_edge_node_edgenode_register_node",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L293",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_run",
+      "target": "complete_edge_node_edgenode_send_heartbeat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L308",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_run",
+      "target": "complete_edge_node_edgenode_poll_tasks",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L314",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_edgenode_run",
+      "target": "complete_edge_node_edgenode_execute_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L316",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_main",
+      "target": "complete_edge_node_edgenode",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L347",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_main",
+      "target": "complete_edge_node_edgenode_run",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_edge_node_rationale_175",
+      "target": "complete_edge_node_edgenode_write_back_result",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-edge-node.py",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "http_server",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "socketserver",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "sqlite3",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "urllib_parse",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "datetime",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "simple_cloud_api_hermesapihandler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_do_get",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_do_post",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_send_health_check",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_send_stats",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_send_nodes",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_create_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_handle_heartbeat",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_send_task_detail",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_send_tasks_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L211",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_send_error_response",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L247",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_send_not_found",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L256",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler",
+      "target": "simple_cloud_api_hermesapihandler_log_message",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "simple_cloud_api_init_database",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L269",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_py",
+      "target": "simple_cloud_api_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L311",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_get",
+      "target": "simple_cloud_api_hermesapihandler_send_health_check",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_get",
+      "target": "simple_cloud_api_hermesapihandler_send_stats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_get",
+      "target": "simple_cloud_api_hermesapihandler_send_nodes",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_get",
+      "target": "simple_cloud_api_hermesapihandler_send_task_detail",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_get",
+      "target": "simple_cloud_api_hermesapihandler_send_tasks_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_get",
+      "target": "simple_cloud_api_hermesapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_get",
+      "target": "simple_cloud_api_hermesapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_post",
+      "target": "simple_cloud_api_hermesapihandler_create_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_post",
+      "target": "simple_cloud_api_hermesapihandler_handle_heartbeat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_post",
+      "target": "simple_cloud_api_hermesapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_do_post",
+      "target": "simple_cloud_api_hermesapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_send_health_check",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_send_stats",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_send_nodes",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_create_task",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_create_task",
+      "target": "simple_cloud_api_hermesapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_handle_heartbeat",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_send_task_detail",
+      "target": "simple_cloud_api_hermesapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L197",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_send_task_detail",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L209",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_send_tasks_list",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L237",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_send_error_response",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L254",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_hermesapihandler_send_not_found",
+      "target": "simple_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L263",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_cloud_api_main",
+      "target": "simple_cloud_api_init_database",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-cloud-api.py",
+      "source_location": "L319",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "http_server",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "socketserver",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "sqlite3",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "urllib_parse",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "traceback",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "datetime",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "threading",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "complete_cloud_api_hermesapihandler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_do_get",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_do_post",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_health_check",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_stats",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_nodes",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_node_tasks",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L172",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_node_task_detail",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_create_device",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L231",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_create_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L273",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_handle_heartbeat",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L324",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_handle_task_result",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L352",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_task_detail",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L473",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_tasks_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L502",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_devices_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L529",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_jobs_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L557",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_events_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L561",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_audit_logs",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L588",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L615",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_error_response",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L623",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_send_not_found",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L632",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_log_message",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L641",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_log_info",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L645",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler",
+      "target": "complete_cloud_api_hermesapihandler_log_error",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L649",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "complete_cloud_api_init_database",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L653",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_py",
+      "target": "complete_cloud_api_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L737",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_health_check",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_stats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_nodes",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_node_tasks",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_node_task_detail",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_task_detail",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_tasks_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_jobs_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_devices_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_events_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_audit_logs",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_get",
+      "target": "complete_cloud_api_hermesapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_post",
+      "target": "complete_cloud_api_hermesapihandler_create_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_post",
+      "target": "complete_cloud_api_hermesapihandler_create_device",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_post",
+      "target": "complete_cloud_api_hermesapihandler_handle_heartbeat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_post",
+      "target": "complete_cloud_api_hermesapihandler_handle_task_result",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_post",
+      "target": "complete_cloud_api_hermesapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_post",
+      "target": "complete_cloud_api_hermesapihandler_log_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_do_post",
+      "target": "complete_cloud_api_hermesapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_health_check",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_stats",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_nodes",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_node_tasks",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_node_task_detail",
+      "target": "complete_cloud_api_hermesapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L216",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_node_task_detail",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L229",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_create_device",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_create_device",
+      "target": "complete_cloud_api_hermesapihandler_log_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L270",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_create_device",
+      "target": "complete_cloud_api_hermesapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L271",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_create_task",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L318",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_create_task",
+      "target": "complete_cloud_api_hermesapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L322",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_handle_heartbeat",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L350",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_handle_task_result",
+      "target": "complete_cloud_api_hermesapihandler_log_info",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L361",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_handle_task_result",
+      "target": "complete_cloud_api_hermesapihandler_log_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L371",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_handle_task_result",
+      "target": "complete_cloud_api_hermesapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L372",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_handle_task_result",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L450",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_task_detail",
+      "target": "complete_cloud_api_hermesapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L487",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_task_detail",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L500",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_tasks_list",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L527",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_devices_list",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L555",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_jobs_list",
+      "target": "complete_cloud_api_hermesapihandler_send_tasks_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L559",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_events_list",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L586",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_audit_logs",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L613",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_error_response",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L630",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_send_not_found",
+      "target": "complete_cloud_api_hermesapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L639",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_log_info",
+      "target": "complete_cloud_api_hermesapihandler_log_message",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L647",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_hermesapihandler_log_error",
+      "target": "complete_cloud_api_hermesapihandler_log_message",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L651",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_main",
+      "target": "complete_cloud_api_init_database",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L746",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_rationale_21",
+      "target": "complete_cloud_api_hermesapihandler",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_rationale_353",
+      "target": "complete_cloud_api_hermesapihandler_handle_task_result",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L353",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_rationale_558",
+      "target": "complete_cloud_api_hermesapihandler_send_jobs_list",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L558",
+      "weight": 1.0
+    },
+    {
+      "source": "complete_cloud_api_rationale_654",
+      "target": "complete_cloud_api_init_database",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "complete-cloud-api.py",
+      "source_location": "L654",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "time",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "subprocess",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "sqlite3",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "requests",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "datetime",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "signal",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "sys",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "simple_edge_node_edgenode",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_init",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_setup_logging",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_register_node",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_send_heartbeat",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_get_system_resources",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_poll_tasks",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_execute_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_execute_ssh_command",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_execute_system_test",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L204",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_execute_test_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_update_task_status",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_run",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L259",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode",
+      "target": "simple_edge_node_edgenode_stop",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L302",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "simple_edge_node_signal_handler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L306",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_py",
+      "target": "simple_edge_node_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L311",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_init",
+      "target": "simple_edge_node_edgenode_setup_logging",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_register_node",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_register_node",
+      "target": "simple_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_send_heartbeat",
+      "target": "simple_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_send_heartbeat",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_poll_tasks",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_task",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_task",
+      "target": "simple_edge_node_edgenode_execute_ssh_command",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_task",
+      "target": "simple_edge_node_edgenode_execute_system_test",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_task",
+      "target": "simple_edge_node_edgenode_execute_test_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_task",
+      "target": "simple_edge_node_edgenode_update_task_status",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_ssh_command",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L174",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_ssh_command",
+      "target": "simple_edge_node_edgenode_run",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_system_test",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L208",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_system_test",
+      "target": "simple_edge_node_edgenode_get_system_resources",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L215",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_execute_test_task",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L233",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_update_task_status",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L248",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_run",
+      "target": "simple_edge_node_edgenode_log",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L261",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_run",
+      "target": "simple_edge_node_edgenode_register_node",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L268",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_run",
+      "target": "simple_edge_node_edgenode_send_heartbeat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L283",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_run",
+      "target": "simple_edge_node_edgenode_poll_tasks",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_edgenode_run",
+      "target": "simple_edge_node_edgenode_execute_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L291",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_main",
+      "target": "simple_edge_node_edgenode",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L321",
+      "weight": 1.0
+    },
+    {
+      "source": "simple_edge_node_main",
+      "target": "simple_edge_node_edgenode_run",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "simple-edge-node.py",
+      "source_location": "L322",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "http_server",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "socketserver",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "json",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "sqlite3",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "os",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "urllib_parse",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "datetime",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "traceback",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "stable_cloud_api_stableapihandler",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_do_get",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_do_post",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_handle_task_result_stable",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_health_check",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_stats",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_nodes",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L271",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_create_device",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L296",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_create_task",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L338",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_handle_heartbeat",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L419",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_task_detail",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L447",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_tasks_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L476",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_jobs_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L503",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_devices_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L507",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_events_list",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L535",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_audit_logs",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L562",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L589",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_error_response",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L597",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_send_not_found",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L606",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_log_message",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L615",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_log_info",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L619",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler",
+      "target": "stable_cloud_api_stableapihandler_log_error",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L623",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "stable_cloud_api_init_database",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L627",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_py",
+      "target": "stable_cloud_api_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L696",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_health_check",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_stats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_nodes",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_task_detail",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_tasks_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_jobs_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_devices_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_events_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_audit_logs",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_log_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_get",
+      "target": "stable_cloud_api_stableapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_post",
+      "target": "stable_cloud_api_stableapihandler_create_task",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_post",
+      "target": "stable_cloud_api_stableapihandler_create_device",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_post",
+      "target": "stable_cloud_api_stableapihandler_handle_heartbeat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_post",
+      "target": "stable_cloud_api_stableapihandler_handle_task_result_stable",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_post",
+      "target": "stable_cloud_api_stableapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_post",
+      "target": "stable_cloud_api_stableapihandler_log_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_do_post",
+      "target": "stable_cloud_api_stableapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_handle_task_result_stable",
+      "target": "stable_cloud_api_stableapihandler_log_info",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_handle_task_result_stable",
+      "target": "stable_cloud_api_stableapihandler_log_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_handle_task_result_stable",
+      "target": "stable_cloud_api_stableapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_handle_task_result_stable",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L205",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_health_check",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L237",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_stats",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L269",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_nodes",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L294",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_create_device",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L331",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_create_device",
+      "target": "stable_cloud_api_stableapihandler_log_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L335",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_create_device",
+      "target": "stable_cloud_api_stableapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_create_task",
+      "target": "stable_cloud_api_stableapihandler_log_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L375",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_create_task",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L408",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_create_task",
+      "target": "stable_cloud_api_stableapihandler_log_info",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L409",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_create_task",
+      "target": "stable_cloud_api_stableapihandler_send_error_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L413",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_handle_heartbeat",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L445",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_task_detail",
+      "target": "stable_cloud_api_stableapihandler_send_not_found",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L461",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_task_detail",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L474",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_tasks_list",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L501",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_jobs_list",
+      "target": "stable_cloud_api_stableapihandler_send_tasks_list",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L505",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_devices_list",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L533",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_events_list",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L560",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_audit_logs",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L587",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_error_response",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L604",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_send_not_found",
+      "target": "stable_cloud_api_stableapihandler_send_json_response",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L613",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_log_info",
+      "target": "stable_cloud_api_stableapihandler_log_message",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L621",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_stableapihandler_log_error",
+      "target": "stable_cloud_api_stableapihandler_log_message",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L625",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_main",
+      "target": "stable_cloud_api_init_database",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L705",
+      "weight": 1.0
+    },
+    {
+      "source": "stable_cloud_api_rationale_504",
+      "target": "stable_cloud_api_stableapihandler_send_jobs_list",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "stable-cloud-api.py",
+      "source_location": "L504",
+      "weight": 1.0
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "shared_init_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "shared/__init__.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "edge_init_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "edge/__init__.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "edge_runtime_init_py",
+      "target": "core",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "edge/runtime/__init__.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "edge_storage_init_py",
+      "target": "storage",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "edge/storage/__init__.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "edge_executors_init_py",
+      "target": "ssh_executor",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "edge/executors/__init__.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "edge_executors_init_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "edge/executors/__init__.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "edge_cloud_init_py",
+      "target": "client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "edge/cloud/__init__.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "cloud_init_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "cloud/__init__.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "cloud_database_init_py",
+      "target": "db",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "cloud/database/__init__.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "cloud_api_init_py",
+      "target": "main",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "cloud/api/__init__.py",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "init_rationale_1",
+      "target": "cloud_api_init_py",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "cloud/api/__init__.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_initializetabs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_switchtab",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_initializefilters",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_initializerefreshbuttons",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_loadalldata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_loadnodes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_loadtasks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_loadevents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_rendernodes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_rendertasks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_renderevents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L233",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_updateoverview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L263",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_updateheaderstats",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L345",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_filtertasks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L365",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_filterevents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L375",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_formattime",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L385",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_getstatustext",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L398",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_escapehtml",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L409",
+      "weight": 1.0
+    },
+    {
+      "source": "console_static_js_app_js",
+      "target": "app_showerrormessage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L416",
+      "weight": 1.0
+    },
+    {
+      "source": "app_initializefilters",
+      "target": "app_filtertasks",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "app_initializefilters",
+      "target": "app_filterevents",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadalldata",
+      "target": "app_loadnodes",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadalldata",
+      "target": "app_loadtasks",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadalldata",
+      "target": "app_loadevents",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadalldata",
+      "target": "app_updateoverview",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadalldata",
+      "target": "app_updateheaderstats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadnodes",
+      "target": "app_rendernodes",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadnodes",
+      "target": "app_updateoverview",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadnodes",
+      "target": "app_updateheaderstats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadnodes",
+      "target": "app_showerrormessage",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadtasks",
+      "target": "app_rendertasks",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadtasks",
+      "target": "app_updateoverview",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadtasks",
+      "target": "app_updateheaderstats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadtasks",
+      "target": "app_showerrormessage",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadevents",
+      "target": "app_renderevents",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadevents",
+      "target": "app_updateoverview",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadevents",
+      "target": "app_updateheaderstats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "app_loadevents",
+      "target": "app_showerrormessage",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "app_filtertasks",
+      "target": "app_rendertasks",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L367",
+      "weight": 1.0
+    },
+    {
+      "source": "app_filterevents",
+      "target": "app_renderevents",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L377",
+      "weight": 1.0
+    },
+    {
+      "source": "app_showerrormessage",
+      "target": "app_escapehtml",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "console/static/js/app.js",
+      "source_location": "L421",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
