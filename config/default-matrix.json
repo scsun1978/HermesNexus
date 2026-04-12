@@ -1,0 +1,181 @@
+{
+  "matrix_id": "default-matrix",
+  "name": "默认权限矩阵",
+  "description": "系统默认的权限控制矩阵",
+  "role_permissions": {
+    "super_admin": [
+      {
+        "action": "*",
+        "resource": "*",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "超级管理员拥有所有权限"
+      }
+    ],
+    "tenant_admin": [
+      {
+        "action": "read",
+        "resource": "asset",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "查看资产信息"
+      },
+      {
+        "action": "create",
+        "resource": "asset",
+        "conditions": {},
+        "risk_level": "medium",
+        "description": "创建资产"
+      },
+      {
+        "action": "update",
+        "resource": "asset",
+        "conditions": {},
+        "risk_level": "medium",
+        "description": "更新资产信息"
+      },
+      {
+        "action": "delete",
+        "resource": "asset",
+        "conditions": {},
+        "risk_level": "high",
+        "description": "删除资产"
+      },
+      {
+        "action": "execute",
+        "resource": "task",
+        "conditions": {},
+        "risk_level": "medium",
+        "description": "执行任务"
+      },
+      {
+        "action": "read",
+        "resource": "node",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "查看节点信息"
+      }
+    ],
+    "operator": [
+      {
+        "action": "read",
+        "resource": "asset",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "查看资产信息"
+      },
+      {
+        "action": "list",
+        "resource": "asset",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "列出资产"
+      },
+      {
+        "action": "update",
+        "resource": "task",
+        "conditions": {},
+        "risk_level": "medium",
+        "description": "更新任务状态"
+      },
+      {
+        "action": "execute",
+        "resource": "task",
+        "conditions": {},
+        "risk_level": "medium",
+        "description": "执行任务"
+      },
+      {
+        "action": "read",
+        "resource": "log",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "查看日志"
+      }
+    ],
+    "viewer": [
+      {
+        "action": "read",
+        "resource": "asset",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "查看资产信息"
+      },
+      {
+        "action": "list",
+        "resource": "asset",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "列出资产"
+      },
+      {
+        "action": "read",
+        "resource": "task",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "查看任务信息"
+      },
+      {
+        "action": "list",
+        "resource": "task",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "列出任务"
+      }
+    ],
+    "node": [
+      {
+        "action": "heartbeat",
+        "resource": "node",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "节点心跳"
+      },
+      {
+        "action": "status",
+        "resource": "task",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "任务状态报告"
+      },
+      {
+        "action": "execute",
+        "resource": "task",
+        "conditions": {},
+        "risk_level": "medium",
+        "description": "执行分配的任务"
+      },
+      {
+        "action": "report",
+        "resource": "task",
+        "conditions": {},
+        "risk_level": "low",
+        "description": "报告任务执行结果"
+      }
+    ]
+  },
+  "default_policy": "deny",
+  "whitelist": [
+    "health.check",
+    "system.ping",
+    "node.heartbeat"
+  ],
+  "blacklist": [
+    "system.shutdown",
+    "data.delete_all",
+    "*.drop.*",
+    "security.bypass",
+    "auth.disable"
+  ],
+  "high_risk_actions": [
+    "delete",
+    "deregister",
+    "restart",
+    "rollback",
+    "grant",
+    "revoke",
+    "admin",
+    "shutdown"
+  ],
+  "version": "1.0.0"
+}
