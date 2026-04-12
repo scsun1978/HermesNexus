@@ -3,7 +3,7 @@ HermesNexus Phase 3 - 节点认证Token服务
 JWT Token的生成、验证和管理
 """
 
-import jwt
+from jose import jwt
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, List, Optional
