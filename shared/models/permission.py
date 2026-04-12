@@ -186,7 +186,7 @@ class PermissionMatrix(BaseModel):
     high_risk_actions: List[str] = Field(default_factory=list, description="高风险动作列表")
 
     # 版本控制
-    version: str = Field(default="1.0.0", description="权限矩阵版本")
+    version: str = Field(default="1.1.0", description="权限矩阵版本")
     created_at: int = Field(..., description="创建时间（Unix时间戳）")
     updated_at: int = Field(..., description="更新时间（Unix时间戳）")
 

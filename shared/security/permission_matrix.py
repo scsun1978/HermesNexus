@@ -309,7 +309,7 @@ class PermissionMatrixManager:
             whitelist=data.get("whitelist", []),
             blacklist=data.get("blacklist", []),
             high_risk_actions=data.get("high_risk_actions", []),
-            version=data.get("version", "1.0.0"),
+            version=data.get("version", "1.1.0"),
             created_at=data.get("created_at", int(datetime.now().timestamp())),
             updated_at=data.get("updated_at", int(datetime.now().timestamp())),
         )

@@ -160,7 +160,7 @@ class RegisterMessage(BaseMessage):
     node_name: str = ""
     node_type: str = "edge"
     capabilities: Dict[str, Any] = field(default_factory=dict)
-    version: str = "0.1.0"
+    version: str = "1.1.0"
 
     def to_dict(self) -> Dict[str, Any]:
         return {

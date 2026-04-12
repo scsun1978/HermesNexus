@@ -10,7 +10,7 @@ import signal
 import sys
 
 # 配置
-HERMES_VERSION = "1.0.0"  # MVP正式版本
+HERMES_VERSION = "1.1.0"  # Phase 3 安全增强版本
 CLOUD_API_URL = os.getenv("CLOUD_API_URL", "http://localhost:8080")
 NODE_ID = os.getenv("NODE_ID", "dev-edge-node-001")
 NODE_NAME = os.getenv("NODE_NAME", "开发服务器边缘节点")

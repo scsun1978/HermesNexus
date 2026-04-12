@@ -125,7 +125,7 @@ async function loadRecentActivity() {
 // 更新系统信息
 function updateSystemInfo() {
     // 系统版本
-    const version = 'Phase 2 v2.0.0';
+    const version = 'v1.1.0';
     const environment = 'development';
 
     // 运行时间（简化实现）
