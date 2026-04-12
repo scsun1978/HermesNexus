@@ -17,8 +17,8 @@ redis==5.0.1
 hiredis==2.2.3
 
 # 数据验证
-pydantic==2.5.0
-pydantic-settings==2.1.0
+pydantic==2.10.0
+pydantic-settings==2.6.0
 email-validator==2.1.0
 
 # 安全认证
