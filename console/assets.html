@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资产管理 - HermesNexus 控制台</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>HermesNexus 资产管理</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="showCreateModal()">+ 新增资产</button>
+                <button class="btn btn-secondary" onclick="refreshAssets()">刷新</button>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">总资产数</div>
+                <div class="stat-value" id="total-assets">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">活跃节点</div>
+                <div class="stat-value stat-success" id="active-nodes">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">非活跃节点</div>
+                <div class="stat-value stat-warning" id="inactive-nodes">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">边缘节点</div>
+                <div class="stat-value" id="edge-nodes">-</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>资产类型:</label>
+                <select id="filter-type" onchange="filterAssets()">
+                    <option value="">全部</option>
+                    <option value="edge_node">边缘节点</option>
+                    <option value="linux_host">Linux 主机</option>
+                    <option value="network_device">网络设备</option>
+                    <option value="iot_device">IoT 设备</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>状态:</label>
+                <select id="filter-status" onchange="filterAssets()">
+                    <option value="">全部</option>
+                    <option value="registered">已注册</option>
+                    <option value="active">活跃</option>
+                    <option value="inactive">非活跃</option>
+                    <option value="decommissioned">已退役</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>搜索:</label>
+                <input type="text" id="filter-search" placeholder="名称、IP地址..." onkeyup="filterAssets()">
+            </div>
+        </div>
+
+        <!-- Assets Table -->
+        <div class="table-container">
+            <table class="table" id="assets-table">
+                <thead>
+                    <tr>
+                        <th>资产ID</th>
+                        <th>名称</th>
+                        <th>类型</th>
+                        <th>状态</th>
+                        <th>IP地址</th>
+                        <th>关联节点</th>
+                        <th>最后心跳</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="assets-tbody">
+                    <tr>
+                        <td colspan="8" class="text-center">加载中...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <button class="btn btn-sm" onclick="previousPage()" id="prev-btn">上一页</button>
+            <span id="page-info">第 1 页</span>
+            <button class="btn btn-sm" onclick="nextPage()" id="next-btn">下一页</button>
+        </div>
+    </div>
+
+    <!-- Create/Edit Modal -->
+    <div id="asset-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">新增资产</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="asset-form">
+                    <input type="hidden" id="asset-id">
+
+                    <div class="form-group">
+                        <label>资产名称 *</label>
+                        <input type="text" id="asset-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>资产类型 *</label>
+                        <select id="asset-type" required>
+                            <option value="">请选择</option>
+                            <option value="edge_node">边缘节点</option>
+                            <option value="linux_host">Linux 主机</option>
+                            <option value="network_device">网络设备</option>
+                            <option value="iot_device">IoT 设备</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="asset-description" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>IP地址</label>
+                        <input type="text" id="asset-ip" placeholder="192.168.1.100">
+                    </div>
+
+                    <div class="form-group">
+                        <label>主机名</label>
+                        <input type="text" id="asset-hostname" placeholder="server-001.local">
+                    </div>
+
+                    <div class="form-group">
+                        <label>SSH端口</label>
+                        <input type="number" id="asset-ssh-port" value="22">
+                    </div>
+
+                    <div class="form-group">
+                        <label>SSH用户名</label>
+                        <input type="text" id="asset-ssh-user" placeholder="root">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asset Detail Modal -->
+    <div id="detail-modal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>资产详情</h2>
+                <button class="close-btn" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="detail-content">
+                <!-- 详情内容将动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/assets.js"></script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HermesNexus 控制台</title>
+    <link rel="stylesheet" href="/static/css/console.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="console-container">
+        <!-- 侧边栏导航 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                    <span class="logo-text">HermesNexus</span>
+                </div>
+                <div class="version">Phase 2 v2.0.0</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">监控</div>
+                    <a href="/console/index.html" class="nav-item active" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>概览</span>
+                    </a>
+                    <a href="/console/nodes.html" class="nav-item" data-page="nodes">
+                        <i class="fas fa-server"></i>
+                        <span>节点状态</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">管理</div>
+                    <a href="/console/assets.html" class="nav-item" data-page="assets">
+                        <i class="fas fa-boxes"></i>
+                        <span>资产管理</span>
+                    </a>
+                    <a href="/console/tasks.html" class="nav-item" data-page="tasks">
+                        <i class="fas fa-tasks"></i>
+                        <span>任务管理</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">审计</div>
+                    <a href="/console/audit.html" class="nav-item" data-page="audit">
+                        <i class="fas fa-history"></i>
+                        <span>审计日志</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">系统</div>
+                    <a href="/console/settings.html" class="nav-item" data-page="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                    <a href="/console/help.html" class="nav-item" data-page="help">
+                        <i class="fas fa-question-circle"></i>
+                        <span>帮助文档</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-indicator online"></div>
+                    <span class="status-text">系统运行中</span>
+                </div>
+                <div class="footer-links">
+                    <a href="/api/v1/health" target="_blank">API 健康检查</a>
+                    <a href="https://github.com" target="_blank">GitHub</a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <nav class="breadcrumb" id="breadcrumb">
+                        <a href="/console/index.html">首页</a>
+                    </nav>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">资产</span>
+                            <span class="stat-value" id="header-assets-count">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">任务</span>
+                            <span class="stat-value" id="header-tasks-count">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">节点</span>
+                            <span class="stat-value" id="header-nodes-count">-</span>
+                        </div>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="btn btn-icon" onclick="refreshAll()" title="刷新">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="btn btn-icon" onclick="showNotifications()" title="通知">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge" id="notification-count">0</span>
+                        </button>
+                        <div class="user-menu">
+                            <button class="btn btn-icon">
+                                <i class="fas fa-user-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 页面内容容器 -->
+            <div class="content-container" id="contentContainer">
+                <!-- 动态内容将在这里加载 -->
+            </div>
+        </main>
+    </div>
+
+    <!-- 通知面板 -->
+    <div id="notificationPanel" class="notification-panel" style="display: none;">
+        <div class="panel-header">
+            <h3>通知中心</h3>
+            <button class="close-btn" onclick="hideNotifications()">&times;</button>
+        </div>
+        <div class="panel-content" id="notificationContent">
+            <div class="no-notifications">暂无新通知</div>
+        </div>
+    </div>
+
+    <!-- 全局加载提示 -->
+    <div id="globalLoader" class="global-loader" style="display: none;">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">加载中...</div>
+    </div>
+
+    <!-- 全局提示框 -->
+    <div id="globalToast" class="toast" style="display: none;">
+        <div class="toast-content">
+            <i class="toast-icon"></i>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <script src="/static/js/console.js"></script>
+</body>
+</html>

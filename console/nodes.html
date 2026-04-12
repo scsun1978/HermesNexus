@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>节点状态 - HermesNexus 控制台</title>
+    <link rel="stylesheet" href="/static/css/console.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="console-container">
+        <!-- 侧边栏导航 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                    <span class="logo-text">HermesNexus</span>
+                </div>
+                <div class="version">Phase 2 v2.0.0</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">监控</div>
+                    <a href="/console/index.html" class="nav-item" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>概览</span>
+                    </a>
+                    <a href="/console/nodes.html" class="nav-item active" data-page="nodes">
+                        <i class="fas fa-server"></i>
+                        <span>节点状态</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">管理</div>
+                    <a href="/console/assets.html" class="nav-item" data-page="assets">
+                        <i class="fas fa-boxes"></i>
+                        <span>资产管理</span>
+                    </a>
+                    <a href="/console/tasks.html" class="nav-item" data-page="tasks">
+                        <i class="fas fa-tasks"></i>
+                        <span>任务管理</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">审计</div>
+                    <a href="/console/audit.html" class="nav-item" data-page="audit">
+                        <i class="fas fa-history"></i>
+                        <span>审计日志</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <div class="status-indicator online"></div>
+                    <span class="status-text">系统运行中</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 class="page-title">节点状态</h1>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="refreshNodes()">
+                            <i class="fas fa-sync-alt"></i> 刷新
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportNodes()">
+                            <i class="fas fa-download"></i> 导出
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-container">
+                <!-- 节点统计概览 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">总节点数</div>
+                        <div class="stat-value" id="total-nodes">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">在线节点</div>
+                        <div class="stat-value stat-success" id="online-nodes">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">离线节点</div>
+                        <div class="stat-value stat-danger" id="offline-nodes">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">运行任务</div>
+                        <div class="stat-value stat-primary" id="busy-nodes">-</div>
+                    </div>
+                </div>
+
+                <!-- 过滤器 -->
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>状态:</label>
+                        <select id="filter-status" onchange="filterNodes()">
+                            <option value="">全部</option>
+                            <option value="online">在线</option>
+                            <option value="offline">离线</option>
+                            <option value="busy">忙碌</option>
+                            <option value="degraded">降级</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>搜索:</label>
+                        <input type="text" id="filter-search" placeholder="节点名称、ID..." onkeyup="filterNodes()">
+                    </div>
+
+                    <div class="filter-group">
+                        <label>视图:</label>
+                        <select id="view-mode" onchange="changeViewMode()">
+                            <option value="cards">卡片视图</option>
+                            <option value="table">表格视图</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 节点列表 - 卡片视图 -->
+                <div id="nodes-cards-view" class="nodes-grid-view">
+                    <!-- 节点卡片将动态加载 -->
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>加载节点数据...</p>
+                    </div>
+                </div>
+
+                <!-- 节点列表 - 表格视图 -->
+                <div id="nodes-table-view" class="table-container" style="display: none;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>节点ID</th>
+                                <th>节点名称</th>
+                                <th>状态</th>
+                                <th>关联资产</th>
+                                <th>运行任务</th>
+                                <th>最后心跳</th>
+                                <th>版本</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nodes-table-body">
+                            <!-- 节点数据将动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 节点详情模态框 -->
+    <div id="node-detail-modal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>节点详情</h2>
+                <button class="close-btn" onclick="closeNodeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="node-detail-content">
+                <!-- 详情内容将动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/nodes.js"></script>
+</body>
+</html>

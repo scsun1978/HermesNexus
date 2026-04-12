@@ -22,6 +22,9 @@ from shared.protocol.messages import MessageType
 from shared.protocol.error_codes import ErrorCode
 from cloud.database.db import db
 
+# 导入新的 API 路由
+from cloud.api import task_api, asset_api
+
 # 配置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -100,6 +103,13 @@ async def health_check():
         "version": "1.1.0",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
+
+
+# 注册新的 API 路由
+app.include_router(task_api.router, prefix="")
+app.include_router(asset_api.router, prefix="")
+# 也注册兼容的 jobs 路由
+app.include_router(task_api.jobs_router, prefix="")
 
 
 # 节点管理 API

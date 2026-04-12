@@ -96,7 +96,7 @@ class SystemMonitor:
 
     def check_database_status(self):
         """检查数据库状态"""
-        db_path = Path("./data/hermesnexus.db")
+        db_path = Path(os.getenv("SQLITE_DB_PATH", str(Path(__file__).resolve().parent.parent / "data" / "hermesnexus.db")))
         try:
             if db_path.exists():
                 size = db_path.stat().st_size

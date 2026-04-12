@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>审计日志 - HermesNexus 控制台</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>HermesNexus 审计日志</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="exportLogs('json')">导出 JSON</button>
+                <button class="btn btn-secondary" onclick="exportLogs('csv')">导出 CSV</button>
+                <button class="btn btn-secondary" onclick="refreshLogs()">刷新</button>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">总事件数</div>
+                <div class="stat-value" id="total-events">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">错误事件</div>
+                <div class="stat-value stat-danger" id="error-events">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">最近1小时</div>
+                <div class="stat-value stat-primary" id="events-last-hour">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">最近1天</div>
+                <div class="stat-value" id="events-last-day">-</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>分类:</label>
+                <select id="filter-category" onchange="filterLogs()">
+                    <option value="">全部</option>
+                    <option value="task">任务</option>
+                    <option value="node">节点</option>
+                    <option value="asset">资产</option>
+                    <option value="system">系统</option>
+                    <option value="security">安全</option>
+                    <option value="user">用户</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>级别:</label>
+                <select id="filter-level" onchange="filterLogs()">
+                    <option value="">全部</option>
+                    <option value="debug">调试</option>
+                    <option value="info">信息</option>
+                    <option value="warning">警告</option>
+                    <option value="error">错误</option>
+                    <option value="critical">严重</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>操作者:</label>
+                <input type="text" id="filter-actor" placeholder="用户名" onkeyup="filterLogs()">
+            </div>
+
+            <div class="filter-group">
+                <label>搜索:</label>
+                <input type="text" id="filter-search" placeholder="消息、详情..." onkeyup="filterLogs()">
+            </div>
+
+            <div class="filter-group">
+                <label>时间范围:</label>
+                <select id="filter-time-range" onchange="applyTimeRange()">
+                    <option value="1h">最近1小时</option>
+                    <option value="24h" selected>最近1天</option>
+                    <option value="7d">最近1周</option>
+                    <option value="30d">最近1月</option>
+                    <option value="custom">自定义</option>
+                </select>
+            </div>
+
+            <div class="filter-group" id="custom-time-range" style="display: none;">
+                <label>自定义:</label>
+                <input type="datetime-local" id="filter-start-time">
+                <input type="datetime-local" id="filter-end-time">
+            </div>
+        </div>
+
+        <!-- Audit Logs Table -->
+        <div class="table-container">
+            <table class="table" id="audit-logs-table">
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>级别</th>
+                        <th>分类</th>
+                        <th>动作</th>
+                        <th>操作者</th>
+                        <th>目标</th>
+                        <th>消息</th>
+                        <th>详情</th>
+                    </tr>
+                </thead>
+                <tbody id="audit-logs-tbody">
+                    <tr>
+                        <td colspan="8" class="text-center">加载中...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+            <button class="btn btn-sm" onclick="previousPage()" id="prev-btn">上一页</button>
+            <span id="page-info">第 1 页</span>
+            <button class="btn btn-sm" onclick="nextPage()" id="next-btn">下一页</button>
+        </div>
+    </div>
+
+    <!-- Audit Log Detail Modal -->
+    <div id="detail-modal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>审计日志详情</h2>
+                <button class="close-btn" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="detail-content">
+                <!-- 详情内容将动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/audit.js"></script>
+</body>
+</html>
