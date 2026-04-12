@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HermesNexus 控制台</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部导航 -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🚀 HermesNexus 控制台</h1>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">节点状态</span>
+                        <span id="node-status" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">活跃任务</span>
+                        <span id="active-tasks" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">最近事件</span>
+                        <span id="recent-events" class="stat-value">-</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容区域 -->
+        <main class="main-content">
+            <!-- 标签页导航 -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="overview">概览</button>
+                <button class="tab-button" data-tab="nodes">节点</button>
+                <button class="tab-button" data-tab="tasks">任务</button>
+                <button class="tab-button" data-tab="events">事件</button>
+            </div>
+
+            <!-- 概览页面 -->
+            <div id="overview-tab" class="tab-content active">
+                <div class="overview-grid">
+                    <div class="overview-card">
+                        <h3>节点状态</h3>
+                        <div id="overview-nodes" class="overview-content">
+                            <div class="loading">加载中...</div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <h3>任务状态</h3>
+                        <div id="overview-tasks" class="overview-content">
+                            <div class="loading">加载中...</div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <h3>最近事件</h3>
+                        <div id="overview-events" class="overview-content">
+                            <div class="loading">加载中...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 节点页面 -->
+            <div id="nodes-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>节点列表</h2>
+                    <button id="refresh-nodes" class="btn btn-secondary">刷新</button>
+                </div>
+                <div id="nodes-list" class="nodes-list">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+
+            <!-- 任务页面 -->
+            <div id="tasks-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>任务列表</h2>
+                    <div class="filter-controls">
+                        <select id="task-status-filter">
+                            <option value="">全部状态</option>
+                            <option value="pending">等待中</option>
+                            <option value="running">运行中</option>
+                            <option value="success">成功</option>
+                            <option value="failed">失败</option>
+                            <option value="cancelled">已取消</option>
+                        </select>
+                        <button id="refresh-tasks" class="btn btn-secondary">刷新</button>
+                    </div>
+                </div>
+                <div id="tasks-list" class="tasks-list">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+
+            <!-- 事件页面 -->
+            <div id="events-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>事件日志</h2>
+                    <div class="filter-controls">
+                        <select id="event-level-filter">
+                            <option value="">全部级别</option>
+                            <option value="info">信息</option>
+                            <option value="warning">警告</option>
+                            <option value="error">错误</option>
+                        </select>
+                        <button id="refresh-events" class="btn btn-secondary">刷新</button>
+                    </div>
+                </div>
+                <div id="events-list" class="events-list">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

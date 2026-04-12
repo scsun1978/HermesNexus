@@ -1,0 +1,233 @@
+# HermesNexus 配置文件模板
+# 复制此文件为 config.yaml 并根据实际环境调整
+
+# ===== 全局配置 =====
+global:
+  environment: development  # development, staging, production
+  debug: true
+  log_level: DEBUG
+  timezone: Asia/Shanghai
+
+# ===== 云端服务配置 =====
+cloud:
+  service:
+    host: 0.0.0.0
+    port: 8080
+    workers: 4
+    reload: true
+
+  api:
+    prefix: /api/v1
+    cors_origins:
+      - http://localhost:3000
+      - http://localhost:8080
+    rate_limit:
+      enabled: true
+      requests_per_minute: 60
+
+  database:
+    host: localhost
+    port: 5432
+    name: hermesnexus
+    user: hermes
+    password: change_me_in_production
+    pool_size: 10
+    max_overflow: 20
+    pool_timeout: 30
+    echo: false  # 开发环境可设为 true 查看 SQL
+
+  redis:
+    host: localhost
+    port: 6379
+    password: ""
+    db: 0
+    pool_size: 10
+    socket_timeout: 5
+    socket_connect_timeout: 5
+
+  storage:
+    type: local  # local, s3, minio
+    local:
+      data_dir: ./data
+      log_dir: ./logs
+      upload_dir: ./uploads
+
+# ===== 边缘节点配置 =====
+edge:
+  node:
+    id: edge-node-1
+    name: "Edge Node 1"
+    location: "数据中心1"
+    tags:
+      - linux
+      - ssh
+      - mvp
+
+  runtime:
+    hermes_home: .hermes
+    hermes_version: 1.0.0
+    work_dir: ./edge/work
+    temp_dir: ./edge/temp
+
+  heartbeat:
+    interval: 30  # 秒
+    timeout: 10   # 秒
+    retry_times: 3
+
+  cloud_connection:
+    url: http://localhost:8080
+    api_key: change_me_in_production
+    timeout: 30
+    retry_times: 3
+    retry_delay: 5
+
+  task_executor:
+    max_concurrent: 10
+    timeout: 300      # 5分钟
+    poll_interval: 10 # 秒
+
+  ssh:
+    timeout: 30
+    connect_timeout: 10
+    exec_timeout: 300
+    max_sessions: 5
+
+# ===== 任务配置 =====
+task:
+  types:
+    - name: inspection
+      enabled: true
+      timeout: 60
+    - name: restart
+      enabled: true
+      timeout: 120
+    - name: basic_exec
+      enabled: true
+      timeout: 300
+
+  state_machine:
+    pending_timeout: 300    # 任务在 pending 状态的最大时间
+    running_timeout: 3600   # 任务在 running 状态的最大时间
+    max_retries: 3          # 最大重试次数
+    retry_delay: 60         # 重试延迟(秒)
+
+# ===== 设备管理配置 =====
+device:
+  types:
+    - name: linux_host
+      enabled: true
+      protocols:
+        - ssh
+      discovery_enabled: false
+
+  protocols:
+    ssh:
+      port: 22
+      timeout: 30
+      max_connections: 10
+
+# ===== 安全配置 =====
+security:
+  jwt:
+    secret: change_me_in_production_use_long_random_string
+    algorithm: HS256
+    expiration_hours: 24
+    refresh_expiration_days: 7
+
+  api_key:
+    header_name: X-API-Key
+    min_length: 32
+
+  password:
+    min_length: 8
+    require_special_char: true
+    require_number: true
+
+  cors:
+    enabled: true
+    allow_origins:
+      - http://localhost:3000
+    allow_methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allow_headers:
+      - Content-Type
+      - Authorization
+      - X-API-Key
+
+# ===== 监控和观测配置 =====
+monitoring:
+  metrics:
+    enabled: true
+    port: 9090
+    path: /metrics
+
+  tracing:
+    enabled: false
+    jaeger_endpoint: http://localhost:14268/api/traces
+    sample_rate: 0.1
+
+  logging:
+    level: DEBUG
+    format: json  # json, text
+    output:
+      - stdout
+      - ./logs/hermesnexus.log
+    rotation:
+      max_size: 100MB
+      max_age: 30
+      max_backups: 10
+
+  health_check:
+    enabled: true
+    endpoint: /health
+    interval: 30
+
+# ===== 开发服务器配置 =====
+development:
+  server:
+    host: 172.16.100.101
+    user: scsun
+    port: 22
+    key_path: ~/.ssh/id_rsa
+
+  deployment:
+    auto_deploy: false
+    restart_on_failure: true
+    log_tail_lines: 100
+
+# ===== 前端配置 =====
+console:
+  port: 3000
+  host: localhost
+  api_url: http://localhost:8080
+  build_output: ./console/frontend/dist
+  public_url: /
+
+# ===== 测试配置 =====
+testing:
+  unit:
+    coverage: true
+    coverage_threshold: 80
+
+  integration:
+    timeout: 300
+    cleanup: true
+
+  e2e:
+    timeout: 600
+    headless: true
+    screenshot_on_failure: true
+
+# ===== MVP 限制配置 =====
+mvp:
+  max_nodes: 1          # 最大节点数
+  max_devices: 10       # 最大设备数
+  max_concurrent_tasks: 5  # 最大并发任务数
+  supported_protocols:
+    - ssh
+  supported_device_types:
+    - linux_host

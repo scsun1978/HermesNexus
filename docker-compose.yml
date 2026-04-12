@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  hermesnexus-cloud:
+    build: .
+    container_name: hermesnexus-cloud
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+      - HERMES_HOME=/app
+      - SQLITE_DB_PATH=/app/data/hermesnexus.db
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    networks:
+      - hermesnexus-network
+
+  # 可选：添加Edge节点容器
+  hermesnexus-edge:
+    build: .
+    container_name: hermesnexus-edge
+    depends_on:
+      - hermesnexus-cloud
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+      - HERMES_HOME=/app
+      - CLOUD_API_URL=http://hermesnexus-cloud:8080
+      - NODE_ID=dev-edge-node-001
+    command: ["python3", "-m", "edge.runtime.core"]
+    restart: unless-stopped
+    networks:
+      - hermesnexus-network
+
+networks:
+  hermesnexus-network:
+    driver: bridge
+
+volumes:
+  hermesnexus-data:

@@ -1,0 +1,175 @@
+version: '3.8'
+
+services:
+  # ===== 云端服务 =====
+  cloud-service:
+    build:
+      context: ./cloud
+      dockerfile: Dockerfile
+    container_name: hermesnexus-cloud
+    ports:
+      - "8080:8080"
+      - "9090:9090"  # Metrics port
+    environment:
+      - CLOUD_SERVICE_HOST=0.0.0.0
+      - CLOUD_SERVICE_PORT=8080
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=hermesnexus
+      - DB_USER=hermes
+      - DB_PASSWORD=hermes_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hermesnexus-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ===== 控制台前端 =====
+  console:
+    build:
+      context: ./console
+      dockerfile: Dockerfile
+    container_name: hermesnexus-console
+    ports:
+      - "3000:80"
+    environment:
+      - API_BASE_URL=http://cloud-service:8080
+      - NODE_ENV=production
+    depends_on:
+      - cloud-service
+    networks:
+      - hermesnexus-network
+    restart: unless-stopped
+
+  # ===== PostgreSQL 数据库 =====
+  postgres:
+    image: postgres:14-alpine
+    container_name: hermesnexus-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=hermesnexus
+      - POSTGRES_USER=hermes
+      - POSTGRES_PASSWORD=hermes_password
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./deploy/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hermesnexus-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hermes -d hermesnexus"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===== Redis 缓存 =====
+  redis:
+    image: redis:7-alpine
+    container_name: hermesnexus-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass redis_password
+    volumes:
+      - redis-data:/data
+    networks:
+      - hermesnexus-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===== 边缘节点 (可选，用于开发测试) =====
+  edge-node:
+    build:
+      context: ./edge
+      dockerfile: Dockerfile
+    container_name: hermesnexus-edge
+    environment:
+      - EDGE_NODE_ID=edge-node-1
+      - EDGE_NODE_NAME=Development-Edge-Node
+      - CLOUD_SERVER_URL=http://cloud-service:8080
+      - CLOUD_API_KEY=dev_api_key_change_in_production
+    volumes:
+      - ./edge/work:/app/work
+      - ./edge/temp:/app/temp
+      - ./logs:/app/logs
+    depends_on:
+      - cloud-service
+    networks:
+      - hermesnexus-network
+    restart: unless-stopped
+    profiles:
+      - edge  # 默认不启动，需要时使用 --profile edge 启动
+
+  # ===== 监控服务 (可选) =====
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: hermesnexus-prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./deploy/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - hermesnexus-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: hermesnexus-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./deploy/docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./deploy/docker/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - hermesnexus-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+networks:
+  hermesnexus-network:
+    driver: bridge
+    name: hermesnexus-network
+
+volumes:
+  postgres-data:
+    name: hermesnexus-postgres-data
+  redis-data:
+    name: hermesnexus-redis-data
+  prometheus-data:
+    name: hermesnexus-prometheus-data
+  grafana-data:
+    name: hermesnexus-grafana-data

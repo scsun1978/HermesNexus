@@ -1,0 +1,21 @@
+{
+  "project_name": "HermesNexus",
+  "version": "1.0.0",
+  "build_date": "2026-04-11",
+  "git_commit": "mvp-release",
+  "environment": "production",
+  "components": {
+    "cloud_api": "1.0.0",
+    "edge_node": "1.0.0",
+    "database_schema": "1.0.0",
+    "api_spec": "1.0.0"
+  },
+  "compatibility": {
+    "min_client_version": "1.0.0",
+    "api_version": "v1",
+    "protocol_version": "1.0"
+  },
+  "release_notes": "MVP正式版本 - 包含完整的云边协同任务管理功能",
+  "next_version": "1.1.0",
+  "maintenance_status": "active"
+}

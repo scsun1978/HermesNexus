@@ -1,0 +1,84 @@
+# HermesNexus 项目 .gitignore
+
+# Python 虚拟环境
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Hermes 项目环境隔离
+.hermes/
+*.hermes
+
+# 环境变量和配置
+.env
+.env.local
+.env.*.local
+config.yaml
+config.local.yaml
+
+# 数据和日志
+data/
+logs/
+*.log
+uploads/
+backups/
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 测试和覆盖率
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# 构建产物
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.temp
+
+# 前端构建产物
+console/frontend/dist/
+console/frontend/node_modules/
+console/frontend/.next/
+
+# 部署相关
+deploy/docker/secrets/
+*.pem
+*.key
+*.crt
+deploy/docker/credentials/
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# 缓存
+.cache/
+.mypy_cache/
+.pyre/
+.pytype/
+
+# 其他
+*.bak
+*.backup
+*.old
