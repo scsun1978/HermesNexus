@@ -7,9 +7,14 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import uuid
 from shared.models.asset import (
-    Asset, AssetCreateRequest, AssetUpdateRequest,
-    AssetQueryParams, AssetListResponse, AssetStats,
-    AssetType, AssetStatus
+    Asset,
+    AssetCreateRequest,
+    AssetUpdateRequest,
+    AssetQueryParams,
+    AssetListResponse,
+    AssetStats,
+    AssetType,
+    AssetStatus,
 )
 
 
@@ -55,7 +60,7 @@ class AssetService:
             metadata=request.metadata or {},
             description=request.description,
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         # 保存资产
@@ -75,7 +80,9 @@ class AssetService:
         """
         return self._assets.get(asset_id)
 
-    def update_asset(self, asset_id: str, request: AssetUpdateRequest) -> Optional[Asset]:
+    def update_asset(
+        self, asset_id: str, request: AssetUpdateRequest
+    ) -> Optional[Asset]:
         """
         更新资产
 
@@ -160,22 +167,23 @@ class AssetService:
         if params.search:
             search_lower = params.search.lower()
             assets = [
-                a for a in assets
-                if search_lower in a.name.lower() or
-                (a.description and search_lower in a.description.lower()) or
-                (a.metadata.ip_address and search_lower in a.metadata.ip_address) or
-                (a.metadata.hostname and search_lower in a.metadata.hostname.lower())
+                a
+                for a in assets
+                if search_lower in a.name.lower()
+                or (a.description and search_lower in a.description.lower())
+                or (a.metadata.ip_address and search_lower in a.metadata.ip_address)
+                or (a.metadata.hostname and search_lower in a.metadata.hostname.lower())
             ]
 
         if params.tags:
             assets = [
-                a for a in assets
-                if any(tag in a.metadata.tags for tag in params.tags)
+                a for a in assets if any(tag in a.metadata.tags for tag in params.tags)
             ]
 
         if params.groups:
             assets = [
-                a for a in assets
+                a
+                for a in assets
                 if any(group in a.metadata.groups for group in params.groups)
             ]
 
@@ -197,7 +205,7 @@ class AssetService:
             assets=paged_assets,
             page=params.page,
             page_size=params.page_size,
-            total_pages=total_pages
+            total_pages=total_pages,
         )
 
     def get_asset_stats(self) -> AssetStats:
@@ -230,7 +238,7 @@ class AssetService:
             by_type=by_type,
             by_status=by_status,
             active_nodes=active_nodes,
-            inactive_nodes=inactive_nodes
+            inactive_nodes=inactive_nodes,
         )
 
     def update_asset_heartbeat(self, asset_id: str) -> bool:

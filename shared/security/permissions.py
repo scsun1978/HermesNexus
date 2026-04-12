@@ -9,6 +9,7 @@ from typing import List, Set
 
 class Permission(str, Enum):
     """权限枚举"""
+
     # 资源管理权限
     ASSET_READ = "asset:read"
     ASSET_WRITE = "asset:write"
@@ -91,7 +92,9 @@ class PermissionChecker:
         return cls.ROLE_PERMISSIONS.get(role, [])
 
     @classmethod
-    def check_permission(cls, user_permissions: List[str], required_permission: Permission) -> bool:
+    def check_permission(
+        cls, user_permissions: List[str], required_permission: Permission
+    ) -> bool:
         """
         检查用户是否有指定权限
 
@@ -114,7 +117,9 @@ class PermissionChecker:
         return required_permission.value in user_permissions
 
     @classmethod
-    def check_any_permission(cls, user_permissions: List[str], required_permissions: List[Permission]) -> bool:
+    def check_any_permission(
+        cls, user_permissions: List[str], required_permissions: List[Permission]
+    ) -> bool:
         """
         检查用户是否有任意一个指定权限
 
@@ -131,7 +136,9 @@ class PermissionChecker:
         return False
 
     @classmethod
-    def check_all_permissions(cls, user_permissions: List[str], required_permissions: List[Permission]) -> bool:
+    def check_all_permissions(
+        cls, user_permissions: List[str], required_permissions: List[Permission]
+    ) -> bool:
         """
         检查用户是否有所有指定权限
 
@@ -155,7 +162,6 @@ OPERATION_PERMISSIONS = {
     "POST:/api/v1/assets": [Permission.ASSET_WRITE],
     "PUT:/api/v1/assets/{id}": [Permission.ASSET_WRITE],
     "DELETE:/api/v1/assets/{id}": [Permission.ASSET_DELETE],
-
     # 任务操作
     "GET:/api/v1/tasks": [Permission.TASK_READ],
     "POST:/api/v1/tasks": [Permission.TASK_WRITE],
@@ -164,15 +170,12 @@ OPERATION_PERMISSIONS = {
     "POST:/api/v1/tasks/{id}/cancel": [Permission.TASK_EXECUTE],
     "POST:/api/v1/tasks/dispatch": [Permission.TASK_EXECUTE],
     "POST:/api/v1/tasks/{id}/result": [Permission.TASK_EXECUTE],
-
     # 审计日志操作
     "GET:/api/v1/audit_logs": [Permission.AUDIT_READ],
     "GET:/api/v1/audit_logs/{id}": [Permission.AUDIT_READ],
-
     # 节点操作
     "GET:/api/v1/nodes": [Permission.NODE_READ],
     "POST:/api/v1/nodes/{id}/heartbeat": [Permission.NODE_WRITE],
-
     # 系统操作
     "GET:/api/v1/stats": [Permission.SYSTEM_STATS],
     "GET:/health": [],  # 健康检查不需要权限

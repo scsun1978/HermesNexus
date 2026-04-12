@@ -10,7 +10,12 @@ from sqlalchemy import or_, and_
 
 from shared.dao.base_dao import BaseDAO
 from shared.database.models import TaskModel
-from shared.models.task import Task, TaskCreateRequest, TaskUpdateRequest, TaskExecutionResult
+from shared.models.task import (
+    Task,
+    TaskCreateRequest,
+    TaskUpdateRequest,
+    TaskExecutionResult,
+)
 
 
 class TaskDAO(BaseDAO):
@@ -19,6 +24,7 @@ class TaskDAO(BaseDAO):
     @staticmethod
     def _json_safe(value):
         from datetime import datetime
+
         if isinstance(value, dict):
             return {k: TaskDAO._json_safe(v) for k, v in value.items()}
         if isinstance(value, list):
@@ -82,7 +88,7 @@ class TaskDAO(BaseDAO):
                 created_at=task.created_at,
                 updated_at=task.updated_at,
                 started_at=task.started_at,
-                completed_at=task.completed_at
+                completed_at=task.completed_at,
             )
 
             # 插入数据库
@@ -113,9 +119,9 @@ class TaskDAO(BaseDAO):
 
         try:
             # 查询数据库
-            task_model = session.query(TaskModel).filter(
-                TaskModel.task_id == task_id
-            ).first()
+            task_model = (
+                session.query(TaskModel).filter(TaskModel.task_id == task_id).first()
+            )
 
             if not task_model:
                 return None
@@ -140,9 +146,11 @@ class TaskDAO(BaseDAO):
 
         try:
             # 查询现有任务
-            task_model = session.query(TaskModel).filter(
-                TaskModel.task_id == task.task_id
-            ).first()
+            task_model = (
+                session.query(TaskModel)
+                .filter(TaskModel.task_id == task.task_id)
+                .first()
+            )
 
             if not task_model:
                 raise ValueError(f"Task not found: {task.task_id}")
@@ -198,9 +206,9 @@ class TaskDAO(BaseDAO):
 
         try:
             # 查询并删除任务
-            task_model = session.query(TaskModel).filter(
-                TaskModel.task_id == task_id
-            ).first()
+            task_model = (
+                session.query(TaskModel).filter(TaskModel.task_id == task_id).first()
+            )
 
             if not task_model:
                 return False
@@ -216,8 +224,13 @@ class TaskDAO(BaseDAO):
         finally:
             session.close()
 
-    def list(self, filters: Dict[str, Any] = None, limit: int = None,
-             offset: int = None, order_by: str = None) -> List[Task]:
+    def list(
+        self,
+        filters: Dict[str, Any] = None,
+        limit: int = None,
+        offset: int = None,
+        order_by: str = None,
+    ) -> List[Task]:
         """
         查询任务列表
 
@@ -249,16 +262,20 @@ class TaskDAO(BaseDAO):
                 if "priority" in filters:
                     query = query.filter(TaskModel.priority == filters["priority"])
                 if "target_asset_id" in filters:
-                    query = query.filter(TaskModel.target_asset_id == filters["target_asset_id"])
+                    query = query.filter(
+                        TaskModel.target_asset_id == filters["target_asset_id"]
+                    )
                 if "target_node_id" in filters:
-                    query = query.filter(TaskModel.assigned_node_id == filters["target_node_id"])
+                    query = query.filter(
+                        TaskModel.assigned_node_id == filters["target_node_id"]
+                    )
                 if "search" in filters:
                     search_term = f"%{filters['search']}%"
                     query = query.filter(
                         or_(
                             TaskModel.name.like(search_term),
                             TaskModel.description.like(search_term),
-                            TaskModel.command.like(search_term)
+                            TaskModel.command.like(search_term),
                         )
                     )
 
@@ -316,7 +333,9 @@ class TaskDAO(BaseDAO):
                 if "priority" in filters:
                     query = query.filter(TaskModel.priority == filters["priority"])
                 if "target_asset_id" in filters:
-                    query = query.filter(TaskModel.target_asset_id == filters["target_asset_id"])
+                    query = query.filter(
+                        TaskModel.target_asset_id == filters["target_asset_id"]
+                    )
 
             # 统计数量
             return query.count()
@@ -357,7 +376,7 @@ class TaskDAO(BaseDAO):
             created_at=model.created_at,
             updated_at=model.updated_at,
             started_at=model.started_at,
-            completed_at=model.completed_at
+            completed_at=model.completed_at,
         )
 
     def select_by_ids(self, task_ids: List[str]) -> List[Task]:
@@ -377,9 +396,9 @@ class TaskDAO(BaseDAO):
 
         try:
             # 批量查询 - 一次查询获取所有数据
-            task_models = session.query(TaskModel).filter(
-                TaskModel.task_id.in_(task_ids)
-            ).all()
+            task_models = (
+                session.query(TaskModel).filter(TaskModel.task_id.in_(task_ids)).all()
+            )
 
             # 转换为任务对象列表
             return [self._model_to_task(model) for model in task_models]
@@ -413,7 +432,11 @@ class TaskDAO(BaseDAO):
                         "exit_code": task.result.exit_code,
                         "stdout": task.result.stdout,
                         "stderr": task.result.stderr,
-                        "completed_at": task.result.completed_at.isoformat() if task.result.completed_at else None
+                        "completed_at": (
+                            task.result.completed_at.isoformat()
+                            if task.result.completed_at
+                            else None
+                        ),
                     }
 
                 task_model = TaskModel(
@@ -432,7 +455,7 @@ class TaskDAO(BaseDAO):
                     created_at=task.created_at,
                     updated_at=task.updated_at,
                     started_at=task.started_at,
-                    completed_at=task.completed_at
+                    completed_at=task.completed_at,
                 )
                 task_models.append(task_model)
 
@@ -469,9 +492,11 @@ class TaskDAO(BaseDAO):
 
             for task in tasks:
                 # 查询并更新每个任务
-                task_model = session.query(TaskModel).filter(
-                    TaskModel.task_id == task.task_id
-                ).first()
+                task_model = (
+                    session.query(TaskModel)
+                    .filter(TaskModel.task_id == task.task_id)
+                    .first()
+                )
 
                 if task_model:
                     # 更新字段
@@ -488,7 +513,11 @@ class TaskDAO(BaseDAO):
                             "exit_code": task.result.exit_code,
                             "stdout": task.result.stdout,
                             "stderr": task.result.stderr,
-                            "completed_at": task.result.completed_at.isoformat() if task.result.completed_at else None
+                            "completed_at": (
+                                task.result.completed_at.isoformat()
+                                if task.result.completed_at
+                                else None
+                            ),
                         }
 
                     updated_tasks.append(task)

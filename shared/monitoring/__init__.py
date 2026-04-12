@@ -7,7 +7,7 @@ from shared.monitoring.metrics import (
     MetricsCollector,
     MetricType,
     MetricCategory,
-    get_metrics_collector
+    get_metrics_collector,
 )
 
 from shared.monitoring.alerts import (
@@ -16,13 +16,10 @@ from shared.monitoring.alerts import (
     AlertRule,
     AlertSeverity,
     AlertCategory,
-    get_alert_manager
+    get_alert_manager,
 )
 
-from shared.monitoring.dashboard import (
-    MonitoringDashboard,
-    get_monitoring_dashboard
-)
+from shared.monitoring.dashboard import MonitoringDashboard, get_monitoring_dashboard
 
 __all__ = [
     # Metrics
@@ -30,7 +27,6 @@ __all__ = [
     "MetricType",
     "MetricCategory",
     "get_metrics_collector",
-
     # Alerts
     "AlertManager",
     "Alert",
@@ -38,7 +34,6 @@ __all__ = [
     "AlertSeverity",
     "AlertCategory",
     "get_alert_manager",
-
     # Dashboard
     "MonitoringDashboard",
     "get_monitoring_dashboard",

@@ -8,9 +8,14 @@ from datetime import datetime, timedelta, timezone
 import uuid
 import math
 from shared.models.audit import (
-    AuditLog, AuditLogCreateRequest,
-    AuditLogQueryParams, AuditLogListResponse, AuditStats,
-    AuditAction, AuditCategory, EventLevel
+    AuditLog,
+    AuditLogCreateRequest,
+    AuditLogQueryParams,
+    AuditLogListResponse,
+    AuditStats,
+    AuditAction,
+    AuditCategory,
+    EventLevel,
 )
 from shared.dao.audit_dao import AuditDAO
 
@@ -82,7 +87,9 @@ class AuditService:
             elif audit_log.target_type == "node" and audit_log.target_id:
                 self._index_by_node.setdefault(audit_log.target_id, []).append(audit_id)
             elif audit_log.target_type == "asset" and audit_log.target_id:
-                self._index_by_asset.setdefault(audit_log.target_id, []).append(audit_id)
+                self._index_by_asset.setdefault(audit_log.target_id, []).append(
+                    audit_id
+                )
             saved = audit_log
 
         return saved
@@ -105,7 +112,13 @@ class AuditService:
                     return log
             return None
 
-    def list_audit_logs(self, params: AuditLogQueryParams = None, limit: int = None, filters: Dict[str, Any] = None, **kwargs):
+    def list_audit_logs(
+        self,
+        params: AuditLogQueryParams = None,
+        limit: int = None,
+        filters: Dict[str, Any] = None,
+        **kwargs,
+    ):
         """
         查询审计日志列表
 
@@ -159,7 +172,11 @@ class AuditService:
                 filters=filters,
                 limit=params.page_size,
                 offset=(params.page - 1) * params.page_size,
-                order_by=(f"-{params.sort_by}" if params.sort_order == "desc" else params.sort_by)
+                order_by=(
+                    f"-{params.sort_by}"
+                    if params.sort_order == "desc"
+                    else params.sort_by
+                ),
             )
             total = self.audit_dao.count(filters)
         else:
@@ -184,9 +201,18 @@ class AuditService:
         """
         if self.audit_dao:
             total = self.audit_dao.count({})
-            category_stats = {category.value: self.audit_dao.count({"category": category}) for category in AuditCategory}
-            level_stats = {level.value: self.audit_dao.count({"level": level}) for level in EventLevel}
-            action_stats = {action.value: self.audit_dao.count({"action": action}) for action in AuditAction}
+            category_stats = {
+                category.value: self.audit_dao.count({"category": category})
+                for category in AuditCategory
+            }
+            level_stats = {
+                level.value: self.audit_dao.count({"level": level})
+                for level in EventLevel
+            }
+            action_stats = {
+                action.value: self.audit_dao.count({"action": action})
+                for action in AuditAction
+            }
         else:
             audit_logs = self._audit_logs
             total = len(audit_logs)
@@ -194,9 +220,13 @@ class AuditService:
             level_stats = {}
             action_stats = {}
             for log in audit_logs:
-                category_stats[log.category.value] = category_stats.get(log.category.value, 0) + 1
+                category_stats[log.category.value] = (
+                    category_stats.get(log.category.value, 0) + 1
+                )
                 level_stats[log.level.value] = level_stats.get(log.level.value, 0) + 1
-                action_stats[log.action.value] = action_stats.get(log.action.value, 0) + 1
+                action_stats[log.action.value] = (
+                    action_stats.get(log.action.value, 0) + 1
+                )
 
         last_hour = datetime.now(timezone.utc) - timedelta(hours=1)
         last_day = datetime.now(timezone.utc) - timedelta(days=1)
@@ -208,9 +238,13 @@ class AuditService:
             error_events = self.audit_dao.count({"level": EventLevel.ERROR})
             critical_events = self.audit_dao.count({"level": EventLevel.CRITICAL})
         else:
-            events_last_hour = sum(1 for log in audit_logs if log.created_at >= last_hour)
+            events_last_hour = sum(
+                1 for log in audit_logs if log.created_at >= last_hour
+            )
             events_last_day = sum(1 for log in audit_logs if log.created_at >= last_day)
-            events_last_week = sum(1 for log in audit_logs if log.created_at >= last_week)
+            events_last_week = sum(
+                1 for log in audit_logs if log.created_at >= last_week
+            )
             error_events = level_stats.get(EventLevel.ERROR.value, 0)
             critical_events = level_stats.get(EventLevel.CRITICAL.value, 0)
 
@@ -241,7 +275,9 @@ class AuditService:
             return self.audit_dao.query_by_task(task_id, limit)
         else:
             audits = []
-            for log in sorted(self._audit_logs, key=lambda item: item.created_at, reverse=True):
+            for log in sorted(
+                self._audit_logs, key=lambda item: item.created_at, reverse=True
+            ):
                 meta = log.details or {}
                 if (
                     (log.target_type == "task" and log.target_id == task_id)
@@ -267,7 +303,9 @@ class AuditService:
             return self.audit_dao.query_by_node(node_id, limit)
         else:
             audits = []
-            for log in sorted(self._audit_logs, key=lambda item: item.created_at, reverse=True):
+            for log in sorted(
+                self._audit_logs, key=lambda item: item.created_at, reverse=True
+            ):
                 meta = log.details or {}
                 if (
                     (log.target_type == "node" and log.target_id == node_id)
@@ -293,7 +331,9 @@ class AuditService:
             return self.audit_dao.query_by_asset(asset_id, limit)
         else:
             audits = []
-            for log in sorted(self._audit_logs, key=lambda item: item.created_at, reverse=True):
+            for log in sorted(
+                self._audit_logs, key=lambda item: item.created_at, reverse=True
+            ):
                 meta = log.details or {}
                 if (
                     (log.target_type == "asset" and log.target_id == asset_id)
@@ -319,8 +359,9 @@ def log_task_created(task_id: str, actor: str, task_data: Dict[str, Any]) -> Aud
         target_id=task_id,
         message=f"Task created: {task_data.get('name', task_id)}",
         details=task_data,
-        created_at=datetime.now(timezone.utc)
+        created_at=datetime.now(timezone.utc),
     )
+
 
 def log_task_succeeded(task_id: str, actor: str, result: Dict[str, Any]) -> AuditLog:
     """记录任务成功日志"""
@@ -334,8 +375,9 @@ def log_task_succeeded(task_id: str, actor: str, result: Dict[str, Any]) -> Audi
         target_id=task_id,
         message=f"Task succeeded: {task_id}",
         details=result,
-        created_at=datetime.now(timezone.utc)
+        created_at=datetime.now(timezone.utc),
     )
+
 
 def log_task_failed(task_id: str, actor: str, error: str) -> AuditLog:
     """记录任务失败日志"""
@@ -349,7 +391,7 @@ def log_task_failed(task_id: str, actor: str, error: str) -> AuditLog:
         target_id=task_id,
         message=f"Task failed: {task_id}",
         details={"error": error},
-        created_at=datetime.now(timezone.utc)
+        created_at=datetime.now(timezone.utc),
     )
 
 
@@ -378,6 +420,7 @@ def get_audit_service(database=None):
 
 # ===== Phase 3: 统一安全审计扩展 =====
 
+
 class SecurityAuditService:
     """安全审计服务 - Phase 3扩展"""
 
@@ -398,7 +441,7 @@ class SecurityAuditService:
         self._statistics_cache = None
         self._cache_expiry = None
 
-    def create_security_audit_log(self, **kwargs) -> 'SecurityAuditLog':
+    def create_security_audit_log(self, **kwargs) -> "SecurityAuditLog":
         """
         创建安全审计日志
 
@@ -407,11 +450,11 @@ class SecurityAuditService:
         from shared.models.audit import SecurityAuditLog
 
         audit_id = f"audit-{uuid.uuid4().hex[:8]}"
-        kwargs['audit_id'] = audit_id
+        kwargs["audit_id"] = audit_id
 
         # 确保timestamp存在
-        if 'timestamp' not in kwargs:
-            kwargs['timestamp'] = datetime.now(timezone.utc)
+        if "timestamp" not in kwargs:
+            kwargs["timestamp"] = datetime.now(timezone.utc)
 
         # 创建安全审计日志
         audit_log = SecurityAuditLog(**kwargs)
@@ -448,94 +491,102 @@ class SecurityAuditService:
             message=security_audit_log.message,
             ip_address=security_audit_log.ip_address,
             user_agent=security_audit_log.user_agent,
-            request_id=security_audit_log.request_id
+            request_id=security_audit_log.request_id,
         )
 
-    def get_security_audit_log(self, audit_id: str) -> Optional['SecurityAuditLog']:
+    def get_security_audit_log(self, audit_id: str) -> Optional["SecurityAuditLog"]:
         """获取安全审计日志"""
         return self._security_audit_logs.get(audit_id)
 
-    def query_security_audit_logs(self, **filters) -> List['SecurityAuditLog']:
+    def query_security_audit_logs(self, **filters) -> List["SecurityAuditLog"]:
         """查询安全审计日志"""
         logs = list(self._security_audit_logs.values())
 
         # 应用过滤条件
-        if 'event_types' in filters and filters['event_types']:
-            logs = [log for log in logs if log.security_event_type in filters['event_types']]
-        if 'actor_types' in filters and filters['actor_types']:
-            logs = [log for log in logs if log.actor_type in filters['actor_types']]
-        if 'result' in filters and filters['result']:
-            logs = [log for log in logs if log.result == filters['result']]
-        if 'risk_level' in filters and filters['risk_level']:
-            logs = [log for log in logs if log.risk_level == filters['risk_level']]
-        if 'actor_id' in filters and filters['actor_id']:
-            logs = [log for log in logs if log.actor == filters['actor_id']]
-        if 'target_id' in filters and filters['target_id']:
-            logs = [log for log in logs if log.target_id == filters['target_id']]
-        if 'correlation_id' in filters and filters['correlation_id']:
-            logs = [log for log in logs if log.correlation_id == filters['correlation_id']]
+        if "event_types" in filters and filters["event_types"]:
+            logs = [
+                log for log in logs if log.security_event_type in filters["event_types"]
+            ]
+        if "actor_types" in filters and filters["actor_types"]:
+            logs = [log for log in logs if log.actor_type in filters["actor_types"]]
+        if "result" in filters and filters["result"]:
+            logs = [log for log in logs if log.result == filters["result"]]
+        if "risk_level" in filters and filters["risk_level"]:
+            logs = [log for log in logs if log.risk_level == filters["risk_level"]]
+        if "actor_id" in filters and filters["actor_id"]:
+            logs = [log for log in logs if log.actor == filters["actor_id"]]
+        if "target_id" in filters and filters["target_id"]:
+            logs = [log for log in logs if log.target_id == filters["target_id"]]
+        if "correlation_id" in filters and filters["correlation_id"]:
+            logs = [
+                log for log in logs if log.correlation_id == filters["correlation_id"]
+            ]
 
         # 时间范围过滤
-        if 'start_time' in filters and filters['start_time']:
-            logs = [log for log in logs if log.timestamp >= filters['start_time']]
-        if 'end_time' in filters and filters['end_time']:
-            logs = [log for log in logs if log.timestamp <= filters['end_time']]
+        if "start_time" in filters and filters["start_time"]:
+            logs = [log for log in logs if log.timestamp >= filters["start_time"]]
+        if "end_time" in filters and filters["end_time"]:
+            logs = [log for log in logs if log.timestamp <= filters["end_time"]]
 
         # 关键词搜索
-        if 'keyword' in filters and filters['keyword']:
-            keyword = filters['keyword'].lower()
+        if "keyword" in filters and filters["keyword"]:
+            keyword = filters["keyword"].lower()
             logs = [
-                log for log in logs
-                if keyword in log.message.lower() or
-                keyword in str(log.details).lower()
+                log
+                for log in logs
+                if keyword in log.message.lower() or keyword in str(log.details).lower()
             ]
 
         # 排序和分页
         logs.sort(key=lambda x: x.timestamp, reverse=True)
-        limit = filters.get('limit', 100)
+        limit = filters.get("limit", 100)
         return logs[:limit]
 
-    def create_security_event(self, **kwargs) -> 'SecurityEvent':
+    def create_security_event(self, **kwargs) -> "SecurityEvent":
         """创建安全事件"""
         from shared.models.audit import SecurityEvent
 
         event_id = f"security-{uuid.uuid4().hex[:8]}"
-        kwargs['event_id'] = event_id
+        kwargs["event_id"] = event_id
 
-        if 'timestamp' not in kwargs:
-            kwargs['timestamp'] = datetime.now(timezone.utc)
+        if "timestamp" not in kwargs:
+            kwargs["timestamp"] = datetime.now(timezone.utc)
 
         security_event = SecurityEvent(**kwargs)
         self._security_events[event_id] = security_event
 
         return security_event
 
-    def get_security_event(self, event_id: str) -> Optional['SecurityEvent']:
+    def get_security_event(self, event_id: str) -> Optional["SecurityEvent"]:
         """获取安全事件"""
         return self._security_events.get(event_id)
 
-    def list_security_events(self, **filters) -> List['SecurityEvent']:
+    def list_security_events(self, **filters) -> List["SecurityEvent"]:
         """列出安全事件"""
         events = list(self._security_events.values())
 
         # 应用过滤条件
-        if 'severity' in filters and filters['severity']:
-            events = [e for e in events if e.severity == filters['severity']]
-        if 'start_time' in filters and filters['start_time']:
-            events = [e for e in events if e.timestamp >= filters['start_time']]
-        if 'end_time' in filters and filters['end_time']:
-            events = [e for e in events if e.timestamp <= filters['end_time']]
+        if "severity" in filters and filters["severity"]:
+            events = [e for e in events if e.severity == filters["severity"]]
+        if "start_time" in filters and filters["start_time"]:
+            events = [e for e in events if e.timestamp >= filters["start_time"]]
+        if "end_time" in filters and filters["end_time"]:
+            events = [e for e in events if e.timestamp <= filters["end_time"]]
 
         # 排序
         events.sort(key=lambda x: x.timestamp, reverse=True)
 
-        limit = filters.get('limit', 100)
+        limit = filters.get("limit", 100)
         return events[:limit]
 
-    def get_statistics(self) -> 'AuditStatisticsExtended':
+    def get_statistics(self) -> "AuditStatisticsExtended":
         """获取审计统计信息"""
         # 检查缓存
-        if self._statistics_cache and self._cache_expiry and datetime.now(timezone.utc) < self._cache_expiry:
+        if (
+            self._statistics_cache
+            and self._cache_expiry
+            and datetime.now(timezone.utc) < self._cache_expiry
+        ):
             return self._statistics_cache
 
         from shared.models.audit import AuditStatisticsExtended
@@ -563,7 +614,9 @@ class SecurityAuditService:
         for log in logs:
             if log.risk_level:
                 risk_str = log.risk_level.value
-                events_by_risk_level[risk_str] = events_by_risk_level.get(risk_str, 0) + 1
+                events_by_risk_level[risk_str] = (
+                    events_by_risk_level.get(risk_str, 0) + 1
+                )
 
         # 时间统计
         events_by_hour = {}
@@ -581,7 +634,9 @@ class SecurityAuditService:
 
         top_actors = [
             {"actor": actor, "count": count}
-            for actor, count in sorted(actor_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+            for actor, count in sorted(
+                actor_counts.items(), key=lambda x: x[1], reverse=True
+            )[:10]
         ]
 
         # 操作者类型统计
@@ -592,13 +647,18 @@ class SecurityAuditService:
 
         # 安全统计
         failed_auth_count = sum(
-            1 for log in logs
-            if log.action and log.action.value in ['auth_denied'] and log.result.value == 'failure'
+            1
+            for log in logs
+            if log.action
+            and log.action.value in ["auth_denied"]
+            and log.result.value == "failure"
         )
 
         permission_denied_count = sum(
-            1 for log in logs
-            if log.security_event_type and log.security_event_type.value == 'permission_denied'
+            1
+            for log in logs
+            if log.security_event_type
+            and log.security_event_type.value == "permission_denied"
         )
 
         security_events_count = len(self._security_events)
@@ -625,7 +685,7 @@ class SecurityAuditService:
             permission_denied_count=permission_denied_count,
             security_events_count=security_events_count,
             avg_duration_ms=avg_duration,
-            max_duration_ms=max_duration
+            max_duration_ms=max_duration,
         )
 
         # 缓存统计结果（5分钟有效期）

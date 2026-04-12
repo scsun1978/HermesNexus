@@ -24,7 +24,7 @@ except ImportError:
 async def test_api_performance():
     """测试API性能"""
     print("🚀 HermesNexus MVP 性能测试")
-    print("="*50)
+    print("=" * 50)
 
     cloud_url = "http://localhost:8080"
     results = {}
@@ -94,9 +94,9 @@ async def test_api_performance():
                 return user_success, user_times
 
             start_time = time.time()
-            user_results = await asyncio.gather(*[
-                concurrent_requests(i) for i in range(5)
-            ])
+            user_results = await asyncio.gather(
+                *[concurrent_requests(i) for i in range(5)]
+            )
             end_time = time.time()
 
             total_time = end_time - start_time
@@ -104,7 +104,9 @@ async def test_api_performance():
             total_requests = 5 * 10
 
             print(f"   总时间: {total_time:.2f}s")
-            print(f"   成功率: {total_success}/{total_requests} ({total_success/total_requests*100:.1f}%)")
+            print(
+                f"   成功率: {total_success}/{total_requests} ({total_success/total_requests*100:.1f}%)"
+            )
             print(f"   吞吐量: {total_success/total_time:.2f} 请求/秒")
 
             if total_success >= total_requests * 0.9:
@@ -150,6 +152,7 @@ async def test_api_performance():
 
             try:
                 import psutil
+
                 process = psutil.Process()
                 memory_info = process.memory_info()
                 memory_mb = memory_info.rss / 1024 / 1024
@@ -171,9 +174,9 @@ async def test_api_performance():
                 results["memory"] = "skipped"
 
             # 生成性能报告
-            print("\n" + "="*50)
+            print("\n" + "=" * 50)
             print("📊 性能测试报告")
-            print("="*50)
+            print("=" * 50)
 
             performance_grades = {
                 "excellent": "✅ 优秀",
@@ -181,7 +184,7 @@ async def test_api_performance():
                 "average": "✅ 一般",
                 "needs_improvement": "⚠️  需改进",
                 "needs_monitoring": "⚠️  需监控",
-                "skipped": "⏭️  跳过"
+                "skipped": "⏭️  跳过",
             }
 
             print("\n性能评级:")
@@ -190,9 +193,15 @@ async def test_api_performance():
                 print(f"{status} {test_name}")
 
             # 计算总体评分
-            excellent_count = sum(1 for grade in results.values() if grade == "excellent")
+            excellent_count = sum(
+                1 for grade in results.values() if grade == "excellent"
+            )
             good_count = sum(1 for grade in results.values() if grade == "good")
-            total_tested = sum(1 for grade in results.values() if grade in ["excellent", "good", "average"])
+            total_tested = sum(
+                1
+                for grade in results.values()
+                if grade in ["excellent", "good", "average"]
+            )
 
             if total_tested > 0:
                 success_rate = (excellent_count + good_count) / total_tested

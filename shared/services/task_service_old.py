@@ -7,10 +7,17 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import uuid
 from shared.models.task import (
-    Task, TaskCreateRequest, TaskUpdateRequest,
-    TaskQueryParams, TaskListResponse, TaskStats,
-    TaskDispatchRequest, TaskResultSubmit,
-    TaskType, TaskStatus, TaskPriority
+    Task,
+    TaskCreateRequest,
+    TaskUpdateRequest,
+    TaskQueryParams,
+    TaskListResponse,
+    TaskStats,
+    TaskDispatchRequest,
+    TaskResultSubmit,
+    TaskType,
+    TaskStatus,
+    TaskPriority,
 )
 from shared.models.enums import validate_state_transition
 
@@ -108,7 +115,7 @@ class TaskService:
             tags=request.tags,
             metadata=request.metadata or {},
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         # 保存任务
@@ -212,17 +219,15 @@ class TaskService:
         if params.search:
             search_lower = params.search.lower()
             tasks = [
-                t for t in tasks
-                if search_lower in t.name.lower() or
-                (t.description and search_lower in t.description.lower()) or
-                search_lower in t.command.lower()
+                t
+                for t in tasks
+                if search_lower in t.name.lower()
+                or (t.description and search_lower in t.description.lower())
+                or search_lower in t.command.lower()
             ]
 
         if params.tags:
-            tasks = [
-                t for t in tasks
-                if any(tag in t.tags for tag in params.tags)
-            ]
+            tasks = [t for t in tasks if any(tag in t.tags for tag in params.tags)]
 
         # 排序
         reverse = params.sort_order == "desc"
@@ -234,7 +239,7 @@ class TaskService:
                 TaskPriority.URGENT: 4,
                 TaskPriority.HIGH: 3,
                 TaskPriority.NORMAL: 2,
-                TaskPriority.LOW: 1
+                TaskPriority.LOW: 1,
             }
             tasks.sort(key=lambda t: priority_order.get(t.priority, 0), reverse=reverse)
 
@@ -251,7 +256,7 @@ class TaskService:
             tasks=paged_tasks,
             page=params.page,
             page_size=params.page_size,
-            total_pages=total_pages
+            total_pages=total_pages,
         )
 
     def get_task_stats(self) -> TaskStats:
@@ -285,11 +290,15 @@ class TaskService:
         running_tasks = sum(1 for t in tasks if t.status == TaskStatus.RUNNING)
         pending_tasks = sum(1 for t in tasks if t.status == TaskStatus.PENDING)
         completed_tasks = sum(1 for t in tasks if t.status == TaskStatus.SUCCEEDED)
-        failed_tasks = sum(1 for t in tasks if t.status in [TaskStatus.FAILED, TaskStatus.TIMEOUT])
+        failed_tasks = sum(
+            1 for t in tasks if t.status in [TaskStatus.FAILED, TaskStatus.TIMEOUT]
+        )
 
         # 成功率计算
         total_finished = completed_tasks + failed_tasks
-        success_rate = (completed_tasks / total_finished * 100) if total_finished > 0 else 0.0
+        success_rate = (
+            (completed_tasks / total_finished * 100) if total_finished > 0 else 0.0
+        )
 
         return TaskStats(
             total_tasks=len(tasks),
@@ -300,7 +309,7 @@ class TaskService:
             pending_tasks=pending_tasks,
             completed_tasks=completed_tasks,
             failed_tasks=failed_tasks,
-            success_rate=round(success_rate, 1)
+            success_rate=round(success_rate, 1),
         )
 
     def dispatch_tasks(self, request: TaskDispatchRequest) -> List[Task]:
@@ -422,9 +431,7 @@ class TaskService:
 
         # 检查是否可以取消
         if task.status.is_terminal():
-            raise ValueError(
-                f"Cannot cancel task in terminal status: {task.status}"
-            )
+            raise ValueError(f"Cannot cancel task in terminal status: {task.status}")
 
         # 更新状态
         task.status = TaskStatus.CANCELLED
@@ -454,7 +461,8 @@ class TaskService:
         """
         # 获取分配给该节点的任务
         node_tasks = [
-            task for task in self._tasks.values()
+            task
+            for task in self._tasks.values()
             if task.target_node_id == node_id and task.status == TaskStatus.ASSIGNED
         ]
 
@@ -463,12 +471,12 @@ class TaskService:
             TaskPriority.URGENT: 4,
             TaskPriority.HIGH: 3,
             TaskPriority.NORMAL: 2,
-            TaskPriority.LOW: 1
+            TaskPriority.LOW: 1,
         }
 
         node_tasks.sort(
             key=lambda t: (priority_order.get(t.priority, 0), t.created_at),
-            reverse=True
+            reverse=True,
         )
 
         return node_tasks[:limit]

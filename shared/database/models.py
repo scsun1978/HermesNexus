@@ -5,9 +5,7 @@ HermesNexus Phase 2 - SQLAlchemy ORM Models
 
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import (
-    Column, String, Integer, Text, DateTime, JSON, ForeignKey, Index
-)
+from sqlalchemy import Column, String, Integer, Text, DateTime, JSON, ForeignKey, Index
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.ext.declarative import AbstractConcreteBase
 
@@ -17,6 +15,7 @@ Base = declarative_base()
 
 class AssetModel(Base):
     """资产表ORM模型"""
+
     __tablename__ = "assets"
 
     # 主键
@@ -60,12 +59,15 @@ class AssetModel(Base):
             "metadata": self.meta_data,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "last_heartbeat": self.last_heartbeat.isoformat() if self.last_heartbeat else None,
+            "last_heartbeat": (
+                self.last_heartbeat.isoformat() if self.last_heartbeat else None
+            ),
         }
 
 
 class NodeModel(Base):
     """节点表ORM模型 - Phase 3: 节点身份管理"""
+
     __tablename__ = "nodes"
 
     # 主键
@@ -92,7 +94,7 @@ class NodeModel(Base):
 
     # 关联关系
     managed_devices = Column(Text, nullable=True)  # 逗号分隔的设备ID列表
-    assigned_tasks = Column(Text, nullable=True)     # 逗号分隔的任务ID列表
+    assigned_tasks = Column(Text, nullable=True)  # 逗号分隔的任务ID列表
 
     # 位置和标签
     location = Column(String(255), nullable=True)
@@ -127,22 +129,33 @@ class NodeModel(Base):
             "status": self.status,
             "description": self.description,
             "auth_token": self.auth_token,
-            "token_expires_at": self.token_expires_at.isoformat() if self.token_expires_at else None,
+            "token_expires_at": (
+                self.token_expires_at.isoformat() if self.token_expires_at else None
+            ),
             "capabilities": self.capabilities,
             "max_concurrent_tasks": self.max_concurrent_tasks,
-            "managed_devices": self.managed_devices.split(",") if self.managed_devices else [],
-            "assigned_tasks": self.assigned_tasks.split(",") if self.assigned_tasks else [],
+            "managed_devices": (
+                self.managed_devices.split(",") if self.managed_devices else []
+            ),
+            "assigned_tasks": (
+                self.assigned_tasks.split(",") if self.assigned_tasks else []
+            ),
             "location": self.location,
             "tags": self.tags.split(",") if self.tags else [],
             "created_by": self.created_by,
-            "registered_at": self.registered_at.isoformat() if self.registered_at else None,
+            "registered_at": (
+                self.registered_at.isoformat() if self.registered_at else None
+            ),
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "last_heartbeat": self.last_heartbeat.isoformat() if self.last_heartbeat else None,
+            "last_heartbeat": (
+                self.last_heartbeat.isoformat() if self.last_heartbeat else None
+            ),
         }
 
 
 class TaskModel(Base):
     """任务表ORM模型"""
+
     __tablename__ = "tasks"
 
     # 主键
@@ -155,7 +168,9 @@ class TaskModel(Base):
     priority = Column(String(50), nullable=False)
 
     # 关联字段
-    target_asset_id = Column(String(64), ForeignKey("assets.asset_id", ondelete="SET NULL"), nullable=False)
+    target_asset_id = Column(
+        String(64), ForeignKey("assets.asset_id", ondelete="SET NULL"), nullable=False
+    )
     assigned_node_id = Column(String(64), nullable=True)
 
     # 任务参数
@@ -206,12 +221,15 @@ class TaskModel(Base):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "completed_at": (
+                self.completed_at.isoformat() if self.completed_at else None
+            ),
         }
 
 
 class AuditLogModel(Base):
     """审计日志表ORM模型"""
+
     __tablename__ = "audit_logs"
 
     # 主键

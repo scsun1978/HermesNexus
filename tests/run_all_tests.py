@@ -22,11 +22,7 @@ def run_command(command, description, timeout=300):
 
     try:
         result = subprocess.run(
-            command,
-            shell=True,
-            capture_output=True,
-            text=True,
-            timeout=timeout
+            command, shell=True, capture_output=True, text=True, timeout=timeout
         )
 
         elapsed_time = time.time() - start_time
@@ -55,52 +51,42 @@ def run_command(command, description, timeout=300):
 def main():
     """主测试函数"""
     print("🚀 HermesNexus MVP 测试运行器")
-    print("="*60)
+    print("=" * 60)
 
     results = []
 
     # 1. 单元测试
     print("\n📋 第一阶段: 单元测试")
     success, returncode = run_command(
-        "python -m pytest tests/unit/ -v --tb=short",
-        "运行单元测试",
-        timeout=120
+        "python -m pytest tests/unit/ -v --tb=short", "运行单元测试", timeout=120
     )
     results.append(("单元测试", success, returncode))
 
     # 2. 集成测试
     print("\n📋 第二阶段: 集成测试")
     success, returncode = run_command(
-        "python -m pytest tests/integration/ -v --tb=short",
-        "运行集成测试",
-        timeout=180
+        "python -m pytest tests/integration/ -v --tb=short", "运行集成测试", timeout=180
     )
     results.append(("集成测试", success, returncode))
 
     # 3. 模拟器测试
     print("\n📋 第三阶段: 模拟器测试")
     success, returncode = run_command(
-        "python tests/test_simulators.py",
-        "运行模拟器测试",
-        timeout=60
+        "python tests/test_simulators.py", "运行模拟器测试", timeout=60
     )
     results.append(("模拟器测试", success, returncode))
 
     # 4. 控制台测试
     print("\n📋 第四阶段: 控制台测试")
     success, returncode = run_command(
-        "python tests/test_console.py",
-        "运行控制台测试",
-        timeout=60
+        "python tests/test_console.py", "运行控制台测试", timeout=60
     )
     results.append(("控制台测试", success, returncode))
 
     # 5. SSH执行器测试
     print("\n📋 第五阶段: SSH执行器测试")
     success, returncode = run_command(
-        "python tests/test_ssh_executor.py",
-        "运行SSH执行器测试",
-        timeout=60
+        "python tests/test_ssh_executor.py", "运行SSH执行器测试", timeout=60
     )
     results.append(("SSH执行器测试", success, returncode))
 
@@ -109,7 +95,7 @@ def main():
     success, returncode = run_command(
         "python tests/test_cloud_edge_integration.py",
         "运行云端边缘集成测试",
-        timeout=120
+        timeout=120,
     )
     results.append(("云端边缘集成测试", success, returncode))
 
@@ -118,11 +104,9 @@ def main():
     print("⚠️  注意: 端到端测试需要云端API运行")
     user_input = input("是否运行端到端测试? (y/n): ").strip().lower()
 
-    if user_input == 'y':
+    if user_input == "y":
         success, returncode = run_command(
-            "python -m pytest tests/e2e/ -v --tb=short",
-            "运行端到端测试",
-            timeout=180
+            "python -m pytest tests/e2e/ -v --tb=short", "运行端到端测试", timeout=180
         )
         results.append(("端到端测试", success, returncode))
     else:
@@ -130,9 +114,9 @@ def main():
         results.append(("端到端测试", None, "skipped"))
 
     # 输出测试结果总结
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📊 测试结果总结")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -151,7 +135,7 @@ def main():
 
         print(f"{status}: {test_name}")
 
-    print("="*60)
+    print("=" * 60)
     print(f"总计: {passed + failed + skipped} 个测试套件")
     print(f"通过: {passed} | 失败: {failed} | 跳过: {skipped}")
 

@@ -7,8 +7,11 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from typing import Optional
 
 from shared.models.asset import (
-    Asset, AssetCreateRequest, AssetUpdateRequest,
-    AssetQueryParams, AssetListResponse
+    Asset,
+    AssetCreateRequest,
+    AssetUpdateRequest,
+    AssetQueryParams,
+    AssetListResponse,
 )
 from shared.services.asset_service import AssetService
 from shared.security.middleware import require_auth, require_admin, AuthMiddleware
@@ -31,7 +34,7 @@ async def list_assets(
     search: Optional[str] = None,
     sort_by: str = "created_at",
     sort_order: str = "desc",
-    current_user: dict = Depends(require_auth)  # 🔒 需要认证
+    current_user: dict = Depends(require_auth),  # 🔒 需要认证
 ):
     """
     获取资产列表
@@ -45,7 +48,7 @@ async def list_assets(
         status=status,
         search=search,
         sort_by=sort_by,
-        sort_order=sort_order
+        sort_order=sort_order,
     )
 
     return asset_service.list_assets(params)
@@ -55,7 +58,9 @@ async def list_assets(
 @router.post("", response_model=Asset, status_code=status.HTTP_201_CREATED)
 async def create_asset(
     request: AssetCreateRequest,
-    current_user: dict = Depends(AuthMiddleware.require_permission(Permission.ASSET_WRITE))  # 🔒 需要写权限
+    current_user: dict = Depends(
+        AuthMiddleware.require_permission(Permission.ASSET_WRITE)
+    ),  # 🔒 需要写权限
 ):
     """
     创建资产
@@ -71,8 +76,7 @@ async def create_asset(
 # GET /api/v1/assets/{asset_id} - 获取资产详情（需要认证）
 @router.get("/{asset_id}", response_model=Asset)
 async def get_asset(
-    asset_id: str,
-    current_user: dict = Depends(require_auth)  # 🔒 需要认证
+    asset_id: str, current_user: dict = Depends(require_auth)  # 🔒 需要认证
 ):
     """
     获取资产详情
@@ -90,7 +94,9 @@ async def get_asset(
 async def update_asset(
     asset_id: str,
     request: AssetUpdateRequest,
-    current_user: dict = Depends(AuthMiddleware.require_permission(Permission.ASSET_WRITE))  # 🔒 需要写权限
+    current_user: dict = Depends(
+        AuthMiddleware.require_permission(Permission.ASSET_WRITE)
+    ),  # 🔒 需要写权限
 ):
     """
     更新资产
@@ -110,7 +116,9 @@ async def update_asset(
 @router.delete("/{asset_id}")
 async def delete_asset(
     asset_id: str,
-    current_user: dict = Depends(AuthMiddleware.require_permission(Permission.ASSET_DELETE))  # 🔒 需要删除权限
+    current_user: dict = Depends(
+        AuthMiddleware.require_permission(Permission.ASSET_DELETE)
+    ),  # 🔒 需要删除权限
 ):
     """
     删除资产（标记为退役）
@@ -126,8 +134,7 @@ async def delete_asset(
 # POST /api/v1/assets/{asset_id}/heartbeat - 更新心跳（需要认证）
 @router.post("/{asset_id}/heartbeat")
 async def update_heartbeat(
-    asset_id: str,
-    current_user: dict = Depends(require_auth)  # 🔒 需要认证
+    asset_id: str, current_user: dict = Depends(require_auth)  # 🔒 需要认证
 ):
     """
     更新资产心跳
@@ -142,9 +149,7 @@ async def update_heartbeat(
 
 # GET /api/v1/assets/stats - 获取资产统计（需要认证）
 @router.get("/stats")
-async def get_asset_stats(
-    current_user: dict = Depends(require_auth)  # 🔒 需要认证
-):
+async def get_asset_stats(current_user: dict = Depends(require_auth)):  # 🔒 需要认证
     """
     获取资产统计信息
 

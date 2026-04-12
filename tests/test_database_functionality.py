@@ -16,9 +16,26 @@ sys.path.insert(0, PROJECT_ROOT)
 
 from shared.database import SQLiteBackend
 from shared.dao import AssetDAO, TaskDAO, AuditDAO
-from shared.models.asset import Asset, AssetCreateRequest, AssetType, AssetStatus, AssetMetadata
-from shared.models.task import Task, TaskCreateRequest, TaskType, TaskStatus, TaskPriority
-from shared.models.audit import AuditLog, AuditLogCreateRequest, AuditCategory, EventLevel
+from shared.models.asset import (
+    Asset,
+    AssetCreateRequest,
+    AssetType,
+    AssetStatus,
+    AssetMetadata,
+)
+from shared.models.task import (
+    Task,
+    TaskCreateRequest,
+    TaskType,
+    TaskStatus,
+    TaskPriority,
+)
+from shared.models.audit import (
+    AuditLog,
+    AuditLogCreateRequest,
+    AuditCategory,
+    EventLevel,
+)
 
 
 def _make_isolated_db():
@@ -58,11 +75,11 @@ def test_asset_crud():
             ip_address="192.168.1.100",
             hostname="test.local",
             ssh_port=22,
-            ssh_username="testuser"
+            ssh_username="testuser",
         ),
         description="Test asset for database validation",
         created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        updated_at=datetime.utcnow(),
     )
 
     # 测试插入
@@ -97,6 +114,7 @@ def test_asset_crud():
     _cleanup_isolated_db(db, temp_dir)
     print("✓ Asset CRUD test passed\n")
 
+
 def test_task_crud():
     """测试任务CRUD功能"""
     print("Testing Task CRUD...")
@@ -120,7 +138,7 @@ def test_task_crud():
         created_by="test-user",
         description="Test task for database validation",
         created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        updated_at=datetime.utcnow(),
     )
 
     # 测试插入
@@ -148,6 +166,7 @@ def test_task_crud():
     _cleanup_isolated_db(db, temp_dir)
     print("✓ Task CRUD test passed\n")
 
+
 def test_audit_crud():
     """测试审计日志CRUD功能"""
     print("Testing Audit Log CRUD...")
@@ -169,7 +188,7 @@ def test_audit_crud():
         target_id="test-task-001",
         message="Task created for testing",
         metadata={"test": True},
-        created_at=datetime.utcnow()
+        created_at=datetime.utcnow(),
     )
 
     # 测试插入
@@ -197,6 +216,7 @@ def test_audit_crud():
     _cleanup_isolated_db(db, temp_dir)
     print("✓ Audit Log CRUD test passed\n")
 
+
 def main():
     """主测试函数"""
     print("=" * 50)
@@ -218,8 +238,10 @@ def main():
     except Exception as e:
         print(f"\n✗ Test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

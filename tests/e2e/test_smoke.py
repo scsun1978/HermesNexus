@@ -34,18 +34,18 @@ class TestSmokeHealthCheck(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Smoke测试初始化"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("🔥 HermesNexus Smoke Tests - 系统健康检查")
-        print("="*60)
+        print("=" * 60)
         cls.start_time = time.time()
 
     @classmethod
     def tearDownClass(cls):
         """Smoke测试完成"""
         elapsed_time = time.time() - cls.start_time
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print(f"✅ Smoke Tests 完成 - 耗时: {elapsed_time:.2f}秒")
-        print("="*60)
+        print("=" * 60)
 
     def setUp(self):
         """每个测试前的设置"""
@@ -67,7 +67,8 @@ class TestSmokeHealthCheck(unittest.TestCase):
     def tearDown(self):
         """清理临时资源"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_01_database_health(self):
@@ -84,11 +85,13 @@ class TestSmokeHealthCheck(unittest.TestCase):
         session = self.db._get_session()
         try:
             # 简单查询验证表存在
-            result = session.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
+            result = session.execute(
+                text("SELECT name FROM sqlite_master WHERE type='table'")
+            )
             tables = [row[0] for row in result.fetchall()]
-            self.assertIn('assets', tables, "assets表应该存在")
-            self.assertIn('tasks', tables, "tasks表应该存在")
-            self.assertIn('audit_logs', tables, "audit_logs表应该存在")
+            self.assertIn("assets", tables, "assets表应该存在")
+            self.assertIn("tasks", tables, "tasks表应该存在")
+            self.assertIn("audit_logs", tables, "audit_logs表应该存在")
             print("   ✓ 数据库连接正常")
             print(f"   ✓ 数据表已创建: {', '.join(tables)}")
         finally:
@@ -104,7 +107,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
             name="Smoke测试资产",
             asset_type=AssetType.LINUX_HOST,
             status=AssetStatus.ACTIVE,
-            description="用于Smoke测试的资产"
+            description="用于Smoke测试的资产",
         )
 
         # 创建资产
@@ -118,7 +121,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
 
         # 统计检查
         stats = self.asset_service.get_statistics()
-        self.assertEqual(stats['total_assets'], 1, "应该有1个资产")
+        self.assertEqual(stats["total_assets"], 1, "应该有1个资产")
 
         print("   ✓ 资产创建成功")
         print("   ✓ 资产查询成功")
@@ -133,7 +136,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
             asset_id="smoke-asset-002",
             name="Smoke任务资产",
             asset_type=AssetType.LINUX_HOST,
-            status=AssetStatus.ACTIVE
+            status=AssetStatus.ACTIVE,
         )
         self.asset_service.create_asset(asset)
 
@@ -149,7 +152,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
             timeout=30,
             created_by="smoke-test",
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         # 创建任务
@@ -161,7 +164,9 @@ class TestSmokeHealthCheck(unittest.TestCase):
         self.assertIsNotNone(retrieved_task, "任务查询应该成功")
 
         # 任务状态变更测试
-        updated_task = self.task_service.assign_node_to_task("smoke-task-001", "smoke-node-001")
+        updated_task = self.task_service.assign_node_to_task(
+            "smoke-task-001", "smoke-node-001"
+        )
         self.assertEqual(updated_task.status, TaskStatus.ASSIGNED, "任务分配应该成功")
 
         print("   ✓ 任务创建成功")
@@ -182,7 +187,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
             actor="smoke-test-user",
             target_type="asset",
             target_id="smoke-asset-003",
-            message="Smoke测试审计日志"
+            message="Smoke测试审计日志",
         )
 
         # 插入审计日志
@@ -210,19 +215,18 @@ class TestSmokeHealthCheck(unittest.TestCase):
             user_id="smoke-user-001",
             username="smokeuser",
             role="operator",
-            permissions=["asset.read", "task.read"]
+            permissions=["asset.read", "task.read"],
         )
         self.assertIsNotNone(token, "Token创建应该成功")
 
         # 验证Token
         validated_user = self.auth_manager.validate_token(token)
         self.assertIsNotNone(validated_user, "Token验证应该成功")
-        self.assertEqual(validated_user['user_id'], 'smoke-user-001')
+        self.assertEqual(validated_user["user_id"], "smoke-user-001")
 
         # API Key创建和验证
         api_key = self.auth_manager.create_api_key(
-            user_id="smoke-user-002",
-            name="smoke-api-key"
+            user_id="smoke-user-002", name="smoke-api-key"
         )
         self.assertIsNotNone(api_key, "API Key创建应该成功")
 
@@ -243,7 +247,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
             asset_id="smoke-integration-asset",
             name="集成测试资产",
             asset_type=AssetType.LINUX_HOST,
-            status=AssetStatus.ACTIVE
+            status=AssetStatus.ACTIVE,
         )
         self.asset_service.create_asset(asset)
 
@@ -259,7 +263,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
             timeout=30,
             created_by="smoke-integration-test",
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
         self.task_service.create_task(task)
 
@@ -274,7 +278,11 @@ class TestSmokeHealthCheck(unittest.TestCase):
         retrieved_asset = self.asset_service.get_asset("smoke-integration-asset")
         retrieved_task = self.task_service.get_task("smoke-integration-task")
 
-        self.assertEqual(retrieved_task.target_asset_id, retrieved_asset.asset_id, "任务应该关联到正确的资产")
+        self.assertEqual(
+            retrieved_task.target_asset_id,
+            retrieved_asset.asset_id,
+            "任务应该关联到正确的资产",
+        )
 
         print("   ✓ 资产-任务关联正确")
         print("   ✓ 审计追踪完整")
@@ -293,7 +301,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
                 asset_id=f"smoke-perf-{i:03d}",
                 name=f"性能测试资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
-                status=AssetStatus.ACTIVE
+                status=AssetStatus.ACTIVE,
             )
             self.asset_service.create_asset(asset)
 
@@ -330,7 +338,8 @@ class TestSmokeQuickCheck(unittest.TestCase):
     def tearDown(self):
         """快速清理"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_critical_path_only(self):
@@ -341,28 +350,32 @@ class TestSmokeQuickCheck(unittest.TestCase):
         self.assertIsNotNone(self.db)
 
         # 2. 能创建资产
-        asset = self.asset_service.create_asset(Asset(
-            asset_id="quick-asset",
-            name="快速检查资产",
-            asset_type=AssetType.LINUX_HOST,
-            status=AssetStatus.ACTIVE
-        ))
+        asset = self.asset_service.create_asset(
+            Asset(
+                asset_id="quick-asset",
+                name="快速检查资产",
+                asset_type=AssetType.LINUX_HOST,
+                status=AssetStatus.ACTIVE,
+            )
+        )
         self.assertIsNotNone(asset)
 
         # 3. 能创建任务
-        task = self.task_service.create_task(Task(
-            task_id="quick-task",
-            name="快速检查任务",
-            task_type=TaskType.BASIC_EXEC,
-            status=TaskStatus.PENDING,
-            priority=TaskPriority.NORMAL,
-            target_asset_id="quick-asset",
-            command="echo 'quick'",
-            timeout=30,
-            created_by="quick",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
-        ))
+        task = self.task_service.create_task(
+            Task(
+                task_id="quick-task",
+                name="快速检查任务",
+                task_type=TaskType.BASIC_EXEC,
+                status=TaskStatus.PENDING,
+                priority=TaskPriority.NORMAL,
+                target_asset_id="quick-asset",
+                command="echo 'quick'",
+                timeout=30,
+                created_by="quick",
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
+            )
+        )
         self.assertIsNotNone(task)
 
         print("   ✓ 数据库: OK")
@@ -373,12 +386,12 @@ class TestSmokeQuickCheck(unittest.TestCase):
 
 def run_smoke_tests():
     """运行Smoke测试的主函数"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🔥 HermesNexus Smoke Tests - 快速系统健康检查")
-    print("="*70)
+    print("=" * 70)
     print("这些测试在5分钟内验证系统核心功能")
     print("如果Smoke测试失败，不要继续其他测试")
-    print("="*70)
+    print("=" * 70)
 
     # 创建测试套件
     loader = unittest.TestLoader()
@@ -395,14 +408,14 @@ def run_smoke_tests():
     result = runner.run(suite)
 
     # 输出结果
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     if result.wasSuccessful():
         print("✅ Smoke Tests 全部通过 - 系统健康")
-        print("="*70)
+        print("=" * 70)
         return 0
     else:
         print("❌ Smoke Tests 失败 - 系统存在问题")
-        print("="*70)
+        print("=" * 70)
         print(f"失败数: {len(result.failures)}")
         print(f"错误数: {len(result.errors)}")
         return 1

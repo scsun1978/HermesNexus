@@ -17,8 +17,12 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from shared.models.approval import (
-    ApprovalRequest, ApprovalDecision, ApprovalComment, ApprovalStatus,
-    ApprovalPriority, ApprovalStatistics
+    ApprovalRequest,
+    ApprovalDecision,
+    ApprovalComment,
+    ApprovalStatus,
+    ApprovalPriority,
+    ApprovalStatistics,
 )
 from shared.services.approval_service import get_approval_service
 from shared.security.node_auth_middleware import require_node_auth
@@ -26,14 +30,13 @@ from shared.security.permission_checker import require_permission
 from shared.models.permission import ActionType, ResourceType, PermissionContext
 from shared.models.node import NodeIdentity
 
-
 # 创建API路由器
 router = APIRouter(prefix="/api/v1/approvals", tags=["approvals"])
 
 
 # 认证依赖函数（简化版，实际应基于JWT Token）
 async def get_current_user(
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
 ) -> Dict[str, Any]:
     """
     获取当前用户信息（基于Token）
@@ -51,7 +54,7 @@ async def get_current_user(
         raise HTTPException(
             status_code=401,
             detail="未提供认证token",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     # 简化处理：这里应该是解析JWT Token
@@ -70,21 +73,19 @@ async def get_current_user(
             "user_name": "测试用户",
             "user_type": "human",
             "roles": ["operator"],
-            "tenant_id": "tenant-001"
+            "tenant_id": "tenant-001",
         }
 
     except Exception as e:
         raise HTTPException(
             status_code=401,
             detail=f"认证失败: {str(e)}",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
 
 # 权限检查依赖函数
-def check_approval_permission(
-    action: str
-):
+def check_approval_permission(action: str):
     """
     检查审批操作权限的依赖工厂函数
 
@@ -94,6 +95,7 @@ def check_approval_permission(
     Returns:
         依赖函数
     """
+
     def permission_dependency(current_user: Dict[str, Any] = Depends(get_current_user)):
         """
         实际的权限检查函数
@@ -114,10 +116,7 @@ def check_approval_permission(
         # 对于审批操作，需要特定角色
         if action == "approve":
             if not any(role in current_user.get("roles", []) for role in allowed_roles):
-                raise HTTPException(
-                    status_code=403,
-                    detail="权限不足：需要审批权限"
-                )
+                raise HTTPException(status_code=403, detail="权限不足：需要审批权限")
 
         # 对于创建请求，所有已认证用户都可以
         if action == "create":
@@ -136,10 +135,7 @@ def check_approval_permission(
     # 对于审批操作，需要特定角色
     if action == "approve":
         if not any(role in current_user.get("roles", []) for role in allowed_roles):
-            raise HTTPException(
-                status_code=403,
-                detail="权限不足：需要审批权限"
-            )
+            raise HTTPException(status_code=403, detail="权限不足：需要审批权限")
 
     # 对于创建请求，所有已认证用户都可以
     if action == "create":
@@ -151,6 +147,7 @@ def check_approval_permission(
 # 请求/响应模型
 class CreateApprovalRequest(BaseModel):
     """创建审批请求模型"""
+
     title: str = Field(..., description="审批标题", min_length=1, max_length=200)
     description: str = Field(..., description="审批描述", min_length=1, max_length=1000)
     requester_id: str = Field(..., description="申请人ID")
@@ -168,11 +165,13 @@ class CreateApprovalRequest(BaseModel):
 
 class SubmitApprovalRequest(BaseModel):
     """提交审批请求模型"""
+
     request_id: str = Field(..., description="请求ID")
 
 
 class MakeApprovalDecision(BaseModel):
     """审批决策模型"""
+
     decision: str = Field(..., description="决策结果: approve/reject")
     reason: str = Field(..., description="决策理由", min_length=1, max_length=500)
     approver_id: str = Field(..., description="审批人ID")
@@ -181,6 +180,7 @@ class MakeApprovalDecision(BaseModel):
 
 class WithdrawApprovalRequest(BaseModel):
     """撤回审批请求模型"""
+
     request_id: str = Field(..., description="请求ID")
     withdrawer_id: str = Field(..., description="撤回人ID")
     withdrawer_name: str = Field(..., description="撤回人姓名")
@@ -189,6 +189,7 @@ class WithdrawApprovalRequest(BaseModel):
 
 class AddApprovalComment(BaseModel):
     """添加审批评论模型"""
+
     request_id: str = Field(..., description="请求ID")
     content: str = Field(..., description="评论内容", min_length=1, max_length=500)
     author_id: str = Field(..., description="评论人ID")
@@ -198,10 +199,11 @@ class AddApprovalComment(BaseModel):
 
 # API端点实现
 
+
 @router.post("/requests", response_model=ApprovalRequest)
 async def create_approval_request(
     request_data: CreateApprovalRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
 ):
     """
     创建审批请求
@@ -233,7 +235,7 @@ async def create_approval_request(
             resource_id=request_data.resource_id,
             priority=priority,
             timeout_seconds=request_data.timeout_seconds,
-            metadata=request_data.metadata
+            metadata=request_data.metadata,
         )
 
         return request
@@ -247,7 +249,7 @@ async def create_approval_request(
 @router.post("/requests/submit", response_model=ApprovalRequest)
 async def submit_approval_request(
     submit_data: SubmitApprovalRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
 ):
     """
     提交审批请求
@@ -261,10 +263,14 @@ async def submit_approval_request(
         # 权限检查：只有申请人能提交自己的请求
         request = service.get_request(submit_data.request_id)
         if not request:
-            raise HTTPException(status_code=404, detail=f"审批请求不存在: {submit_data.request_id}")
+            raise HTTPException(
+                status_code=404, detail=f"审批请求不存在: {submit_data.request_id}"
+            )
 
         if request.requester_id != current_user["user_id"]:
-            raise HTTPException(status_code=403, detail="权限不足：只能提交自己创建的审批请求")
+            raise HTTPException(
+                status_code=403, detail="权限不足：只能提交自己创建的审批请求"
+            )
 
         # 提交请求
         request = service.submit_request(submit_data.request_id)
@@ -282,7 +288,7 @@ async def submit_approval_request(
 @router.post("/requests/decision", response_model=ApprovalRequest)
 async def make_approval_decision(
     decision_data: MakeApprovalDecision,
-    current_user: Dict[str, Any] = Depends(check_approval_permission("approve"))
+    current_user: Dict[str, Any] = Depends(check_approval_permission("approve")),
 ):
     """
     进行审批决策
@@ -303,7 +309,7 @@ async def make_approval_decision(
             decision=decision_data.decision,
             reason=decision_data.reason,
             approver_id=decision_data.approver_id,
-            approver_name=decision_data.approver_name
+            approver_name=decision_data.approver_name,
         )
 
         return request
@@ -319,7 +325,7 @@ async def make_approval_decision(
 @router.post("/requests/withdraw", response_model=ApprovalRequest)
 async def withdraw_approval_request(
     withdraw_data: WithdrawApprovalRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
 ):
     """
     撤回审批请求
@@ -337,17 +343,21 @@ async def withdraw_approval_request(
         # 权限检查：只有申请人能撤回自己的请求
         request = service.get_request(withdraw_data.request_id)
         if not request:
-            raise HTTPException(status_code=404, detail=f"审批请求不存在: {withdraw_data.request_id}")
+            raise HTTPException(
+                status_code=404, detail=f"审批请求不存在: {withdraw_data.request_id}"
+            )
 
         if request.requester_id != current_user["user_id"]:
-            raise HTTPException(status_code=403, detail="权限不足：只能撤回自己创建的审批请求")
+            raise HTTPException(
+                status_code=403, detail="权限不足：只能撤回自己创建的审批请求"
+            )
 
         # 撤回请求
         request = service.withdraw_request(
             request_id=withdraw_data.request_id,
             withdrawer_id=withdraw_data.withdrawer_id,
             withdrawer_name=withdraw_data.withdrawer_name,
-            reason=withdraw_data.reason
+            reason=withdraw_data.reason,
         )
 
         return request
@@ -362,8 +372,7 @@ async def withdraw_approval_request(
 
 @router.delete("/requests/{request_id}", response_model=ApprovalRequest)
 async def cancel_approval_request(
-    request_id: str,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    request_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     """
     取消审批请求
@@ -380,7 +389,9 @@ async def cancel_approval_request(
             raise HTTPException(status_code=404, detail=f"审批请求不存在: {request_id}")
 
         if request.requester_id != current_user["user_id"]:
-            raise HTTPException(status_code=403, detail="权限不足：只能取消自己创建的审批请求")
+            raise HTTPException(
+                status_code=403, detail="权限不足：只能取消自己创建的审批请求"
+            )
 
         # 取消请求
         request = service.cancel_request(request_id)
@@ -398,7 +409,7 @@ async def cancel_approval_request(
 @router.get("/requests/{request_id}", response_model=ApprovalRequest)
 async def get_approval_request(
     request_id: str,
-    current_user: Dict[str, Any] = Depends(check_approval_permission("view"))
+    current_user: Dict[str, Any] = Depends(check_approval_permission("view")),
 ):
     """
     获取审批请求详情
@@ -416,9 +427,13 @@ async def get_approval_request(
         # 权限检查：用户只能查看自己相关的审批请求（除非是管理员）
         user_roles = current_user.get("roles", [])
         if "admin" not in user_roles and "super_admin" not in user_roles:
-            if (request.requester_id != current_user["user_id"] and
-                request.approver_id != current_user["user_id"]):
-                raise HTTPException(status_code=403, detail="权限不足：只能查看自己相关的审批请求")
+            if (
+                request.requester_id != current_user["user_id"]
+                and request.approver_id != current_user["user_id"]
+            ):
+                raise HTTPException(
+                    status_code=403, detail="权限不足：只能查看自己相关的审批请求"
+                )
 
         return request
 
@@ -435,7 +450,7 @@ async def list_approval_requests(
     requester_id: Optional[str] = Query(None, description="申请人ID过滤"),
     approver_id: Optional[str] = Query(None, description="审批人ID过滤"),
     priority: Optional[str] = Query(None, description="优先级过滤"),
-    limit: int = Query(100, description="返回数量限制", ge=1, le=1000)
+    limit: int = Query(100, description="返回数量限制", ge=1, le=1000),
 ):
     """
     列出审批请求
@@ -451,10 +466,7 @@ async def list_approval_requests(
             status_enum = ApprovalStatus(status) if status else None
             priority_enum = ApprovalPriority(priority) if priority else None
         except ValueError as e:
-            raise HTTPException(
-                status_code=400,
-                detail=f"无效的参数值: {str(e)}"
-            )
+            raise HTTPException(status_code=400, detail=f"无效的参数值: {str(e)}")
 
         # 获取请求列表
         requests = service.list_requests(
@@ -462,7 +474,7 @@ async def list_approval_requests(
             requester_id=requester_id,
             approver_id=approver_id,
             priority=priority_enum,
-            limit=limit
+            limit=limit,
         )
 
         return requests
@@ -476,7 +488,7 @@ async def list_approval_requests(
 @router.post("/comments", response_model=ApprovalComment)
 async def add_approval_comment(
     comment_data: AddApprovalComment,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
 ):
     """
     添加审批评论
@@ -497,7 +509,7 @@ async def add_approval_comment(
             content=comment_data.content,
             author_id=comment_data.author_id,
             author_name=comment_data.author_name,
-            is_internal=comment_data.is_internal
+            is_internal=comment_data.is_internal,
         )
 
         return comment
@@ -512,8 +524,7 @@ async def add_approval_comment(
 
 @router.get("/requests/{request_id}/comments", response_model=List[ApprovalComment])
 async def get_approval_comments(
-    request_id: str,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    request_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     """
     获取审批评论
@@ -534,8 +545,7 @@ async def get_approval_comments(
 
 @router.get("/requests/{request_id}/decisions", response_model=List[ApprovalDecision])
 async def get_approval_decisions(
-    request_id: str,
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    request_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     """
     获取审批决策历史
@@ -556,7 +566,7 @@ async def get_approval_decisions(
 
 @router.get("/statistics", response_model=ApprovalStatistics)
 async def get_approval_statistics(
-    current_user: Dict[str, Any] = Depends(check_approval_permission("view"))
+    current_user: Dict[str, Any] = Depends(check_approval_permission("view")),
 ):
     """
     获取审批统计信息
@@ -590,7 +600,7 @@ async def check_approval_timeout():
         return {
             "message": f"处理了 {len(timeout_requests)} 个超时请求",
             "timeout_requests": timeout_requests,
-            "count": len(timeout_requests)
+            "count": len(timeout_requests),
         }
 
     except Exception as e:
@@ -610,5 +620,5 @@ async def approval_health_check():
         "status": "healthy",
         "service": "approval-service",
         "total_requests": statistics.total_requests,
-        "pending_requests": statistics.pending_requests
+        "pending_requests": statistics.pending_requests,
     }

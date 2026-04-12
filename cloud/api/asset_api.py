@@ -8,18 +8,19 @@ from typing import List, Optional
 from datetime import datetime
 
 from shared.models.asset import (
-    Asset, AssetCreateRequest, AssetUpdateRequest,
-    AssetQueryParams, AssetListResponse, AssetStats,
-    AssetType, AssetStatus
+    Asset,
+    AssetCreateRequest,
+    AssetUpdateRequest,
+    AssetQueryParams,
+    AssetListResponse,
+    AssetStats,
+    AssetType,
+    AssetStatus,
 )
 from shared.services.asset_service import get_asset_service
 from shared.models.enums import ErrorCode, create_error_response
 
-
-router = APIRouter(
-    prefix="/api/v1/assets",
-    tags=["assets"]
-)
+router = APIRouter(prefix="/api/v1/assets", tags=["assets"])
 
 
 @router.post(
@@ -27,7 +28,7 @@ router = APIRouter(
     response_model=Asset,
     status_code=status.HTTP_201_CREATED,
     summary="创建资产",
-    description="注册新的资产到系统中"
+    description="注册新的资产到系统中",
 )
 async def create_asset(request: AssetCreateRequest):
     """
@@ -46,17 +47,15 @@ async def create_asset(request: AssetCreateRequest):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=create_error_response(
-                ErrorCode.ASSET_ALREADY_EXISTS,
-                details={"error": str(e)}
-            )
+                ErrorCode.ASSET_ALREADY_EXISTS, details={"error": str(e)}
+            ),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -64,7 +63,7 @@ async def create_asset(request: AssetCreateRequest):
     "",
     response_model=AssetListResponse,
     summary="列出资产",
-    description="获取资产列表，支持分页、搜索和过滤"
+    description="获取资产列表，支持分页、搜索和过滤",
 )
 async def list_assets(
     asset_type: Optional[AssetType] = Query(None, description="按资产类型过滤"),
@@ -75,7 +74,7 @@ async def list_assets(
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页大小"),
     sort_by: str = Query("created_at", description="排序字段"),
-    sort_order: str = Query("desc", regex="^(asc|desc)$", description="排序方向")
+    sort_order: str = Query("desc", regex="^(asc|desc)$", description="排序方向"),
 ):
     """
     列出资产
@@ -103,7 +102,7 @@ async def list_assets(
             page=page,
             page_size=page_size,
             sort_by=sort_by,
-            sort_order=sort_order
+            sort_order=sort_order,
         )
 
         return service.list_assets(params)
@@ -111,9 +110,8 @@ async def list_assets(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -121,7 +119,7 @@ async def list_assets(
     "/stats",
     response_model=AssetStats,
     summary="获取资产统计",
-    description="获取资产统计信息，包括按类型和状态的分布"
+    description="获取资产统计信息，包括按类型和状态的分布",
 )
 async def get_asset_stats():
     """
@@ -140,9 +138,8 @@ async def get_asset_stats():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -150,7 +147,7 @@ async def get_asset_stats():
     "/{asset_id}",
     response_model=Asset,
     summary="获取资产详情",
-    description="根据资产ID获取资产详细信息"
+    description="根据资产ID获取资产详细信息",
 )
 async def get_asset(asset_id: str):
     """
@@ -166,9 +163,8 @@ async def get_asset(asset_id: str):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.ASSET_NOT_FOUND,
-                    details={"asset_id": asset_id}
-                )
+                    ErrorCode.ASSET_NOT_FOUND, details={"asset_id": asset_id}
+                ),
             )
 
         return asset
@@ -178,17 +174,13 @@ async def get_asset(asset_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
 @router.put(
-    "/{asset_id}",
-    response_model=Asset,
-    summary="更新资产",
-    description="更新资产信息"
+    "/{asset_id}", response_model=Asset, summary="更新资产", description="更新资产信息"
 )
 async def update_asset(asset_id: str, request: AssetUpdateRequest):
     """
@@ -209,9 +201,8 @@ async def update_asset(asset_id: str, request: AssetUpdateRequest):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.ASSET_NOT_FOUND,
-                    details={"asset_id": asset_id}
-                )
+                    ErrorCode.ASSET_NOT_FOUND, details={"asset_id": asset_id}
+                ),
             )
 
         # 更新资产
@@ -224,17 +215,15 @@ async def update_asset(asset_id: str, request: AssetUpdateRequest):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=create_error_response(
-                ErrorCode.ASSET_INVALID_STATE_TRANSITION,
-                details={"error": str(e)}
-            )
+                ErrorCode.ASSET_INVALID_STATE_TRANSITION, details={"error": str(e)}
+            ),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -242,7 +231,7 @@ async def update_asset(asset_id: str, request: AssetUpdateRequest):
     "/{asset_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="删除资产",
-    description="删除资产（标记为退役状态）"
+    description="删除资产（标记为退役状态）",
 )
 async def delete_asset(asset_id: str):
     """
@@ -261,9 +250,8 @@ async def delete_asset(asset_id: str):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.ASSET_NOT_FOUND,
-                    details={"asset_id": asset_id}
-                )
+                    ErrorCode.ASSET_NOT_FOUND, details={"asset_id": asset_id}
+                ),
             )
 
         # 删除资产
@@ -273,8 +261,8 @@ async def delete_asset(asset_id: str):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=create_error_response(
                     ErrorCode.ASSET_INVALID_STATE_TRANSITION,
-                    details={"message": "Cannot delete asset in current state"}
-                )
+                    details={"message": "Cannot delete asset in current state"},
+                ),
             )
 
         return None
@@ -285,9 +273,8 @@ async def delete_asset(asset_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -295,7 +282,7 @@ async def delete_asset(asset_id: str):
     "/{asset_id}/heartbeat",
     status_code=status.HTTP_200_OK,
     summary="资产心跳",
-    description="更新资产最后心跳时间"
+    description="更新资产最后心跳时间",
 )
 async def asset_heartbeat(asset_id: str):
     """
@@ -314,9 +301,8 @@ async def asset_heartbeat(asset_id: str):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.ASSET_NOT_FOUND,
-                    details={"asset_id": asset_id}
-                )
+                    ErrorCode.ASSET_NOT_FOUND, details={"asset_id": asset_id}
+                ),
             )
 
         # 更新心跳
@@ -326,8 +312,8 @@ async def asset_heartbeat(asset_id: str):
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=create_error_response(
                     ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                    details={"message": "Failed to update heartbeat"}
-                )
+                    details={"message": "Failed to update heartbeat"},
+                ),
             )
 
         return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
@@ -338,9 +324,8 @@ async def asset_heartbeat(asset_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -348,7 +333,7 @@ async def asset_heartbeat(asset_id: str):
     "/{asset_id}/nodes/{node_id}",
     status_code=status.HTTP_200_OK,
     summary="关联节点",
-    description="将运行节点关联到资产"
+    description="将运行节点关联到资产",
 )
 async def associate_node(asset_id: str, node_id: str):
     """
@@ -366,9 +351,8 @@ async def associate_node(asset_id: str, node_id: str):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.ASSET_NOT_FOUND,
-                    details={"asset_id": asset_id}
-                )
+                    ErrorCode.ASSET_NOT_FOUND, details={"asset_id": asset_id}
+                ),
             )
 
         # 关联节点
@@ -378,8 +362,8 @@ async def associate_node(asset_id: str, node_id: str):
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=create_error_response(
                     ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                    details={"message": "Failed to associate node"}
-                )
+                    details={"message": "Failed to associate node"},
+                ),
             )
 
         return {"status": "ok", "node_id": node_id}
@@ -390,9 +374,8 @@ async def associate_node(asset_id: str, node_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -400,7 +383,7 @@ async def associate_node(asset_id: str, node_id: str):
     "/{asset_id}/nodes",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="取消关联节点",
-    description="取消资产与运行节点的关联"
+    description="取消资产与运行节点的关联",
 )
 async def disassociate_node(asset_id: str):
     """
@@ -417,9 +400,8 @@ async def disassociate_node(asset_id: str):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.ASSET_NOT_FOUND,
-                    details={"asset_id": asset_id}
-                )
+                    ErrorCode.ASSET_NOT_FOUND, details={"asset_id": asset_id}
+                ),
             )
 
         # 取消关联
@@ -429,8 +411,8 @@ async def disassociate_node(asset_id: str):
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=create_error_response(
                     ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                    details={"message": "Failed to disassociate node"}
-                )
+                    details={"message": "Failed to disassociate node"},
+                ),
             )
 
         return None
@@ -441,7 +423,6 @@ async def disassociate_node(asset_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )

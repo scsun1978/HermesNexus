@@ -8,9 +8,12 @@ from fastapi import Header, HTTPException, Request, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from shared.security.auth_manager import auth_manager
-from shared.security.permissions import Permission, get_required_permissions, PermissionChecker
+from shared.security.permissions import (
+    Permission,
+    get_required_permissions,
+    PermissionChecker,
+)
 from shared.models.enums import ErrorCode
-
 
 # 安全方案（用于OpenAPI文档）
 security = HTTPBearer(auto_error=False)
@@ -23,7 +26,7 @@ class AuthMiddleware:
     async def get_current_user(
         request: Request,
         authorization: Optional[str] = Header(None),
-        x_api_key: Optional[str] = Header(None)
+        x_api_key: Optional[str] = Header(None),
     ) -> Optional[dict]:
         """
         获取当前用户信息
@@ -45,7 +48,7 @@ class AuthMiddleware:
                 "user_id": "dev-user",
                 "username": "dev-user",
                 "role": "admin",
-                "permissions": ["*"]
+                "permissions": ["*"],
             }
 
         # 提取认证凭据
@@ -75,7 +78,7 @@ class AuthMiddleware:
                         "username": f"api_key_{api_key_info['name']}",
                         "role": "user",
                         "permissions": ["*"],  # API Key有所有权限
-                        "is_api_key": True
+                        "is_api_key": True,
                     }
 
         if not user_info:
@@ -85,17 +88,16 @@ class AuthMiddleware:
                     "error": {
                         "code": ErrorCode.AUTH_INVALID_CREDENTIALS,
                         "message": "Invalid or missing authentication credentials",
-                        "details": "Please provide a valid Bearer token or API key"
+                        "details": "Please provide a valid Bearer token or API key",
                     }
-                }
+                },
             )
 
         return user_info
 
     @staticmethod
     async def require_permissions(
-    request: Request,
-    current_user: dict = Depends(get_current_user)
+        request: Request, current_user: dict = Depends(get_current_user)
     ) -> dict:
         """
         检查用户权限（基于请求路径和方法）
@@ -122,16 +124,18 @@ class AuthMiddleware:
         # 检查权限
         user_permissions = current_user.get("permissions", [])
 
-        if not PermissionChecker.check_any_permission(user_permissions, required_permissions):
+        if not PermissionChecker.check_any_permission(
+            user_permissions, required_permissions
+        ):
             raise HTTPException(
                 status_code=403,
                 detail={
                     "error": {
                         "code": ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS,
                         "message": "Insufficient permissions",
-                        "details": f"Required permissions: {[p.value for p in required_permissions]}"
+                        "details": f"Required permissions: {[p.value for p in required_permissions]}",
                     }
-                }
+                },
             )
 
         return current_user
@@ -147,8 +151,9 @@ class AuthMiddleware:
         Returns:
             FastAPI依赖函数
         """
+
         async def check_permission(
-            current_user: dict = Depends(get_current_user)
+            current_user: dict = Depends(get_current_user),
         ) -> dict:
             user_permissions = current_user.get("permissions", [])
 
@@ -159,9 +164,9 @@ class AuthMiddleware:
                         "error": {
                             "code": ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS,
                             "message": "Insufficient permissions",
-                            "details": f"Required permission: {permission.value}"
+                            "details": f"Required permission: {permission.value}",
                         }
-                    }
+                    },
                 )
 
             return current_user
@@ -179,9 +184,8 @@ class AuthMiddleware:
         Returns:
             FastAPI依赖函数
         """
-        async def check_role(
-            current_user: dict = Depends(get_current_user)
-        ) -> dict:
+
+        async def check_role(current_user: dict = Depends(get_current_user)) -> dict:
             user_role = current_user.get("role")
 
             if user_role != role and user_role != "admin":
@@ -191,9 +195,9 @@ class AuthMiddleware:
                         "error": {
                             "code": ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS,
                             "message": "Insufficient role privileges",
-                            "details": f"Required role: {role}"
+                            "details": f"Required role: {role}",
                         }
-                    }
+                    },
                 )
 
             return current_user
@@ -203,8 +207,7 @@ class AuthMiddleware:
 
 # 便捷依赖函数
 async def get_current_user(
-    authorization: Optional[str] = Header(None),
-    x_api_key: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None), x_api_key: Optional[str] = Header(None)
 ) -> Optional[dict]:
     """
     获取当前用户（可选认证）
@@ -221,7 +224,7 @@ async def get_current_user(
             "user_id": "dev-user",
             "username": "dev-user",
             "role": "admin",
-            "permissions": ["*"]
+            "permissions": ["*"],
         }
 
     token = None
@@ -242,7 +245,7 @@ async def get_current_user(
                 "username": f"api_key_{api_key_info['name']}",
                 "role": "user",
                 "permissions": ["*"],
-                "is_api_key": True
+                "is_api_key": True,
             }
 
     return None
@@ -283,9 +286,9 @@ async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
                 "error": {
                     "code": ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS,
                     "message": "Insufficient role privileges",
-                    "details": f"Required role: admin"
+                    "details": f"Required role: admin",
                 }
-            }
+            },
         )
 
     return current_user

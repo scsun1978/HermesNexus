@@ -9,12 +9,17 @@ from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from shared.models.rollback import (
-    FailureRecord, RecoveryPlan, RecoveryAction,
-    FailureType, FailureSeverity
+    FailureRecord,
+    RecoveryPlan,
+    RecoveryAction,
+    FailureType,
+    FailureSeverity,
 )
 from shared.services.recovery_service import (
-    RecoveryService, RecoveryServiceConfig,
-    get_recovery_service, create_recovery_service
+    RecoveryService,
+    RecoveryServiceConfig,
+    get_recovery_service,
+    create_recovery_service,
 )
 from shared.services.rollback_service import get_rollback_service
 
@@ -37,7 +42,7 @@ class TestRecoveryService:
             "error_message": "服务启动失败",
             "node_id": "node-001",
             "asset_id": "asset-001",
-            "stack_trace": "Traceback (most recent call last):\n  File 'app.py', line 42"
+            "stack_trace": "Traceback (most recent call last):\n  File 'app.py', line 42",
         }
 
     @pytest.fixture
@@ -48,7 +53,7 @@ class TestRecoveryService:
             "failure_type": FailureType.NETWORK_FAILURE,
             "severity": FailureSeverity.LOW,
             "error_message": "网络连接超时",
-            "node_id": "node-002"
+            "node_id": "node-002",
         }
 
     def test_recovery_service_initialization(self, recovery_service):
@@ -63,7 +68,7 @@ class TestRecoveryService:
         config = RecoveryServiceConfig(
             auto_recovery_enabled=False,
             max_concurrent_recoveries=5,
-            recovery_timeout_seconds=1200
+            recovery_timeout_seconds=1200,
         )
 
         service = create_recovery_service(config)
@@ -73,9 +78,13 @@ class TestRecoveryService:
         assert service.config.recovery_timeout_seconds == 1200
 
     @pytest.mark.asyncio
-    async def test_handle_failure_create_record(self, recovery_service, sample_failure_data):
+    async def test_handle_failure_create_record(
+        self, recovery_service, sample_failure_data
+    ):
         """测试故障处理创建记录"""
-        failure = await recovery_service.handle_failure(**sample_failure_data, auto_process=False)
+        failure = await recovery_service.handle_failure(
+            **sample_failure_data, auto_process=False
+        )
 
         assert failure is not None
         assert failure.failure_id.startswith("failure-")
@@ -94,13 +103,13 @@ class TestRecoveryService:
             failure_type=FailureType.EXECUTION_FAILURE,
             severity=FailureSeverity.HIGH,
             error_message="严重执行失败",
-            auto_process=False
+            auto_process=False,
         )
 
         assert high_severity_failure.recovery_action in [
             RecoveryAction.ROLLBACK,
             RecoveryAction.ESCALATE,
-            RecoveryAction.MANUAL_INTERVENTION
+            RecoveryAction.MANUAL_INTERVENTION,
         ]
 
         # 低严重程度的网络故障 -> 可能重试
@@ -109,12 +118,12 @@ class TestRecoveryService:
             failure_type=FailureType.NETWORK_FAILURE,
             severity=FailureSeverity.LOW,
             error_message="网络超时",
-            auto_process=False
+            auto_process=False,
         )
 
         assert low_severity_failure.recovery_action in [
             RecoveryAction.RETRY,
-            RecoveryAction.IGNORE
+            RecoveryAction.IGNORE,
         ]
 
     @pytest.mark.asyncio
@@ -125,26 +134,35 @@ class TestRecoveryService:
             failure_type=FailureType.APPROVAL_REJECTED,
             severity=FailureSeverity.MEDIUM,
             error_message="审批被拒绝",
-            auto_process=False
+            auto_process=False,
         )
 
         # 审批拒绝应该触发回滚
         assert failure.recovery_action == RecoveryAction.ROLLBACK
 
     @pytest.mark.asyncio
-    async def test_handle_failure_auto_process_disabled(self, recovery_service, sample_failure_data):
+    async def test_handle_failure_auto_process_disabled(
+        self, recovery_service, sample_failure_data
+    ):
         """测试禁用自动处理时的故障处理"""
-        failure = await recovery_service.handle_failure(**sample_failure_data, auto_process=False)
+        failure = await recovery_service.handle_failure(
+            **sample_failure_data, auto_process=False
+        )
 
         assert failure.recovery_status == "pending"
 
         # 检查没有创建自动恢复计划
         rollback_service = get_rollback_service()
-        recovery_plans = [p for p in rollback_service._recovery_plans.values()
-                          if p.failure_id == failure.failure_id]
+        recovery_plans = [
+            p
+            for p in rollback_service._recovery_plans.values()
+            if p.failure_id == failure.failure_id
+        ]
         assert len(recovery_plans) == 0
 
-    def test_calculate_priority(self, recovery_service, sample_failure_data, sample_low_severity_failure_data):
+    def test_calculate_priority(
+        self, recovery_service, sample_failure_data, sample_low_severity_failure_data
+    ):
         """测试恢复优先级计算"""
         # 创建两个故障记录（不自动处理）
         high_severity_failure = recovery_service.rollback_service.create_failure_record(
@@ -166,7 +184,9 @@ class TestRecoveryService:
 
     def test_generate_recovery_steps_retry(self, recovery_service, sample_failure_data):
         """测试生成重试恢复步骤"""
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         steps, validation_criteria = recovery_service._generate_recovery_steps(
             failure, RecoveryAction.RETRY
@@ -177,9 +197,13 @@ class TestRecoveryService:
         assert len(validation_criteria) > 0
         assert any("成功" in criterion for criterion in validation_criteria)
 
-    def test_generate_recovery_steps_rollback(self, recovery_service, sample_failure_data):
+    def test_generate_recovery_steps_rollback(
+        self, recovery_service, sample_failure_data
+    ):
         """测试生成回滚恢复步骤"""
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         steps, validation_criteria = recovery_service._generate_recovery_steps(
             failure, RecoveryAction.ROLLBACK
@@ -189,9 +213,13 @@ class TestRecoveryService:
         assert any("回滚" in step for step in steps)
         assert len(validation_criteria) > 0
 
-    def test_generate_recovery_steps_manual_intervention(self, recovery_service, sample_failure_data):
+    def test_generate_recovery_steps_manual_intervention(
+        self, recovery_service, sample_failure_data
+    ):
         """测试生成人工介入恢复步骤"""
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         steps, validation_criteria = recovery_service._generate_recovery_steps(
             failure, RecoveryAction.MANUAL_INTERVENTION
@@ -204,14 +232,16 @@ class TestRecoveryService:
     @pytest.mark.asyncio
     async def test_handle_retry_recovery(self, recovery_service, sample_failure_data):
         """测试重试恢复处理"""
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         # 创建恢复计划
         recovery_plan = recovery_service.rollback_service.create_recovery_plan(
             failure_id=failure.failure_id,
             recovery_action=RecoveryAction.RETRY,
             steps=["检查故障", "重试任务", "验证结果"],
-            validation_criteria=["任务成功"]
+            validation_criteria=["任务成功"],
         )
 
         # 处理恢复计划
@@ -225,14 +255,16 @@ class TestRecoveryService:
     @pytest.mark.asyncio
     async def test_handle_skip_recovery(self, recovery_service, sample_failure_data):
         """测试跳过恢复处理"""
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         # 创建恢复计划
         recovery_plan = recovery_service.rollback_service.create_recovery_plan(
             failure_id=failure.failure_id,
             recovery_action=RecoveryAction.SKIP,
             steps=["评估影响", "标记跳过", "继续执行"],
-            validation_criteria=["后续步骤正常"]
+            validation_criteria=["后续步骤正常"],
         )
 
         # 处理恢复计划
@@ -244,16 +276,20 @@ class TestRecoveryService:
         assert "跳过" in result["message"]
 
     @pytest.mark.asyncio
-    async def test_handle_escalate_recovery(self, recovery_service, sample_failure_data):
+    async def test_handle_escalate_recovery(
+        self, recovery_service, sample_failure_data
+    ):
         """测试升级恢复处理"""
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         # 创建恢复计划
         recovery_plan = recovery_service.rollback_service.create_recovery_plan(
             failure_id=failure.failure_id,
             recovery_action=RecoveryAction.ESCALATE,
             steps=["收集故障信息", "评估升级级别", "通知上级"],
-            validation_criteria=["收到确认"]
+            validation_criteria=["收到确认"],
         )
 
         # 处理恢复计划
@@ -265,20 +301,26 @@ class TestRecoveryService:
         assert "升级" in result["message"]
 
     @pytest.mark.asyncio
-    async def test_handle_manual_intervention_recovery(self, recovery_service, sample_failure_data):
+    async def test_handle_manual_intervention_recovery(
+        self, recovery_service, sample_failure_data
+    ):
         """测试人工介入恢复处理"""
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         # 创建恢复计划
         recovery_plan = recovery_service.rollback_service.create_recovery_plan(
             failure_id=failure.failure_id,
             recovery_action=RecoveryAction.MANUAL_INTERVENTION,
             steps=["暂停操作", "通知人员", "等待处理"],
-            validation_criteria=["人员确认"]
+            validation_criteria=["人员确认"],
         )
 
         # 处理恢复计划
-        result = await recovery_service._handle_manual_intervention(failure, recovery_plan)
+        result = await recovery_service._handle_manual_intervention(
+            failure, recovery_plan
+        )
 
         assert result is not None
         assert isinstance(result, dict)
@@ -313,7 +355,7 @@ class TestRecoveryService:
             task_id="task-002",
             failure_type=FailureType.NETWORK_FAILURE,
             severity=FailureSeverity.LOW,
-            error_message="轻微网络故障"
+            error_message="轻微网络故障",
         )
 
         # 评估忽略风险
@@ -328,9 +370,13 @@ class TestRecoveryService:
         assert assessment["safe_to_ignore"] is True
 
     @pytest.mark.asyncio
-    async def test_assess_ignore_risk_high_severity(self, recovery_service, sample_failure_data):
+    async def test_assess_ignore_risk_high_severity(
+        self, recovery_service, sample_failure_data
+    ):
         """测试高严重程度故障的忽略风险评估"""
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         # 评估忽略风险
         assessment = await recovery_service._assess_ignore_risk(failure)
@@ -341,6 +387,7 @@ class TestRecoveryService:
 
     def test_register_failure_detector(self, recovery_service):
         """测试注册故障检测器"""
+
         # 创建一个模拟的故障检测器
         async def mock_detector():
             return []
@@ -354,15 +401,18 @@ class TestRecoveryService:
     @pytest.mark.asyncio
     async def test_run_failure_detection(self, recovery_service):
         """测试运行故障检测"""
+
         # 创建一个模拟的故障检测器，返回一个故障
         async def mock_detector():
-            return [{
-                "task_id": "task-detected-001",
-                "failure_type": FailureType.TIMEOUT_FAILURE,
-                "severity": FailureSeverity.MEDIUM,
-                "error_message": "检测到超时故障",
-                "auto_process": False
-            }]
+            return [
+                {
+                    "task_id": "task-detected-001",
+                    "failure_type": FailureType.TIMEOUT_FAILURE,
+                    "severity": FailureSeverity.MEDIUM,
+                    "error_message": "检测到超时故障",
+                    "auto_process": False,
+                }
+            ]
 
         # 注册检测器
         recovery_service.register_failure_detector(mock_detector)
@@ -377,13 +427,15 @@ class TestRecoveryService:
     async def test_get_recovery_status(self, recovery_service, sample_failure_data):
         """测试获取恢复状态"""
         # 创建故障和恢复计划
-        failure = recovery_service.rollback_service.create_failure_record(**sample_failure_data)
+        failure = recovery_service.rollback_service.create_failure_record(
+            **sample_failure_data
+        )
 
         recovery_plan = recovery_service.rollback_service.create_recovery_plan(
             failure_id=failure.failure_id,
             recovery_action=RecoveryAction.RETRY,
             steps=["重试任务"],
-            validation_criteria=["成功"]
+            validation_criteria=["成功"],
         )
 
         # 获取恢复状态
@@ -405,7 +457,7 @@ class TestRecoveryService:
         config = RecoveryServiceConfig(
             auto_recovery_enabled=True,
             max_concurrent_recoveries=5,
-            recovery_timeout_seconds=900
+            recovery_timeout_seconds=900,
         )
 
         service = create_recovery_service(config)
@@ -436,7 +488,7 @@ class TestRecoveryServiceIntegration:
             failure_type=FailureType.EXECUTION_FAILURE,
             severity=FailureSeverity.MEDIUM,
             error_message="集成测试故障",
-            auto_process=True
+            auto_process=True,
         )
 
         # 2. 检查故障记录已创建
@@ -448,8 +500,11 @@ class TestRecoveryServiceIntegration:
 
         # 4. 检查恢复计划已创建
         rollback_service = get_rollback_service()
-        recovery_plans = [p for p in rollback_service._recovery_plans.values()
-                          if p.failure_id == failure.failure_id]
+        recovery_plans = [
+            p
+            for p in rollback_service._recovery_plans.values()
+            if p.failure_id == failure.failure_id
+        ]
 
         # 注意：由于我们禁用了自动处理或队列处理需要时间，可能没有恢复计划
         # 这里我们主要验证工作流没有报错
@@ -465,7 +520,7 @@ class TestRecoveryServiceIntegration:
                 failure_type=FailureType.NETWORK_FAILURE,
                 severity=FailureSeverity.LOW,
                 error_message=f"并发测试故障 {i}",
-                auto_process=False
+                auto_process=False,
             )
             failures.append(failure)
 
@@ -484,7 +539,7 @@ class TestRecoveryServiceIntegration:
             failure_type=FailureType.EXECUTION_FAILURE,
             severity=FailureSeverity.CRITICAL,
             error_message="关键故障",
-            auto_process=False
+            auto_process=False,
         )
 
         low_failure = await recovery_service.handle_failure(
@@ -492,7 +547,7 @@ class TestRecoveryServiceIntegration:
             failure_type=FailureType.NETWORK_FAILURE,
             severity=FailureSeverity.LOW,
             error_message="轻微故障",
-            auto_process=False
+            auto_process=False,
         )
 
         # 计算优先级
@@ -503,13 +558,20 @@ class TestRecoveryServiceIntegration:
         assert critical_priority < low_priority
 
 
-@pytest.mark.parametrize("failure_type,severity,expected_action", [
-    (FailureType.EXECUTION_FAILURE, FailureSeverity.LOW, RecoveryAction.RETRY),
-    (FailureType.EXECUTION_FAILURE, FailureSeverity.CRITICAL, RecoveryAction.MANUAL_INTERVENTION),
-    (FailureType.APPROVAL_REJECTED, FailureSeverity.HIGH, RecoveryAction.ROLLBACK),
-    (FailureType.NETWORK_FAILURE, FailureSeverity.LOW, RecoveryAction.RETRY),
-    (FailureType.TIMEOUT_FAILURE, FailureSeverity.MEDIUM, RecoveryAction.ROLLBACK),
-])
+@pytest.mark.parametrize(
+    "failure_type,severity,expected_action",
+    [
+        (FailureType.EXECUTION_FAILURE, FailureSeverity.LOW, RecoveryAction.RETRY),
+        (
+            FailureType.EXECUTION_FAILURE,
+            FailureSeverity.CRITICAL,
+            RecoveryAction.MANUAL_INTERVENTION,
+        ),
+        (FailureType.APPROVAL_REJECTED, FailureSeverity.HIGH, RecoveryAction.ROLLBACK),
+        (FailureType.NETWORK_FAILURE, FailureSeverity.LOW, RecoveryAction.RETRY),
+        (FailureType.TIMEOUT_FAILURE, FailureSeverity.MEDIUM, RecoveryAction.ROLLBACK),
+    ],
+)
 @pytest.mark.asyncio
 async def test_recovery_action_determination(failure_type, severity, expected_action):
     """测试不同故障类型和严重程度的恢复动作确定"""
@@ -520,7 +582,7 @@ async def test_recovery_action_determination(failure_type, severity, expected_ac
         failure_type=failure_type,
         severity=severity,
         error_message="测试故障",
-        auto_process=False
+        auto_process=False,
     )
 
     # 验证恢复动作符合预期（在允许的范围内）

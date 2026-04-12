@@ -22,8 +22,7 @@ from edge.cloud.client import CloudClient
 from edge.storage.storage import EdgeStorage
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -42,10 +41,10 @@ class EdgeNodeIntegrator:
         # 配置参数
         self.config = {
             "heartbeat_interval": 10,  # 心跳间隔（秒）
-            "task_poll_interval": 5,   # 任务轮询间隔（秒）
-            "max_concurrent_tasks": 3, # 最大并发任务数
-            "ssh_timeout": 30,         # SSH超时（秒）
-            "log_level": "INFO"
+            "task_poll_interval": 5,  # 任务轮询间隔（秒）
+            "max_concurrent_tasks": 3,  # 最大并发任务数
+            "ssh_timeout": 30,  # SSH超时（秒）
+            "log_level": "INFO",
         }
 
     async def deploy(self):
@@ -60,8 +59,7 @@ class EdgeNodeIntegrator:
             # 2. 创建云端客户端
             logger.info("2️⃣ 创建云端连接...")
             self.cloud_client = CloudClient(
-                cloud_url=self.cloud_url,
-                node_id=self.node_id
+                cloud_url=self.cloud_url, node_id=self.node_id
             )
 
             # 3. 创建边缘运行时
@@ -70,7 +68,7 @@ class EdgeNodeIntegrator:
                 node_id=self.node_id,
                 cloud_client=self.cloud_client,
                 storage=storage,
-                config=self.config
+                config=self.config,
             )
 
             # 4. 启动边缘节点
@@ -97,11 +95,12 @@ class EdgeNodeIntegrator:
             # 准备注册信息
             registration_data = {
                 "node_name": self.node_id,
-                "capabilities": capabilities or {
+                "capabilities": capabilities
+                or {
                     "ssh": True,
                     "max_tasks": self.config["max_concurrent_tasks"],
-                    "supported_commands": ["exec", "script", "file_transfer"]
-                }
+                    "supported_commands": ["exec", "script", "file_transfer"],
+                },
             }
 
             # 注册节点
@@ -131,7 +130,9 @@ class EdgeNodeIntegrator:
             logger.info(f"运行时状态: {'运行中' if is_running else '未运行'}")
 
             # 检查连接状态
-            is_connected = self.cloud_client.is_connected if self.cloud_client else False
+            is_connected = (
+                self.cloud_client.is_connected if self.cloud_client else False
+            )
             logger.info(f"云端连接: {'已连接' if is_connected else '未连接'}")
 
             # 检查统计信息
@@ -161,7 +162,7 @@ class EdgeNodeIntegrator:
                 "command": test_command,
                 "timeout": 10,
                 "priority": "normal",
-                "created_by": "integration_test"
+                "created_by": "integration_test",
             }
 
             # 执行任务
@@ -260,23 +261,22 @@ class EdgeNodeIntegrator:
 
 async def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description='边缘节点集成脚本')
-    parser.add_argument('--cloud-url', default='http://localhost:8080', help='云端API URL')
-    parser.add_argument('--node-id', help='节点ID')
-    parser.add_argument('--test-device', help='测试设备ID')
-    parser.add_argument('--test-command', default='uptime', help='测试命令')
-    parser.add_argument('--deploy-only', action='store_true', help='仅部署节点')
-    parser.add_argument('--register-only', action='store_true', help='仅注册节点')
-    parser.add_argument('--test-only', action='store_true', help='仅运行测试')
-    parser.add_argument('--monitor', type=int, default=60, help='监控时长（秒）')
+    parser = argparse.ArgumentParser(description="边缘节点集成脚本")
+    parser.add_argument(
+        "--cloud-url", default="http://localhost:8080", help="云端API URL"
+    )
+    parser.add_argument("--node-id", help="节点ID")
+    parser.add_argument("--test-device", help="测试设备ID")
+    parser.add_argument("--test-command", default="uptime", help="测试命令")
+    parser.add_argument("--deploy-only", action="store_true", help="仅部署节点")
+    parser.add_argument("--register-only", action="store_true", help="仅注册节点")
+    parser.add_argument("--test-only", action="store_true", help="仅运行测试")
+    parser.add_argument("--monitor", type=int, default=60, help="监控时长（秒）")
 
     args = parser.parse_args()
 
     # 创建集成器
-    integrator = EdgeNodeIntegrator(
-        cloud_url=args.cloud_url,
-        node_id=args.node_id
-    )
+    integrator = EdgeNodeIntegrator(cloud_url=args.cloud_url, node_id=args.node_id)
 
     try:
         if args.deploy_only:

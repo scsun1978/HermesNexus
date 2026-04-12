@@ -20,8 +20,7 @@ sys.path.insert(0, str(project_root))
 import httpx
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -51,7 +50,7 @@ class FailureScenarios:
             "scenario": scenario,
             "success": success,
             "details": details,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
         self.test_results.append(result)
 
@@ -71,12 +70,11 @@ class FailureScenarios:
                 "command": "echo test",
                 "priority": "normal",
                 "timeout": 10,
-                "created_by": "failure_test"
+                "created_by": "failure_test",
             }
 
             response = await self.client.post(
-                f"{self.cloud_url}/api/v1/jobs",
-                json=task_config
+                f"{self.cloud_url}/api/v1/jobs", json=task_config
             )
 
             if response.status_code == 404:
@@ -86,7 +84,9 @@ class FailureScenarios:
                 self.log_result("无效设备ID", False, "应该拒绝无效设备")
                 return False
             else:
-                self.log_result("无效设备ID", False, f"意外状态码: {response.status_code}")
+                self.log_result(
+                    "无效设备ID", False, f"意外状态码: {response.status_code}"
+                )
                 return False
 
         except Exception as e:
@@ -119,12 +119,11 @@ class FailureScenarios:
                 "command": "/invalid/nonexistent/command",
                 "priority": "normal",
                 "timeout": 10,
-                "created_by": "failure_test"
+                "created_by": "failure_test",
             }
 
             response = await self.client.post(
-                f"{self.cloud_url}/api/v1/jobs",
-                json=task_config
+                f"{self.cloud_url}/api/v1/jobs", json=task_config
             )
 
             if response.status_code in [200, 201]:
@@ -134,20 +133,28 @@ class FailureScenarios:
                 # 等待任务执行并检查结果
                 await asyncio.sleep(15)
 
-                job_response = await self.client.get(f"{self.cloud_url}/api/v1/jobs/{job_id}")
+                job_response = await self.client.get(
+                    f"{self.cloud_url}/api/v1/jobs/{job_id}"
+                )
                 if job_response.status_code == 200:
                     job_status = job_response.json()
                     if job_status.get("status") == "failed":
                         self.log_result("无效命令", True, "任务正确失败")
                         return True
                     else:
-                        self.log_result("无效命令", False, f"任务状态异常: {job_status.get('status')}")
+                        self.log_result(
+                            "无效命令",
+                            False,
+                            f"任务状态异常: {job_status.get('status')}",
+                        )
                         return False
                 else:
                     self.log_result("无效命令", False, "无法获取任务状态")
                     return False
             else:
-                self.log_result("无效命令", False, f"创建任务失败: {response.status_code}")
+                self.log_result(
+                    "无效命令", False, f"创建任务失败: {response.status_code}"
+                )
                 return False
 
         except Exception as e:
@@ -180,12 +187,11 @@ class FailureScenarios:
                 "command": "sleep 100",  # 一个会超时的命令
                 "priority": "normal",
                 "timeout": 5,  # 5秒超时
-                "created_by": "failure_test"
+                "created_by": "failure_test",
             }
 
             response = await self.client.post(
-                f"{self.cloud_url}/api/v1/jobs",
-                json=task_config
+                f"{self.cloud_url}/api/v1/jobs", json=task_config
             )
 
             if response.status_code in [200, 201]:
@@ -195,7 +201,9 @@ class FailureScenarios:
                 # 等待超时发生
                 await asyncio.sleep(10)
 
-                job_response = await self.client.get(f"{self.cloud_url}/api/v1/jobs/{job_id}")
+                job_response = await self.client.get(
+                    f"{self.cloud_url}/api/v1/jobs/{job_id}"
+                )
                 if job_response.status_code == 200:
                     job_status = job_response.json()
                     status = job_status.get("status")
@@ -204,13 +212,17 @@ class FailureScenarios:
                         self.log_result("命令超时", True, f"任务因超时被终止: {status}")
                         return True
                     else:
-                        self.log_result("命令超时", False, f"任务应该因超时失败: {status}")
+                        self.log_result(
+                            "命令超时", False, f"任务应该因超时失败: {status}"
+                        )
                         return False
                 else:
                     self.log_result("命令超时", False, "无法获取任务状态")
                     return False
             else:
-                self.log_result("命令超时", False, f"创建任务失败: {response.status_code}")
+                self.log_result(
+                    "命令超时", False, f"创建任务失败: {response.status_code}"
+                )
                 return False
 
         except Exception as e:
@@ -227,14 +239,14 @@ class FailureScenarios:
                 {
                     "name": "缺少device_id",
                     "type": "basic_exec",
-                    "task_type": "exec"
+                    "task_type": "exec",
                     # 缺少 target_device_id
                 },
                 {
                     "name": "缺少命令",
                     "type": "basic_exec",
                     "task_type": "exec",
-                    "target_device_id": "test-device"
+                    "target_device_id": "test-device",
                     # 缺少 command 或 script
                 },
                 {
@@ -242,21 +254,22 @@ class FailureScenarios:
                     "type": "invalid_type",
                     "task_type": "exec",
                     "target_device_id": "test-device",
-                    "command": "echo test"
-                }
+                    "command": "echo test",
+                },
             ]
 
             all_correctly_rejected = True
             for i, invalid_request in enumerate(invalid_requests):
                 response = await self.client.post(
-                    f"{self.cloud_url}/api/v1/jobs",
-                    json=invalid_request
+                    f"{self.cloud_url}/api/v1/jobs", json=invalid_request
                 )
 
                 if response.status_code == 400:
                     logger.info(f"  ✅ 正确拒绝无效请求 {i+1}")
                 else:
-                    logger.warning(f"  ⚠️  应该拒绝无效请求 {i+1}: {response.status_code}")
+                    logger.warning(
+                        f"  ⚠️  应该拒绝无效请求 {i+1}: {response.status_code}"
+                    )
                     all_correctly_rejected = False
 
             if all_correctly_rejected:
@@ -297,12 +310,11 @@ class FailureScenarios:
                 "command": "sleep 30",
                 "priority": "normal",
                 "timeout": 60,
-                "created_by": "failure_test"
+                "created_by": "failure_test",
             }
 
             response = await self.client.post(
-                f"{self.cloud_url}/api/v1/jobs",
-                json=task_config
+                f"{self.cloud_url}/api/v1/jobs", json=task_config
             )
 
             if response.status_code in [200, 201]:
@@ -315,30 +327,42 @@ class FailureScenarios:
                 # 取消任务
                 cancel_response = await self.client.patch(
                     f"{self.cloud_url}/api/v1/jobs/{job_id}/cancel",
-                    json={"reason": "测试取消"}
+                    json={"reason": "测试取消"},
                 )
 
                 if cancel_response.status_code == 200:
                     # 检查任务状态
                     await asyncio.sleep(2)
 
-                    job_response = await self.client.get(f"{self.cloud_url}/api/v1/jobs/{job_id}")
+                    job_response = await self.client.get(
+                        f"{self.cloud_url}/api/v1/jobs/{job_id}"
+                    )
                     if job_response.status_code == 200:
                         job_status = job_response.json()
                         if job_status.get("status") == "cancelled":
                             self.log_result("取消运行任务", True, "任务成功被取消")
                             return True
                         else:
-                            self.log_result("取消运行任务", False, f"任务状态异常: {job_status.get('status')}")
+                            self.log_result(
+                                "取消运行任务",
+                                False,
+                                f"任务状态异常: {job_status.get('status')}",
+                            )
                             return False
                     else:
                         self.log_result("取消运行任务", False, "无法获取任务状态")
                         return False
                 else:
-                    self.log_result("取消运行任务", False, f"取消请求失败: {cancel_response.status_code}")
+                    self.log_result(
+                        "取消运行任务",
+                        False,
+                        f"取消请求失败: {cancel_response.status_code}",
+                    )
                     return False
             else:
-                self.log_result("取消运行任务", False, f"创建任务失败: {response.status_code}")
+                self.log_result(
+                    "取消运行任务", False, f"创建任务失败: {response.status_code}"
+                )
                 return False
 
         except Exception as e:
@@ -388,12 +412,11 @@ class FailureScenarios:
                     "command": f"echo 'Task {i+1}' && sleep 10",
                     "priority": "normal",
                     "timeout": 15,
-                    "created_by": "resource_test"
+                    "created_by": "resource_test",
                 }
 
                 response = await self.client.post(
-                    f"{self.cloud_url}/api/v1/jobs",
-                    json=task_config
+                    f"{self.cloud_url}/api/v1/jobs", json=task_config
                 )
 
                 if response.status_code in [200, 201]:
@@ -416,11 +439,15 @@ class FailureScenarios:
             for job_id in created_jobs:
                 await self.client.patch(
                     f"{self.cloud_url}/api/v1/jobs/{job_id}/cancel",
-                    json={"reason": "资源测试清理"}
+                    json={"reason": "资源测试清理"},
                 )
 
             if system_healthy:
-                self.log_result("资源耗尽", True, f"系统在高负载下保持健康，创建了{len(created_jobs)}个任务")
+                self.log_result(
+                    "资源耗尽",
+                    True,
+                    f"系统在高负载下保持健康，创建了{len(created_jobs)}个任务",
+                )
                 return True
             else:
                 self.log_result("资源耗尽", False, "系统在高负载下变得不健康")
@@ -441,7 +468,7 @@ class FailureScenarios:
                 ("命令超时", self.test_timeout_command),
                 ("格式错误请求", self.test_malformed_request),
                 ("取消运行任务", self.test_cancel_running_task),
-                ("资源耗尽", self.test_resource_exhaustion)
+                ("资源耗尽", self.test_resource_exhaustion),
             ]
 
             results = []
@@ -491,14 +518,16 @@ class FailureScenarios:
                 "total_tests": len(self.test_results),
                 "passed_tests": sum(1 for r in self.test_results if r["success"]),
                 "failed_tests": sum(1 for r in self.test_results if not r["success"]),
-                "results": self.test_results
+                "results": self.test_results,
             }
 
             logger.info("📋 测试报告:")
             logger.info(f"  总测试数: {report['total_tests']}")
             logger.info(f"  通过: {report['passed_tests']}")
             logger.info(f"  失败: {report['failed_tests']}")
-            logger.info(f"  成功率: {report['passed_tests']/report['total_tests']*100:.1f}%")
+            logger.info(
+                f"  成功率: {report['passed_tests']/report['total_tests']*100:.1f}%"
+            )
 
             return report
 
@@ -509,12 +538,22 @@ class FailureScenarios:
 
 async def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description='失败场景模拟脚本')
-    parser.add_argument('--cloud-url', default='http://localhost:8080', help='云端API URL')
-    parser.add_argument('--scenario', choices=[
-        'invalid_device', 'invalid_command', 'timeout',
-        'malformed_request', 'cancel_task', 'resource_exhaustion'
-    ], help='运行特定场景')
+    parser = argparse.ArgumentParser(description="失败场景模拟脚本")
+    parser.add_argument(
+        "--cloud-url", default="http://localhost:8080", help="云端API URL"
+    )
+    parser.add_argument(
+        "--scenario",
+        choices=[
+            "invalid_device",
+            "invalid_command",
+            "timeout",
+            "malformed_request",
+            "cancel_task",
+            "resource_exhaustion",
+        ],
+        help="运行特定场景",
+    )
 
     args = parser.parse_args()
 
@@ -523,12 +562,12 @@ async def main():
             if args.scenario:
                 # 运行特定场景
                 scenario_methods = {
-                    'invalid_device': tester.test_invalid_device,
-                    'invalid_command': tester.test_invalid_command,
-                    'timeout': tester.test_timeout_command,
-                    'malformed_request': tester.test_malformed_request,
-                    'cancel_task': tester.test_cancel_running_task,
-                    'resource_exhaustion': tester.test_resource_exhaustion
+                    "invalid_device": tester.test_invalid_device,
+                    "invalid_command": tester.test_invalid_command,
+                    "timeout": tester.test_timeout_command,
+                    "malformed_request": tester.test_malformed_request,
+                    "cancel_task": tester.test_cancel_running_task,
+                    "resource_exhaustion": tester.test_resource_exhaustion,
                 }
 
                 method = scenario_methods.get(args.scenario)

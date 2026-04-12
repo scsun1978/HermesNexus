@@ -30,21 +30,19 @@ class NodeTokenService:
 
         # Token配置
         self.token_algorithm = "RS256"  # 非对称加密
-        self.token_expiry_hours = 24      # Token有效期24小时
+        self.token_expiry_hours = 24  # Token有效期24小时
         self.issuer = "hermesnexus-cloud"  # 颁发者
 
     def _generate_private_key(self) -> str:
         """生成RSA密钥对"""
         private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
-            backend=default_backend()
+            public_exponent=65537, key_size=2048, backend=default_backend()
         )
         return private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
-        ).decode('utf-8')
+            encryption_algorithm=serialization.NoEncryption(),
+        ).decode("utf-8")
 
     def _extract_public_key(self) -> str:
         """从私钥提取公钥"""
@@ -53,8 +51,8 @@ class NodeTokenService:
             public_key = private_key.public_key()
             return public_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo
-            ).decode('utf-8')
+                format=serialization.PublicFormat.SubjectPublicKeyInfo,
+            ).decode("utf-8")
         except Exception:
             # 如果私钥无效，生成新密钥对
             return self._generate_private_key()
@@ -62,9 +60,9 @@ class NodeTokenService:
     def _load_pem_key(self, key_string: str):
         """加载PEM格式密钥"""
         from cryptography.hazmat.primitives import serialization
+
         return serialization.load_pem_private_key(
-            key_string.encode('utf-8'),
-            password=None
+            key_string.encode("utf-8"), password=None
         )
 
     def generate_token(self, node_identity: NodeIdentity) -> NodeTokenInfo:
@@ -93,7 +91,7 @@ class NodeTokenService:
             "iat": int(issued_at.timestamp()),
             "exp": int(expires_at.timestamp()),
             "iss": self.issuer,
-            "jti": str(uuid.uuid4())  # Token唯一ID
+            "jti": str(uuid.uuid4()),  # Token唯一ID
         }
 
         # 生成JWT Token
@@ -105,7 +103,7 @@ class NodeTokenService:
             node_id=node_identity.node_id,
             expires_at=expires_at,
             permissions=payload["permissions"],
-            issued_at=issued_at
+            issued_at=issued_at,
         )
 
         return token_info
@@ -125,7 +123,7 @@ class NodeTokenService:
                 token,
                 self.public_key,
                 algorithms=[self.token_algorithm],
-                issuer=self.issuer
+                issuer=self.issuer,
             )
 
             # 检查Token是否过期
@@ -146,7 +144,9 @@ class NodeTokenService:
             print(f"Token verification error: {e}")
             return None
 
-    def refresh_token(self, old_token: str, node_identity: NodeIdentity) -> NodeTokenInfo:
+    def refresh_token(
+        self, old_token: str, node_identity: NodeIdentity
+    ) -> NodeTokenInfo:
         """
         刷新节点Token
 
@@ -193,7 +193,7 @@ class NodeTokenService:
         permissions = [
             NodePermission.HEARTBEAT.value,
             NodePermission.STATUS_REPORT.value,
-            NodePermission.ERROR_REPORT.value
+            NodePermission.ERROR_REPORT.value,
         ]
 
         # 根据节点状态和类型添加权限

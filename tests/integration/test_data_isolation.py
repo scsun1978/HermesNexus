@@ -47,7 +47,7 @@ class TestDataIsolation:
         # 清理数据库连接
         for db in self.databases:
             try:
-                if hasattr(db, 'close'):
+                if hasattr(db, "close"):
                     db.close()
             except Exception as e:
                 print(f"清理数据库连接时出错: {e}")
@@ -76,7 +76,7 @@ class IsolatedTestCase(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """测试类清理 - 清理所有资源"""
-        if hasattr(cls, 'isolation_manager'):
+        if hasattr(cls, "isolation_manager"):
             cls.isolation_manager.cleanup_all()
 
     def setUp(self):
@@ -162,6 +162,7 @@ class TestConcurrencyManager:
     def generate_test_id(prefix: str, index: int) -> str:
         """生成唯一的测试ID"""
         import time
+
         timestamp = int(time.time() * 1000)
         return f"{prefix}_{timestamp}_{index:04d}"
 
@@ -169,6 +170,7 @@ class TestConcurrencyManager:
     def create_isolated_test_data(prefix: str, count: int) -> list:
         """创建相互隔离的测试数据ID"""
         import uuid
+
         return [f"{prefix}_{uuid.uuid4().hex[:8]}" for _ in range(count)]
 
 
@@ -181,9 +183,10 @@ def with_test_data_isolation(test_func):
             # 测试代码，自动使用隔离的测试数据
             pass
     """
+
     def wrapper(self, *args, **kwargs):
         # 在测试执行前创建隔离环境
-        if not hasattr(self, 'db') or self.db is None:
+        if not hasattr(self, "db") or self.db is None:
             self.db = self.isolation_manager.create_temp_database()
 
         try:

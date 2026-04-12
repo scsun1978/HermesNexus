@@ -21,20 +21,17 @@ class RiskAssessor:
         ActionType.GET: RiskLevel.LOW,
         ActionType.QUERY: RiskLevel.LOW,
         ActionType.DESCRIBE: RiskLevel.LOW,
-
         # 修改操作 - 中风险
         ActionType.CREATE: RiskLevel.MEDIUM,
         ActionType.UPDATE: RiskLevel.MEDIUM,
         ActionType.MODIFY: RiskLevel.MEDIUM,
         ActionType.CHANGE: RiskLevel.MEDIUM,
         ActionType.CONFIGURE: RiskLevel.MEDIUM,
-
         # 删除操作 - 高风险
         ActionType.DELETE: RiskLevel.HIGH,
         ActionType.REMOVE: RiskLevel.HIGH,
         ActionType.UNBIND: RiskLevel.HIGH,
         ActionType.DEREGISTER: RiskLevel.HIGH,
-
         # 执行操作 - 中高风险
         ActionType.EXECUTE: RiskLevel.MEDIUM,
         ActionType.START: RiskLevel.MEDIUM,
@@ -42,14 +39,12 @@ class RiskAssessor:
         ActionType.RESTART: RiskLevel.HIGH,
         ActionType.DEPLOY: RiskLevel.HIGH,
         ActionType.ROLLBACK: RiskLevel.HIGH,
-
         # 管理操作 - 高风险
         ActionType.APPROVE: RiskLevel.HIGH,
         ActionType.REJECT: RiskLevel.HIGH,
         ActionType.GRANT: RiskLevel.HIGH,
         ActionType.REVOKE: RiskLevel.HIGH,
         ActionType.ADMIN: RiskLevel.HIGH,
-
         # 节点操作 - 低风险
         ActionType.HEARTBEAT: RiskLevel.LOW,
         ActionType.STATUS: RiskLevel.LOW,
@@ -108,7 +103,7 @@ class RiskAssessor:
         action: ActionType,
         resource: ResourceType,
         context: Optional[Dict[str, Any]] = None,
-        custom_rules: Optional[List[Dict[str, Any]]] = None
+        custom_rules: Optional[List[Dict[str, Any]]] = None,
     ) -> RiskLevel:
         """
         评估操作的风险等级
@@ -165,8 +160,7 @@ class RiskAssessor:
         return action in self.CONFIRMATION_REQUIRED_ACTIONS
 
     def batch_assess_risk(
-        self,
-        operations: List[Dict[str, Any]]
+        self, operations: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """
         批量评估操作风险
@@ -187,13 +181,15 @@ class RiskAssessor:
             needs_approval = self.requires_approval(risk_level)
             needs_confirmation = self.requires_confirmation(action)
 
-            results.append({
-                "action": action,
-                "resource": resource,
-                "risk_level": risk_level,
-                "requires_approval": needs_approval,
-                "requires_confirmation": needs_confirmation
-            })
+            results.append(
+                {
+                    "action": action,
+                    "resource": resource,
+                    "risk_level": risk_level,
+                    "requires_approval": needs_approval,
+                    "requires_confirmation": needs_confirmation,
+                }
+            )
 
         return results
 
@@ -201,7 +197,9 @@ class RiskAssessor:
         """获取操作的基础风险等级"""
         return self.risk_mapping.get(action, RiskLevel.MEDIUM)
 
-    def _apply_resource_factor(self, base_risk: RiskLevel, resource: ResourceType) -> RiskLevel:
+    def _apply_resource_factor(
+        self, base_risk: RiskLevel, resource: ResourceType
+    ) -> RiskLevel:
         """应用资源类型风险调整因子"""
         factor = self.RESOURCE_RISK_FACTORS.get(resource, 1.0)
 
@@ -249,7 +247,7 @@ class RiskAssessor:
         action: ActionType,
         resource: ResourceType,
         context: Optional[Dict[str, Any]],
-        custom_rules: List[Dict[str, Any]]
+        custom_rules: List[Dict[str, Any]],
     ) -> RiskLevel:
         """应用自定义规则调整风险等级"""
         for rule in custom_rules:
@@ -263,10 +261,18 @@ class RiskAssessor:
                 # 应用风险调整
                 risk_adjustment = rule.get("risk_adjustment", 0)
                 if risk_adjustment != 0:
-                    risk_values = {RiskLevel.LOW: 1, RiskLevel.MEDIUM: 2, RiskLevel.HIGH: 3}
+                    risk_values = {
+                        RiskLevel.LOW: 1,
+                        RiskLevel.MEDIUM: 2,
+                        RiskLevel.HIGH: 3,
+                    }
                     current_value = risk_values[current_risk]
                     adjusted_value = max(1, min(3, current_value + risk_adjustment))
-                    value_to_risk = {1: RiskLevel.LOW, 2: RiskLevel.MEDIUM, 3: RiskLevel.HIGH}
+                    value_to_risk = {
+                        1: RiskLevel.LOW,
+                        2: RiskLevel.MEDIUM,
+                        3: RiskLevel.HIGH,
+                    }
                     return value_to_risk[adjusted_value]
 
         return current_risk
@@ -276,7 +282,7 @@ class RiskAssessor:
         rule: Dict[str, Any],
         action: ActionType,
         resource: ResourceType,
-        context: Optional[Dict[str, Any]]
+        context: Optional[Dict[str, Any]],
     ) -> bool:
         """检查自定义规则是否匹配当前操作"""
         # 检查动作匹配
@@ -309,8 +315,7 @@ def get_risk_assessor() -> RiskAssessor:
 
 
 def create_custom_risk_assessor(
-    low_risk_actions: List[ActionType],
-    high_risk_actions: List[ActionType]
+    low_risk_actions: List[ActionType], high_risk_actions: List[ActionType]
 ) -> RiskAssessor:
     """
     创建自定义风险评估器

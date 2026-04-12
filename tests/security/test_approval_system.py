@@ -16,8 +16,13 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from shared.models.approval import (
-    ApprovalRequest, ApprovalDecision, ApprovalComment, ApprovalStatus,
-    ApprovalPriority, ApprovalConfig, ApprovalStateTransition
+    ApprovalRequest,
+    ApprovalDecision,
+    ApprovalComment,
+    ApprovalStatus,
+    ApprovalPriority,
+    ApprovalConfig,
+    ApprovalStateTransition,
 )
 from shared.services.approval_service import ApprovalService, get_approval_service
 
@@ -30,28 +35,44 @@ class TestApprovalModels(unittest.TestCase):
         print("\n[1/5] 测试审批状态转换...")
 
         # 测试有效转换
-        self.assertTrue(ApprovalStateTransition.can_transition(
-            ApprovalStatus.DRAFT, ApprovalStatus.PENDING
-        ))
-        self.assertTrue(ApprovalStateTransition.can_transition(
-            ApprovalStatus.PENDING, ApprovalStatus.APPROVED
-        ))
-        self.assertTrue(ApprovalStateTransition.can_transition(
-            ApprovalStatus.PENDING, ApprovalStatus.REJECTED
-        ))
+        self.assertTrue(
+            ApprovalStateTransition.can_transition(
+                ApprovalStatus.DRAFT, ApprovalStatus.PENDING
+            )
+        )
+        self.assertTrue(
+            ApprovalStateTransition.can_transition(
+                ApprovalStatus.PENDING, ApprovalStatus.APPROVED
+            )
+        )
+        self.assertTrue(
+            ApprovalStateTransition.can_transition(
+                ApprovalStatus.PENDING, ApprovalStatus.REJECTED
+            )
+        )
 
         # 测试无效转换
-        self.assertFalse(ApprovalStateTransition.can_transition(
-            ApprovalStatus.APPROVED, ApprovalStatus.PENDING
-        ))
-        self.assertFalse(ApprovalStateTransition.can_transition(
-            ApprovalStatus.DRAFT, ApprovalStatus.APPROVED
-        ))
+        self.assertFalse(
+            ApprovalStateTransition.can_transition(
+                ApprovalStatus.APPROVED, ApprovalStatus.PENDING
+            )
+        )
+        self.assertFalse(
+            ApprovalStateTransition.can_transition(
+                ApprovalStatus.DRAFT, ApprovalStatus.APPROVED
+            )
+        )
 
         # 测试终态
-        self.assertTrue(ApprovalStateTransition.is_terminal_state(ApprovalStatus.APPROVED))
-        self.assertTrue(ApprovalStateTransition.is_terminal_state(ApprovalStatus.REJECTED))
-        self.assertFalse(ApprovalStateTransition.is_terminal_state(ApprovalStatus.PENDING))
+        self.assertTrue(
+            ApprovalStateTransition.is_terminal_state(ApprovalStatus.APPROVED)
+        )
+        self.assertTrue(
+            ApprovalStateTransition.is_terminal_state(ApprovalStatus.REJECTED)
+        )
+        self.assertFalse(
+            ApprovalStateTransition.is_terminal_state(ApprovalStatus.PENDING)
+        )
 
         print("  ✅ 审批状态转换测试通过")
 
@@ -71,7 +92,7 @@ class TestApprovalModels(unittest.TestCase):
             resource_id="server-001",
             target_operation={"action": "delete", "name": "server-001"},
             risk_level="high",
-            priority=ApprovalPriority.HIGH
+            priority=ApprovalPriority.HIGH,
         )
 
         self.assertEqual(request.request_id, "test-approval-001")
@@ -92,7 +113,7 @@ class TestApprovalModels(unittest.TestCase):
             decision="approve",
             reason="同意执行",
             approver_id="admin-001",
-            approver_name="李四"
+            approver_name="李四",
         )
 
         self.assertEqual(decision.decision, "approve")
@@ -111,7 +132,7 @@ class TestApprovalModels(unittest.TestCase):
             content="请确认是否已备份数据",
             author_id="user-002",
             author_name="王五",
-            is_internal=False
+            is_internal=False,
         )
 
         self.assertEqual(comment.request_id, "approval-001")
@@ -127,7 +148,7 @@ class TestApprovalModels(unittest.TestCase):
         config = ApprovalConfig(
             default_timeout_seconds=3600,
             default_approver_role="admin",
-            notification_enabled=True
+            notification_enabled=True,
         )
 
         self.assertEqual(config.default_timeout_seconds, 3600)
@@ -159,7 +180,7 @@ class TestApprovalService(unittest.TestCase):
             risk_level="high",
             approver_role="tenant_admin",
             resource_id="server-001",
-            priority=ApprovalPriority.HIGH
+            priority=ApprovalPriority.HIGH,
         )
 
         self.assertIsNotNone(request)
@@ -188,7 +209,7 @@ class TestApprovalService(unittest.TestCase):
             resource_type="service",
             target_operation={"service": "core-api"},
             risk_level="medium",
-            approver_role="operator"
+            approver_role="operator",
         )
 
         # 提交请求
@@ -214,7 +235,7 @@ class TestApprovalService(unittest.TestCase):
             resource_type="config",
             target_operation={"config": "database"},
             risk_level="medium",
-            approver_role="admin"
+            approver_role="admin",
         )
         self.service.submit_request(request.request_id)
 
@@ -224,7 +245,7 @@ class TestApprovalService(unittest.TestCase):
             decision="approve",
             reason="配置更新安全，批准执行",
             approver_id="admin-001",
-            approver_name="管理员"
+            approver_name="管理员",
         )
 
         self.assertEqual(approved.status, ApprovalStatus.APPROVED)
@@ -253,7 +274,7 @@ class TestApprovalService(unittest.TestCase):
             resource_type="database",
             target_operation={"database": "prod-db"},
             risk_level="high",
-            approver_role="admin"
+            approver_role="admin",
         )
         self.service.submit_request(request.request_id)
 
@@ -263,7 +284,7 @@ class TestApprovalService(unittest.TestCase):
             decision="reject",
             reason="生产数据库不能删除，风险太高",
             approver_id="admin-001",
-            approver_name="管理员"
+            approver_name="管理员",
         )
 
         self.assertEqual(rejected.status, ApprovalStatus.REJECTED)
@@ -286,7 +307,7 @@ class TestApprovalService(unittest.TestCase):
             resource_type="application",
             target_operation={"version": "v2.0"},
             risk_level="high",
-            approver_role="admin"
+            approver_role="admin",
         )
         self.service.submit_request(request.request_id)
 
@@ -295,7 +316,7 @@ class TestApprovalService(unittest.TestCase):
             request_id=request.request_id,
             withdrawer_id="user-001",
             withdrawer_name="孙七",
-            reason="发现新版本有bug，先撤回"
+            reason="发现新版本有bug，先撤回",
         )
 
         self.assertEqual(withdrawn.status, ApprovalStatus.WITHDRAWN)
@@ -317,7 +338,7 @@ class TestApprovalService(unittest.TestCase):
             resource_type="test",
             target_operation={},
             risk_level="low",
-            approver_role="operator"
+            approver_role="operator",
         )
 
         # 取消请求
@@ -335,7 +356,7 @@ class TestApprovalService(unittest.TestCase):
             resource_type="test",
             target_operation={},
             risk_level="low",
-            approver_role="operator"
+            approver_role="operator",
         )
         self.service.submit_request(submitted.request_id)
 
@@ -359,7 +380,7 @@ class TestApprovalService(unittest.TestCase):
             resource_type="test",
             target_operation={},
             risk_level="medium",
-            approver_role="admin"
+            approver_role="admin",
         )
 
         # 添加评论
@@ -367,14 +388,14 @@ class TestApprovalService(unittest.TestCase):
             request_id=request.request_id,
             content="请确认操作安全性",
             author_id="user-002",
-            author_name="审批人A"
+            author_name="审批人A",
         )
 
         comment2 = self.service.add_comment(
             request_id=request.request_id,
             content="已经做好安全检查",
             author_id="user-001",
-            author_name="郑十"
+            author_name="郑十",
         )
 
         # 获取评论
@@ -401,7 +422,7 @@ class TestApprovalService(unittest.TestCase):
             target_operation={},
             risk_level="medium",
             approver_role="admin",
-            priority=ApprovalPriority.HIGH
+            priority=ApprovalPriority.HIGH,
         )
 
         request2 = self.service.create_request(
@@ -414,7 +435,7 @@ class TestApprovalService(unittest.TestCase):
             target_operation={},
             risk_level="low",
             approver_role="admin",
-            priority=ApprovalPriority.LOW
+            priority=ApprovalPriority.LOW,
         )
 
         # 提交第一个请求
@@ -426,7 +447,9 @@ class TestApprovalService(unittest.TestCase):
         self.assertEqual(pending_requests[0].request_id, request1.request_id)
 
         # 按优先级过滤
-        high_priority_requests = self.service.list_requests(priority=ApprovalPriority.HIGH)
+        high_priority_requests = self.service.list_requests(
+            priority=ApprovalPriority.HIGH
+        )
         self.assertGreaterEqual(len(high_priority_requests), 1)
 
         # 按申请人过滤
@@ -454,7 +477,7 @@ class TestApprovalStatistics(unittest.TestCase):
                 resource_type="test",
                 target_operation={},
                 risk_level=["low", "medium", "high"][i % 3],  # 分散风险等级
-                approver_role="admin"
+                approver_role="admin",
             )
             self.service.submit_request(request.request_id)
 
@@ -467,7 +490,7 @@ class TestApprovalStatistics(unittest.TestCase):
                     decision="approve",
                     reason=f"批准{i}",
                     approver_id="admin-001",
-                    approver_name="管理员"
+                    approver_name="管理员",
                 )
             else:
                 self.service.make_decision(
@@ -475,7 +498,7 @@ class TestApprovalStatistics(unittest.TestCase):
                     decision="reject",
                     reason=f"拒绝{i}",
                     approver_id="admin-001",
-                    approver_name="管理员"
+                    approver_name="管理员",
                 )
 
     def test_01_get_statistics(self):
@@ -507,7 +530,9 @@ class TestApprovalStatistics(unittest.TestCase):
         self.assertGreater(stats.avg_approval_time_seconds, 0)
 
         # 最大时间应该大于等于最小时间
-        self.assertGreaterEqual(stats.max_approval_time_seconds, stats.min_approval_time_seconds)
+        self.assertGreaterEqual(
+            stats.max_approval_time_seconds, stats.min_approval_time_seconds
+        )
 
         print("  ✅ 审批时间统计测试通过")
 
@@ -516,9 +541,7 @@ class TestApprovalStatistics(unittest.TestCase):
         print("\n[3/3] 测试超时检查...")
 
         # 创建一个会超时的配置
-        config = ApprovalConfig(
-            default_timeout_seconds=1  # 1秒超时
-        )
+        config = ApprovalConfig(default_timeout_seconds=1)  # 1秒超时
         service = ApprovalService(config)
 
         # 创建请求并提交
@@ -531,7 +554,7 @@ class TestApprovalStatistics(unittest.TestCase):
             resource_type="test",
             target_operation={},
             risk_level="low",
-            approver_role="admin"
+            approver_role="admin",
         )
         service.submit_request(request.request_id)
 

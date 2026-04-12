@@ -9,11 +9,13 @@ from typing import List, Dict, Any, Optional, Callable
 from datetime import datetime, timedelta, timezone
 
 from shared.models.rollback import (
-    FailureRecord, RecoveryPlan, RecoveryAction,
-    FailureType, FailureSeverity
+    FailureRecord,
+    RecoveryPlan,
+    RecoveryAction,
+    FailureType,
+    FailureSeverity,
 )
 from shared.services.rollback_service import get_rollback_service
-
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +31,7 @@ class RecoveryServiceConfig:
         max_concurrent_recoveries: int = 3,
         recovery_timeout_seconds: int = 600,
         notification_enabled: bool = True,
-        escalation_enabled: bool = True
+        escalation_enabled: bool = True,
     ):
         self.auto_recovery_enabled = auto_recovery_enabled
         self.max_concurrent_recoveries = max_concurrent_recoveries
@@ -66,7 +68,7 @@ class RecoveryService:
             RecoveryAction.SKIP: self._handle_skip,
             RecoveryAction.ESCALATE: self._handle_escalate,
             RecoveryAction.MANUAL_INTERVENTION: self._handle_manual_intervention,
-            RecoveryAction.IGNORE: self._handle_ignore
+            RecoveryAction.IGNORE: self._handle_ignore,
         }
 
         # 故障检测器
@@ -91,7 +93,9 @@ class RecoveryService:
 
         # 等待任务结束
         if self._active_recoveries:
-            await asyncio.gather(*self._active_recoveries.values(), return_exceptions=True)
+            await asyncio.gather(
+                *self._active_recoveries.values(), return_exceptions=True
+            )
 
         logger.info("恢复服务已停止")
 
@@ -104,7 +108,9 @@ class RecoveryService:
                 # 从队列获取恢复任务
                 recovery_plan = await self._recovery_queue.get()
 
-                logger.info(f"工作协程 {worker_id} 开始处理恢复计划: {recovery_plan.plan_id}")
+                logger.info(
+                    f"工作协程 {worker_id} 开始处理恢复计划: {recovery_plan.plan_id}"
+                )
 
                 # 处理恢复计划
                 await self._process_recovery_plan(recovery_plan)
@@ -128,7 +134,7 @@ class RecoveryService:
         stack_trace: Optional[str] = None,
         context: Optional[Dict[str, Any]] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        auto_process: bool = True
+        auto_process: bool = True,
     ) -> FailureRecord:
         """
         处理故障
@@ -157,10 +163,12 @@ class RecoveryService:
             asset_id=asset_id,
             stack_trace=stack_trace,
             context=context,
-            metadata=metadata
+            metadata=metadata,
         )
 
-        logger.info(f"记录故障: {failure.failure_id}, 类型: {failure_type.value}, 严重程度: {severity.value}")
+        logger.info(
+            f"记录故障: {failure.failure_id}, 类型: {failure_type.value}, 严重程度: {severity.value}"
+        )
 
         # 如果启用自动处理且允许自动恢复
         if auto_process and self.config.auto_recovery_enabled:
@@ -182,13 +190,17 @@ class RecoveryService:
         except Exception as e:
             logger.error(f"自动处理故障失败: {str(e)}")
 
-    async def _create_auto_recovery_plan(self, failure: FailureRecord) -> Optional[RecoveryPlan]:
+    async def _create_auto_recovery_plan(
+        self, failure: FailureRecord
+    ) -> Optional[RecoveryPlan]:
         """创建自动恢复计划"""
         # 根据故障类型和严重程度确定恢复策略
         recovery_action = failure.recovery_action
 
         # 生成恢复步骤和验证标准
-        steps, validation_criteria = self._generate_recovery_steps(failure, recovery_action)
+        steps, validation_criteria = self._generate_recovery_steps(
+            failure, recovery_action
+        )
 
         # 创建恢复计划
         plan = self.rollback_service.create_recovery_plan(
@@ -196,15 +208,13 @@ class RecoveryService:
             recovery_action=recovery_action,
             steps=steps,
             validation_criteria=validation_criteria,
-            priority=self._calculate_priority(failure)
+            priority=self._calculate_priority(failure),
         )
 
         return plan
 
     def _generate_recovery_steps(
-        self,
-        failure: FailureRecord,
-        recovery_action: RecoveryAction
+        self, failure: FailureRecord, recovery_action: RecoveryAction
     ) -> tuple[List[str], List[str]]:
         """生成恢复步骤和验证标准"""
         steps = []
@@ -215,7 +225,7 @@ class RecoveryService:
                 "检查故障条件是否仍然存在",
                 "清除错误状态",
                 f"重试任务 {failure.task_id}",
-                "验证执行结果"
+                "验证执行结果",
             ]
             validation_criteria = ["任务执行成功", "无错误日志"]
 
@@ -225,7 +235,7 @@ class RecoveryService:
                 "创建回滚计划",
                 "执行回滚操作",
                 "验证回滚结果",
-                "通知相关人员"
+                "通知相关人员",
             ]
             validation_criteria = ["系统状态恢复正常", "服务可访问"]
 
@@ -234,7 +244,7 @@ class RecoveryService:
                 "评估跳过该操作的影响",
                 "标记操作为已跳过",
                 "继续执行后续步骤",
-                "记录跳过原因"
+                "记录跳过原因",
             ]
             validation_criteria = ["后续步骤能正常执行"]
 
@@ -243,7 +253,7 @@ class RecoveryService:
                 "收集故障详细信息",
                 "评估升级级别",
                 "通知上级处理人员",
-                "提供故障上下文和建议解决方案"
+                "提供故障上下文和建议解决方案",
             ]
             validation_criteria = ["收到处理人员确认"]
 
@@ -253,7 +263,7 @@ class RecoveryService:
                 "收集和记录故障信息",
                 "通知操作人员",
                 "等待人工处理",
-                "记录处理结果"
+                "记录处理结果",
             ]
             validation_criteria = ["操作人员确认问题已解决"]
 
@@ -262,7 +272,7 @@ class RecoveryService:
                 "评估忽略该故障的风险",
                 "记录忽略原因",
                 "添加监控标记",
-                "继续正常操作"
+                "继续正常操作",
             ]
             validation_criteria = ["系统能继续正常运行"]
 
@@ -275,13 +285,16 @@ class RecoveryService:
             FailureSeverity.LOW: 8,
             FailureSeverity.MEDIUM: 5,
             FailureSeverity.HIGH: 3,
-            FailureSeverity.CRITICAL: 1
+            FailureSeverity.CRITICAL: 1,
         }
 
         priority = priority_map.get(failure.severity, 5)
 
         # 根据故障类型调整优先级
-        if failure.failure_type in [FailureType.APPROVAL_REJECTED, FailureType.CONFIGURATION_ERROR]:
+        if failure.failure_type in [
+            FailureType.APPROVAL_REJECTED,
+            FailureType.CONFIGURATION_ERROR,
+        ]:
             priority = max(1, priority - 1)  # 提高优先级
         elif failure.failure_type == FailureType.NETWORK_FAILURE:
             priority = min(10, priority + 1)  # 降低优先级
@@ -337,7 +350,9 @@ class RecoveryService:
 
             logger.error(f"恢复计划失败: {plan_id}, 错误: {str(e)}")
 
-    async def _handle_retry(self, failure: FailureRecord, recovery_plan: RecoveryPlan) -> Dict[str, Any]:
+    async def _handle_retry(
+        self, failure: FailureRecord, recovery_plan: RecoveryPlan
+    ) -> Dict[str, Any]:
         """处理重试恢复"""
         logger.info(f"执行重试恢复: {failure.task_id}")
 
@@ -355,7 +370,9 @@ class RecoveryService:
 
         return {"success": success, "message": message}
 
-    async def _handle_rollback(self, failure: FailureRecord, recovery_plan: RecoveryPlan) -> Dict[str, Any]:
+    async def _handle_rollback(
+        self, failure: FailureRecord, recovery_plan: RecoveryPlan
+    ) -> Dict[str, Any]:
         """处理回滚恢复"""
         logger.info(f"执行回滚恢复: {failure.task_id}")
 
@@ -369,13 +386,12 @@ class RecoveryService:
             rollback_type=self._determine_rollback_type(failure),
             target_resources=[failure.asset_id] if failure.asset_id else [],
             original_task_id=failure.task_id,
-            estimated_duration_seconds=300
+            estimated_duration_seconds=300,
         )
 
         # 执行回滚
         result_plan = await self.rollback_service.execute_rollback_plan(
-            rollback_plan.plan_id,
-            auto_confirm=True
+            rollback_plan.plan_id, auto_confirm=True
         )
 
         success = result_plan.status.value == "completed"
@@ -387,15 +403,23 @@ class RecoveryService:
         """根据故障确定回滚类型"""
         if failure.failure_type == FailureType.CONFIGURATION_ERROR:
             from shared.models.rollback import RollbackType
+
             return RollbackType.CONFIG
-        elif failure.failure_type in [FailureType.EXECUTION_FAILURE, FailureType.TIMEOUT_FAILURE]:
+        elif failure.failure_type in [
+            FailureType.EXECUTION_FAILURE,
+            FailureType.TIMEOUT_FAILURE,
+        ]:
             from shared.models.rollback import RollbackType
+
             return RollbackType.SERVICE
         else:
             from shared.models.rollback import RollbackType
+
             return RollbackType.TASK
 
-    async def _handle_skip(self, failure: FailureRecord, recovery_plan: RecoveryPlan) -> Dict[str, Any]:
+    async def _handle_skip(
+        self, failure: FailureRecord, recovery_plan: RecoveryPlan
+    ) -> Dict[str, Any]:
         """处理跳过恢复"""
         logger.info(f"执行跳过恢复: {failure.task_id}")
 
@@ -407,7 +431,9 @@ class RecoveryService:
 
         return {"success": success, "message": message}
 
-    async def _handle_escalate(self, failure: FailureRecord, recovery_plan: RecoveryPlan) -> Dict[str, Any]:
+    async def _handle_escalate(
+        self, failure: FailureRecord, recovery_plan: RecoveryPlan
+    ) -> Dict[str, Any]:
         """处理升级恢复"""
         logger.info(f"执行升级恢复: {failure.task_id}")
 
@@ -437,7 +463,9 @@ class RecoveryService:
         logger.info(f"发送升级通知: 故障 {failure.failure_id}, 级别 {level}")
         await asyncio.sleep(0.5)  # 模拟发送通知
 
-    async def _handle_manual_intervention(self, failure: FailureRecord, recovery_plan: RecoveryPlan) -> Dict[str, Any]:
+    async def _handle_manual_intervention(
+        self, failure: FailureRecord, recovery_plan: RecoveryPlan
+    ) -> Dict[str, Any]:
         """处理人工介入恢复"""
         logger.info(f"执行人工介入恢复: {failure.task_id}")
 
@@ -455,7 +483,9 @@ class RecoveryService:
         logger.info(f"发送人工介入通知: 故障 {failure.failure_id}")
         await asyncio.sleep(0.5)  # 模拟发送通知
 
-    async def _handle_ignore(self, failure: FailureRecord, recovery_plan: RecoveryPlan) -> Dict[str, Any]:
+    async def _handle_ignore(
+        self, failure: FailureRecord, recovery_plan: RecoveryPlan
+    ) -> Dict[str, Any]:
         """处理忽略恢复"""
         logger.info(f"执行忽略恢复: {failure.task_id}")
 
@@ -531,7 +561,7 @@ class RecoveryService:
             "result_message": plan.result_message,
             "created_at": plan.created_at,
             "started_at": plan.started_at,
-            "completed_at": plan.completed_at
+            "completed_at": plan.completed_at,
         }
 
 

@@ -8,19 +8,20 @@ from typing import List, Optional
 from datetime import datetime
 
 from shared.models.audit import (
-    AuditLog, AuditLogCreateRequest,
-    AuditLogQueryParams, AuditLogListResponse, AuditStats,
+    AuditLog,
+    AuditLogCreateRequest,
+    AuditLogQueryParams,
+    AuditLogListResponse,
+    AuditStats,
     AuditExportRequest,
-    AuditAction, AuditCategory, EventLevel
+    AuditAction,
+    AuditCategory,
+    EventLevel,
 )
 from shared.services.audit_service import get_audit_service
 from shared.models.enums import ErrorCode, create_error_response
 
-
-router = APIRouter(
-    prefix="/api/v1/audit_logs",
-    tags=["audit_logs"]
-)
+router = APIRouter(prefix="/api/v1/audit_logs", tags=["audit_logs"])
 
 
 def get_current_user(authorization: Optional[str] = None) -> str:
@@ -48,11 +49,10 @@ def get_client_info(request) -> tuple:
     response_model=AuditLog,
     status_code=status.HTTP_201_CREATED,
     summary="记录审计日志",
-    description="记录新的审计日志事件"
+    description="记录新的审计日志事件",
 )
 async def create_audit_log(
-    request: AuditLogCreateRequest,
-    authorization: Optional[str] = Header(None)
+    request: AuditLogCreateRequest, authorization: Optional[str] = Header(None)
 ):
     """
     记录审计日志
@@ -74,9 +74,8 @@ async def create_audit_log(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -84,7 +83,7 @@ async def create_audit_log(
     "",
     response_model=AuditLogListResponse,
     summary="查询审计日志",
-    description="获取审计日志列表，支持分页、搜索和过滤"
+    description="获取审计日志列表，支持分页、搜索和过滤",
 )
 async def query_audit_logs(
     action: Optional[AuditAction] = Query(None, description="按动作类型过滤"),
@@ -102,7 +101,7 @@ async def query_audit_logs(
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(50, ge=1, le=500, description="每页大小"),
     sort_by: str = Query("timestamp", description="排序字段"),
-    sort_order: str = Query("desc", regex="^(asc|desc)$", description="排序方向")
+    sort_order: str = Query("desc", regex="^(asc|desc)$", description="排序方向"),
 ):
     """
     查询审计日志
@@ -144,7 +143,7 @@ async def query_audit_logs(
             page=page,
             page_size=page_size,
             sort_by=sort_by,
-            sort_order=sort_order
+            sort_order=sort_order,
         )
 
         return service.query_logs(params)
@@ -152,9 +151,8 @@ async def query_audit_logs(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -162,7 +160,7 @@ async def query_audit_logs(
     "/stats",
     response_model=AuditStats,
     summary="获取审计统计",
-    description="获取审计日志统计信息"
+    description="获取审计日志统计信息",
 )
 async def get_audit_stats():
     """
@@ -183,9 +181,8 @@ async def get_audit_stats():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -193,11 +190,10 @@ async def get_audit_stats():
     "/tasks/{task_id}",
     response_model=List[AuditLog],
     summary="获取任务审计日志",
-    description="获取特定任务的所有审计日志"
+    description="获取特定任务的所有审计日志",
 )
 async def get_task_audit_logs(
-    task_id: str,
-    limit: int = Query(100, ge=1, le=1000, description="最大返回数量")
+    task_id: str, limit: int = Query(100, ge=1, le=1000, description="最大返回数量")
 ):
     """
     获取任务审计日志
@@ -215,9 +211,8 @@ async def get_task_audit_logs(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -225,11 +220,10 @@ async def get_task_audit_logs(
     "/nodes/{node_id}",
     response_model=List[AuditLog],
     summary="获取节点审计日志",
-    description="获取特定节点的所有审计日志"
+    description="获取特定节点的所有审计日志",
 )
 async def get_node_audit_logs(
-    node_id: str,
-    limit: int = Query(100, ge=1, le=1000, description="最大返回数量")
+    node_id: str, limit: int = Query(100, ge=1, le=1000, description="最大返回数量")
 ):
     """
     获取节点审计日志
@@ -247,9 +241,8 @@ async def get_node_audit_logs(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -257,11 +250,10 @@ async def get_node_audit_logs(
     "/assets/{asset_id}",
     response_model=List[AuditLog],
     summary="获取资产审计日志",
-    description="获取特定资产的所有审计日志"
+    description="获取特定资产的所有审计日志",
 )
 async def get_asset_audit_logs(
-    asset_id: str,
-    limit: int = Query(100, ge=1, le=1000, description="最大返回数量")
+    asset_id: str, limit: int = Query(100, ge=1, le=1000, description="最大返回数量")
 ):
     """
     获取资产审计日志
@@ -279,9 +271,8 @@ async def get_asset_audit_logs(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -289,7 +280,7 @@ async def get_asset_audit_logs(
     "/export",
     status_code=status.HTTP_200_OK,
     summary="导出审计日志",
-    description="导出审计日志为 JSON 或 CSV 格式"
+    description="导出审计日志为 JSON 或 CSV 格式",
 )
 async def export_audit_logs(request: AuditExportRequest):
     """
@@ -310,6 +301,7 @@ async def export_audit_logs(request: AuditExportRequest):
         # 设置默认时间范围（如果未指定）
         if not request.start_time and not request.end_time:
             from datetime import timedelta
+
             request.end_time = datetime.utcnow()
             request.start_time = request.end_time - timedelta(days=7)
 
@@ -319,28 +311,26 @@ async def export_audit_logs(request: AuditExportRequest):
         from fastapi.responses import Response
 
         media_type = "application/json" if request.format == "json" else "text/csv"
-        filename = f"audit_logs_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.{request.format}"
+        filename = (
+            f"audit_logs_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.{request.format}"
+        )
 
         return Response(
             content=content,
             media_type=media_type,
-            headers={
-                "Content-Disposition": f"attachment; filename={filename}"
-            }
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
         )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=create_error_response(
-                ErrorCode.VALIDATION_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.VALIDATION_ERROR, details={"error": str(e)}
+            ),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )

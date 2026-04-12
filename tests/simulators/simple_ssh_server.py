@@ -21,8 +21,7 @@ except ImportError:
     sys.exit(1)
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -36,7 +35,7 @@ class SimpleSSHServer(paramiko.ServerInterface):
         self.event = threading.Event()
 
     def check_channel_request(self, kind, chanid):
-        if kind == 'session':
+        if kind == "session":
             return paramiko.OPEN_SUCCEEDED
         return paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
 
@@ -51,20 +50,22 @@ class SimpleSSHServer(paramiko.ServerInterface):
         return paramiko.AUTH_SUCCESSFUL
 
     def get_allowed_auths(self, username):
-        return 'password,publickey'
+        return "password,publickey"
 
     def check_channel_shell_request(self, channel):
         self.event.set()
         return True
 
-    def check_channel_pty_request(self, channel, term, width, height, pixelwidth, pixelheight, modes):
+    def check_channel_pty_request(
+        self, channel, term, width, height, pixelwidth, pixelheight, modes
+    ):
         return True
 
 
 class SSHTestServer:
     """SSH测试服务器"""
 
-    def __init__(self, host='0.0.0.0', port=2222, host_key_path=None):
+    def __init__(self, host="0.0.0.0", port=2222, host_key_path=None):
         self.host = host
         self.port = port
         self.running = False
@@ -128,7 +129,7 @@ class SSHTestServer:
                     thread = threading.Thread(
                         target=self._handle_client,
                         args=(client_sock, client_addr),
-                        daemon=True
+                        daemon=True,
                     )
                     thread.start()
                     self.client_threads.append(thread)
@@ -158,8 +159,12 @@ class SSHTestServer:
         """更新系统状态"""
         while self.running:
             # 随机波动系统资源使用率
-            self.cpu_usage = max(10.0, min(90.0, self.cpu_usage + random.uniform(-3, 3)))
-            self.memory_usage = max(15.0, min(85.0, self.memory_usage + random.uniform(-2, 2)))
+            self.cpu_usage = max(
+                10.0, min(90.0, self.cpu_usage + random.uniform(-3, 3))
+            )
+            self.memory_usage = max(
+                15.0, min(85.0, self.memory_usage + random.uniform(-2, 2))
+            )
             time.sleep(5)
 
     def _handle_client(self, client_sock, client_addr):
@@ -188,7 +193,9 @@ class SSHTestServer:
                 if transport.is_active():
                     # 发送欢迎信息
                     chan.send(f"Welcome to {self.hostname}\\n")
-                    chan.send(f"Last login: {datetime.now().strftime('%a %b %d %H:%M:%S %Y')} from {client_addr[0]}\\n")
+                    chan.send(
+                        f"Last login: {datetime.now().strftime('%a %b %d %H:%M:%S %Y')} from {client_addr[0]}\\n"
+                    )
                     chan.send(f"{self.hostname}$ ")
 
                     # 命令循环
@@ -218,19 +225,23 @@ class SSHTestServer:
                         break
 
                     # 处理输入
-                    buffer += data.decode('utf-8', errors='ignore')
+                    buffer += data.decode("utf-8", errors="ignore")
 
                     # 处理完整命令
-                    while '\\n' in buffer or '\\r' in buffer:
-                        line_end = buffer.find('\\n') if '\\n' in buffer else buffer.find('\\r')
+                    while "\\n" in buffer or "\\r" in buffer:
+                        line_end = (
+                            buffer.find("\\n")
+                            if "\\n" in buffer
+                            else buffer.find("\\r")
+                        )
                         command = buffer[:line_end].strip()
-                        buffer = buffer[line_end + 1:]
+                        buffer = buffer[line_end + 1 :]
 
                         if command:
                             logger.info(f"📝 命令: {command}")
 
                             # 执行命令
-                            if command in ['exit', 'quit']:
+                            if command in ["exit", "quit"]:
                                 chan.send("Goodbye!\\n")
                                 chan.close()
                                 return
@@ -314,11 +325,7 @@ class SSHTestServer:
                 # 尝试执行实际命令（小心使用）
                 try:
                     result = subprocess.run(
-                        command,
-                        shell=True,
-                        capture_output=True,
-                        text=True,
-                        timeout=5
+                        command, shell=True, capture_output=True, text=True, timeout=5
                     )
                     if result.returncode == 0:
                         return result.stdout.strip() or "Command completed"
@@ -335,10 +342,10 @@ def main():
     """主函数"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='SSH测试服务器')
-    parser.add_argument('--host', default='0.0.0.0', help='监听地址')
-    parser.add_argument('--port', type=int, default=2222, help='监听端口')
-    parser.add_argument('--key', help='主机密钥文件路径')
+    parser = argparse.ArgumentParser(description="SSH测试服务器")
+    parser.add_argument("--host", default="0.0.0.0", help="监听地址")
+    parser.add_argument("--port", type=int, default=2222, help="监听端口")
+    parser.add_argument("--key", help="主机密钥文件路径")
 
     args = parser.parse_args()
 

@@ -84,6 +84,7 @@ class PerformanceTester:
 
         try:
             async with httpx.AsyncClient(timeout=60.0) as client:
+
                 async def user_requests(user_id):
                     """模拟单个用户的多个请求"""
                     user_times = []
@@ -92,7 +93,9 @@ class PerformanceTester:
                     for i in range(requests_per_user):
                         try:
                             start = time.time()
-                            response = await client.get(f"{self.cloud_url}/api/v1/nodes")
+                            response = await client.get(
+                                f"{self.cloud_url}/api/v1/nodes"
+                            )
                             end = time.time()
 
                             if response.status_code == 200:
@@ -109,9 +112,9 @@ class PerformanceTester:
 
                 # 并发执行用户请求
                 start_time = time.time()
-                results = await asyncio.gather(*[
-                    user_requests(user_id) for user_id in range(concurrent_users)
-                ])
+                results = await asyncio.gather(
+                    *[user_requests(user_id) for user_id in range(concurrent_users)]
+                )
                 end_time = time.time()
 
                 total_time = end_time - start_time
@@ -124,7 +127,9 @@ class PerformanceTester:
 
                 print(f"\n   📊 并发测试结果:")
                 print(f"      总时间: {total_time:.2f}s")
-                print(f"      成功率: {total_success}/{total_requests} ({total_success/total_requests*100:.1f}%)")
+                print(
+                    f"      成功率: {total_success}/{total_requests} ({total_success/total_requests*100:.1f}%)"
+                )
                 print(f"      吞吐量: {total_success/total_time:.2f} 请求/秒")
 
                 if all_times:
@@ -159,10 +164,9 @@ class PerformanceTester:
             write_times = []
             for i in range(operations):
                 start = time.time()
-                db.add_node(f"perf-test-{i}", {
-                    "node_id": f"perf-test-{i}",
-                    "status": "online"
-                })
+                db.add_node(
+                    f"perf-test-{i}", {"node_id": f"perf-test-{i}", "status": "online"}
+                )
                 end = time.time()
                 write_times.append((end - start) * 1000)  # 毫秒
 
@@ -215,6 +219,7 @@ class PerformanceTester:
 
         try:
             import psutil
+
             process = psutil.Process()
 
             # 获取当前内存使用
@@ -248,13 +253,13 @@ class PerformanceTester:
     async def run_performance_tests(self):
         """运行所有性能测试"""
         print("🚀 开始性能和压力测试")
-        print("="*60)
+        print("=" * 60)
 
         tests = [
             ("API响应时间", self.test_api_response_time),
             ("并发请求", self.test_concurrent_requests),
             ("数据库性能", self.test_database_performance),
-            ("内存使用", self.test_memory_usage)
+            ("内存使用", self.test_memory_usage),
         ]
 
         for test_name, test_func in tests:
@@ -275,9 +280,9 @@ class PerformanceTester:
 
     async def generate_performance_report(self):
         """生成性能测试报告"""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("📊 性能测试报告")
-        print("="*60)
+        print("=" * 60)
 
         print("\n🎯 性能指标总结:")
 
@@ -285,7 +290,7 @@ class PerformanceTester:
             "excellent": "✅ 优秀",
             "good": "✅ 良好",
             "needs_improvement": "⚠️  需要改进",
-            "needs_monitoring": "⚠️  需要监控"
+            "needs_monitoring": "⚠️  需要监控",
         }
 
         for test_name, result in self.results.items():
@@ -293,7 +298,9 @@ class PerformanceTester:
             print(f"{status} {test_name}")
 
         # 计算总体评分
-        excellent_count = sum(1 for result in self.results.values() if result == "excellent")
+        excellent_count = sum(
+            1 for result in self.results.values() if result == "excellent"
+        )
         good_count = sum(1 for result in self.results.values() if result == "good")
         total_count = len(self.results)
 
@@ -313,9 +320,11 @@ async def main():
     """主函数"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='HermesNexus 性能测试')
-    parser.add_argument('--cloud-url', default='http://localhost:8080', help='云端API URL')
-    parser.add_argument('--quick', action='store_true', help='快速性能测试')
+    parser = argparse.ArgumentParser(description="HermesNexus 性能测试")
+    parser.add_argument(
+        "--cloud-url", default="http://localhost:8080", help="云端API URL"
+    )
+    parser.add_argument("--quick", action="store_true", help="快速性能测试")
 
     args = parser.parse_args()
 

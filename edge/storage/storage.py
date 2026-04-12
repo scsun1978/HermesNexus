@@ -40,11 +40,13 @@ class EdgeStorage:
         """加载持久化状态"""
         try:
             if self.tasks_file.exists():
-                with open(self.tasks_file, 'r') as f:
+                with open(self.tasks_file, "r") as f:
                     data = json.load(f)
                     # 恢复任务状态
                     for task_id, task_data in data.get("tasks", {}).items():
-                        self.task_status[task_id] = task_data.get("status", JobStatus.PENDING)
+                        self.task_status[task_id] = task_data.get(
+                            "status", JobStatus.PENDING
+                        )
                 logger.info(f"✅ 加载了 {len(self.task_status)} 个任务状态")
         except Exception as e:
             logger.warning(f"⚠️  加载状态失败: {e}")
@@ -57,9 +59,9 @@ class EdgeStorage:
                     task_id: {"status": status}
                     for task_id, status in self.task_status.items()
                 },
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": datetime.now(timezone.utc).isoformat(),
             }
-            with open(self.tasks_file, 'w') as f:
+            with open(self.tasks_file, "w") as f:
                 json.dump(state, f, indent=2)
         except Exception as e:
             logger.error(f"❌ 保存状态失败: {e}")
@@ -83,7 +85,8 @@ class EdgeStorage:
     def get_pending_tasks(self) -> List[TaskMessage]:
         """获取待处理任务"""
         return [
-            task for task_id, task in self.tasks.items()
+            task
+            for task_id, task in self.tasks.items()
             if self.task_status.get(task_id) == JobStatus.PENDING
         ]
 
@@ -118,10 +121,18 @@ class EdgeStorage:
     def get_stats(self) -> Dict[str, Any]:
         """获取统计信息"""
         total_tasks = len(self.tasks)
-        pending_tasks = len([t for t, s in self.task_status.items() if s == JobStatus.PENDING])
-        running_tasks = len([t for t, s in self.task_status.items() if s == JobStatus.RUNNING])
-        success_tasks = len([t for t, s in self.task_status.items() if s == JobStatus.SUCCESS])
-        failed_tasks = len([t for t, s in self.task_status.items() if s in JobStatus.FAILED])
+        pending_tasks = len(
+            [t for t, s in self.task_status.items() if s == JobStatus.PENDING]
+        )
+        running_tasks = len(
+            [t for t, s in self.task_status.items() if s == JobStatus.RUNNING]
+        )
+        success_tasks = len(
+            [t for t, s in self.task_status.items() if s == JobStatus.SUCCESS]
+        )
+        failed_tasks = len(
+            [t for t, s in self.task_status.items() if s in JobStatus.FAILED]
+        )
 
         return {
             "total_tasks": total_tasks,
@@ -129,7 +140,7 @@ class EdgeStorage:
             "running_tasks": running_tasks,
             "success_tasks": success_tasks,
             "failed_tasks": failed_tasks,
-            "active_tasks": pending_tasks + running_tasks
+            "active_tasks": pending_tasks + running_tasks,
         }
 
     def cleanup_old_tasks(self, keep_count: int = 100):
@@ -137,10 +148,7 @@ class EdgeStorage:
         try:
             if len(self.tasks) > keep_count:
                 # 按时间排序，删除最老的任务
-                sorted_tasks = sorted(
-                    self.tasks.items(),
-                    key=lambda x: x[1].timestamp
-                )
+                sorted_tasks = sorted(self.tasks.items(), key=lambda x: x[1].timestamp)
                 tasks_to_remove = sorted_tasks[:-keep_count]
 
                 for task_id, _ in tasks_to_remove:

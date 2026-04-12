@@ -57,6 +57,7 @@ class ActionType(str, Enum):
 
 class ResourceType(str, Enum):
     """资源类型枚举"""
+
     ASSET = "asset"  # 资产/设备
     TASK = "task"  # 任务
     NODE = "node"  # 节点
@@ -71,6 +72,7 @@ class ResourceType(str, Enum):
 
 class RiskLevel(str, Enum):
     """风险等级枚举"""
+
     LOW = "low"  # 低风险：查询操作
     MEDIUM = "medium"  # 中风险：修改操作
     HIGH = "high"  # 高风险：删除、关键变更
@@ -92,7 +94,7 @@ class Permission(BaseModel):
                 "resource": "asset",
                 "conditions": {"tenant_id": "tenant-001"},
                 "risk_level": "low",
-                "description": "查询租户内的资产信息"
+                "description": "查询租户内的资产信息",
             }
         }
 
@@ -111,15 +113,21 @@ class PermissionContext(BaseModel):
     zone_ids: List[str] = Field(default_factory=list, description="可用区域列表")
 
     # 资源限制
-    allowed_asset_types: List[str] = Field(default_factory=list, description="允许操作的设备类型")
-    allowed_regions: List[str] = Field(default_factory=list, description="允许操作的区域")
+    allowed_asset_types: List[str] = Field(
+        default_factory=list, description="允许操作的设备类型"
+    )
+    allowed_regions: List[str] = Field(
+        default_factory=list, description="允许操作的区域"
+    )
 
     # 时间限制
     not_before: Optional[int] = Field(None, description="权限生效时间（Unix时间戳）")
     not_after: Optional[int] = Field(None, description="权限失效时间（Unix时间戳）")
 
     # 额外属性
-    attributes: Dict[str, Any] = Field(default_factory=dict, description="额外的权限属性")
+    attributes: Dict[str, Any] = Field(
+        default_factory=dict, description="额外的权限属性"
+    )
 
     class Config:
         json_schema_extra = {
@@ -131,7 +139,7 @@ class PermissionContext(BaseModel):
                 "region_id": "region-cn-east",
                 "zone_ids": ["zone-shanghai", "zone-hangzhou"],
                 "allowed_asset_types": ["server", "switch"],
-                "allowed_regions": ["cn-east", "cn-south"]
+                "allowed_regions": ["cn-east", "cn-south"],
             }
         }
 
@@ -143,7 +151,9 @@ class PermissionCheckResult(BaseModel):
     reason: str = Field(default="", description="拒绝原因（如果拒绝）")
     risk_level: RiskLevel = Field(..., description="操作风险等级")
     requires_approval: bool = Field(default=False, description="是否需要审批")
-    missing_permissions: List[str] = Field(default_factory=list, description="缺失的权限列表")
+    missing_permissions: List[str] = Field(
+        default_factory=list, description="缺失的权限列表"
+    )
 
     class Config:
         json_schema_extra = {
@@ -152,7 +162,7 @@ class PermissionCheckResult(BaseModel):
                 "reason": "用户角色 insufficient_permissions",
                 "risk_level": "high",
                 "requires_approval": True,
-                "missing_permissions": ["asset.delete", "asset.admin"]
+                "missing_permissions": ["asset.delete", "asset.admin"],
             }
         }
 
@@ -166,30 +176,25 @@ class PermissionMatrix(BaseModel):
 
     # 角色到权限的映射
     role_permissions: Dict[str, List[Permission]] = Field(
-        default_factory=dict,
-        description="角色权限映射: role_name -> [Permission]"
+        default_factory=dict, description="角色权限映射: role_name -> [Permission]"
     )
 
     # 全局策略
     default_policy: str = Field(
-        default="deny",
-        description="默认策略: allow(默认允许) / deny(默认拒绝)"
+        default="deny", description="默认策略: allow(默认允许) / deny(默认拒绝)"
     )
 
     # 白名单和黑名单
     whitelist: List[str] = Field(
-        default_factory=list,
-        description="白名单：无条件允许的权限表达式"
+        default_factory=list, description="白名单：无条件允许的权限表达式"
     )
     blacklist: List[str] = Field(
-        default_factory=list,
-        description="黑名单：无条件拒绝的权限表达式"
+        default_factory=list, description="黑名单：无条件拒绝的权限表达式"
     )
 
     # 高危动作定义
     high_risk_actions: List[str] = Field(
-        default_factory=list,
-        description="高风险动作列表"
+        default_factory=list, description="高风险动作列表"
     )
 
     # 版本控制
@@ -204,31 +209,21 @@ class PermissionMatrix(BaseModel):
                 "name": "默认权限矩阵",
                 "description": "系统默认的权限控制矩阵",
                 "role_permissions": {
-                    "admin": [
-                        {
-                            "action": "*",
-                            "resource": "*",
-                            "risk_level": "low"
-                        }
-                    ],
+                    "admin": [{"action": "*", "resource": "*", "risk_level": "low"}],
                     "operator": [
-                        {
-                            "action": "read",
-                            "resource": "asset",
-                            "risk_level": "low"
-                        },
+                        {"action": "read", "resource": "asset", "risk_level": "low"},
                         {
                             "action": "update",
                             "resource": "task",
-                            "risk_level": "medium"
-                        }
-                    ]
+                            "risk_level": "medium",
+                        },
+                    ],
                 },
                 "default_policy": "deny",
                 "whitelist": ["health.check"],
                 "blacklist": ["system.shutdown", "data.delete_all"],
                 "high_risk_actions": ["delete", "deregister", "restart", "rollback"],
-                "version": "1.0.0"
+                "version": "1.0.0",
             }
         }
 
@@ -251,37 +246,115 @@ class CommonPermissions:
 
     # 只读权限
     READ_ONLY = [
-        Permission(action=ActionType.READ, resource=ResourceType.ASSET, risk_level=RiskLevel.LOW),
-        Permission(action=ActionType.LIST, resource=ResourceType.ASSET, risk_level=RiskLevel.LOW),
-        Permission(action=ActionType.READ, resource=ResourceType.TASK, risk_level=RiskLevel.LOW),
-        Permission(action=ActionType.LIST, resource=ResourceType.TASK, risk_level=RiskLevel.LOW),
+        Permission(
+            action=ActionType.READ,
+            resource=ResourceType.ASSET,
+            risk_level=RiskLevel.LOW,
+        ),
+        Permission(
+            action=ActionType.LIST,
+            resource=ResourceType.ASSET,
+            risk_level=RiskLevel.LOW,
+        ),
+        Permission(
+            action=ActionType.READ, resource=ResourceType.TASK, risk_level=RiskLevel.LOW
+        ),
+        Permission(
+            action=ActionType.LIST, resource=ResourceType.TASK, risk_level=RiskLevel.LOW
+        ),
     ]
 
     # 操作员权限
     OPERATOR = [
-        Permission(action=ActionType.READ, resource=ResourceType.ASSET, risk_level=RiskLevel.LOW),
-        Permission(action=ActionType.LIST, resource=ResourceType.ASSET, risk_level=RiskLevel.LOW),
-        Permission(action=ActionType.UPDATE, resource=ResourceType.TASK, risk_level=RiskLevel.MEDIUM),
-        Permission(action=ActionType.EXECUTE, resource=ResourceType.TASK, risk_level=RiskLevel.MEDIUM),
-        Permission(action=ActionType.READ, resource=ResourceType.LOG, risk_level=RiskLevel.LOW),
+        Permission(
+            action=ActionType.READ,
+            resource=ResourceType.ASSET,
+            risk_level=RiskLevel.LOW,
+        ),
+        Permission(
+            action=ActionType.LIST,
+            resource=ResourceType.ASSET,
+            risk_level=RiskLevel.LOW,
+        ),
+        Permission(
+            action=ActionType.UPDATE,
+            resource=ResourceType.TASK,
+            risk_level=RiskLevel.MEDIUM,
+        ),
+        Permission(
+            action=ActionType.EXECUTE,
+            resource=ResourceType.TASK,
+            risk_level=RiskLevel.MEDIUM,
+        ),
+        Permission(
+            action=ActionType.READ, resource=ResourceType.LOG, risk_level=RiskLevel.LOW
+        ),
     ]
 
     # 管理员权限
     ADMIN = [
-        Permission(action=ActionType.READ, resource=ResourceType.ASSET, risk_level=RiskLevel.LOW),
-        Permission(action=ActionType.CREATE, resource=ResourceType.ASSET, risk_level=RiskLevel.MEDIUM),
-        Permission(action=ActionType.UPDATE, resource=ResourceType.ASSET, risk_level=RiskLevel.MEDIUM),
-        Permission(action=ActionType.DELETE, resource=ResourceType.ASSET, risk_level=RiskLevel.HIGH),
-        Permission(action=ActionType.EXECUTE, resource=ResourceType.TASK, risk_level=RiskLevel.MEDIUM),
-        Permission(action=ActionType.START, resource=ResourceType.TASK, risk_level=RiskLevel.MEDIUM),
-        Permission(action=ActionType.STOP, resource=ResourceType.TASK, risk_level=RiskLevel.MEDIUM),
-        Permission(action=ActionType.ADMIN, resource=ResourceType.CONFIG, risk_level=RiskLevel.HIGH),
+        Permission(
+            action=ActionType.READ,
+            resource=ResourceType.ASSET,
+            risk_level=RiskLevel.LOW,
+        ),
+        Permission(
+            action=ActionType.CREATE,
+            resource=ResourceType.ASSET,
+            risk_level=RiskLevel.MEDIUM,
+        ),
+        Permission(
+            action=ActionType.UPDATE,
+            resource=ResourceType.ASSET,
+            risk_level=RiskLevel.MEDIUM,
+        ),
+        Permission(
+            action=ActionType.DELETE,
+            resource=ResourceType.ASSET,
+            risk_level=RiskLevel.HIGH,
+        ),
+        Permission(
+            action=ActionType.EXECUTE,
+            resource=ResourceType.TASK,
+            risk_level=RiskLevel.MEDIUM,
+        ),
+        Permission(
+            action=ActionType.START,
+            resource=ResourceType.TASK,
+            risk_level=RiskLevel.MEDIUM,
+        ),
+        Permission(
+            action=ActionType.STOP,
+            resource=ResourceType.TASK,
+            risk_level=RiskLevel.MEDIUM,
+        ),
+        Permission(
+            action=ActionType.ADMIN,
+            resource=ResourceType.CONFIG,
+            risk_level=RiskLevel.HIGH,
+        ),
     ]
 
     # 节点权限
     NODE = [
-        Permission(action=ActionType.HEARTBEAT, resource=ResourceType.NODE, risk_level=RiskLevel.LOW),
-        Permission(action=ActionType.STATUS, resource=ResourceType.TASK, risk_level=RiskLevel.LOW),
-        Permission(action=ActionType.EXECUTE, resource=ResourceType.TASK, risk_level=RiskLevel.MEDIUM),
-        Permission(action=ActionType.REPORT, resource=ResourceType.TASK, risk_level=RiskLevel.LOW),
+        Permission(
+            action=ActionType.HEARTBEAT,
+            resource=ResourceType.NODE,
+            risk_level=RiskLevel.LOW,
+        ),
+        Permission(
+            action=ActionType.STATUS,
+            resource=ResourceType.TASK,
+            risk_level=RiskLevel.LOW,
+        ),
+        Permission(
+            action=ActionType.EXECUTE,
+            resource=ResourceType.TASK,
+            risk_level=RiskLevel.MEDIUM,
+        ),
+        Permission(
+            action=ActionType.REPORT,
+            resource=ResourceType.TASK,
+            risk_level=RiskLevel.LOW,
+        ),
     ]

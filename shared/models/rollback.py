@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 
 class RollbackType(str, Enum):
     """回滚类型枚举"""
+
     CONFIG = "config"  # 配置回滚
     SERVICE = "service"  # 服务回滚
     DEVICE = "device"  # 设备回滚
@@ -19,6 +20,7 @@ class RollbackType(str, Enum):
 
 class RollbackStatus(str, Enum):
     """回滚状态枚举"""
+
     PLANNED = "planned"  # 计划中
     PREPARING = "preparing"  # 准备中
     READY = "ready"  # 就绪
@@ -44,7 +46,9 @@ class RollbackStep(BaseModel):
     parameters: Dict[str, Any] = Field(default_factory=dict, description="操作参数")
 
     # 执行信息
-    status: RollbackStatus = Field(default=RollbackStatus.PLANNED, description="步骤状态")
+    status: RollbackStatus = Field(
+        default=RollbackStatus.PLANNED, description="步骤状态"
+    )
     executed_at: Optional[datetime] = Field(None, description="执行时间")
     result: Optional[str] = Field(None, description="执行结果")
     error_message: Optional[str] = Field(None, description="错误信息")
@@ -68,13 +72,11 @@ class RollbackStep(BaseModel):
                 "rollback_type": "config",
                 "target_resource": "/etc/app/config.json",
                 "operation": "restore_backup",
-                "parameters": {
-                    "backup_path": "/backup/config.json.bak"
-                },
+                "parameters": {"backup_path": "/backup/config.json.bak"},
                 "status": "planned",
                 "requires_backup": True,
                 "validation_criteria": ["config_exists", "config_valid"],
-                "timeout_seconds": 60
+                "timeout_seconds": 60,
             }
         }
 
@@ -98,13 +100,17 @@ class RollbackPlan(BaseModel):
     trigger_reason: str = Field(..., description="触发回滚的原因")
     trigger_type: str = Field(..., description="触发类型: auto/manual")
     triggered_by: str = Field(..., description="触发人ID")
-    triggered_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="触发时间")
+    triggered_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="触发时间"
+    )
 
     # 回滚步骤
     steps: List[RollbackStep] = Field(..., description="回滚步骤列表")
 
     # 状态信息
-    status: RollbackStatus = Field(default=RollbackStatus.PLANNED, description="回滚状态")
+    status: RollbackStatus = Field(
+        default=RollbackStatus.PLANNED, description="回滚状态"
+    )
     current_step: int = Field(default=0, description="当前执行步骤")
     started_at: Optional[datetime] = Field(None, description="开始时间")
     completed_at: Optional[datetime] = Field(None, description="完成时间")
@@ -141,7 +147,7 @@ class RollbackPlan(BaseModel):
                         "rollback_type": "service",
                         "target_resource": "core-api",
                         "operation": "stop",
-                        "status": "planned"
+                        "status": "planned",
                     },
                     {
                         "step_id": "step-002",
@@ -150,19 +156,20 @@ class RollbackPlan(BaseModel):
                         "rollback_type": "config",
                         "target_resource": "/etc/app/config.json",
                         "operation": "restore_backup",
-                        "status": "planned"
-                    }
+                        "status": "planned",
+                    },
                 ],
                 "status": "planned",
                 "current_step": 0,
                 "estimated_duration_seconds": 300,
-                "estimated_risk_level": "low"
+                "estimated_risk_level": "low",
             }
         }
 
 
 class FailureType(str, Enum):
     """故障类型枚举"""
+
     EXECUTION_FAILURE = "execution_failure"  # 执行失败
     VALIDATION_FAILURE = "validation_failure"  # 验证失败
     TIMEOUT_FAILURE = "timeout_failure"  # 超时失败
@@ -176,6 +183,7 @@ class FailureType(str, Enum):
 
 class FailureSeverity(str, Enum):
     """故障严重程度"""
+
     LOW = "low"  # 低影响，不影响业务
     MEDIUM = "medium"  # 中等影响，部分功能受影响
     HIGH = "high"  # 高影响，核心功能受影响
@@ -184,6 +192,7 @@ class FailureSeverity(str, Enum):
 
 class RecoveryAction(str, Enum):
     """恢复动作枚举"""
+
     RETRY = "retry"  # 重试
     ROLLBACK = "rollback"  # 回滚
     SKIP = "skip"  # 跳过
@@ -208,7 +217,9 @@ class FailureRecord(BaseModel):
     stack_trace: Optional[str] = Field(None, description="错误堆栈")
 
     # 发生信息
-    occurred_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="发生时间")
+    occurred_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="发生时间"
+    )
     detected_by: str = Field(default="system", description="检测方式")
 
     # 处理信息
@@ -232,7 +243,7 @@ class FailureRecord(BaseModel):
                 "error_message": "Connection timeout",
                 "occurred_at": "2026-04-15T10:30:00Z",
                 "recovery_action": "retry",
-                "recovery_status": "pending"
+                "recovery_status": "pending",
             }
         }
 
@@ -256,7 +267,9 @@ class RecoveryPlan(BaseModel):
 
     # 状态信息
     status: str = Field(default="pending", description="恢复状态")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="创建时间"
+    )
     started_at: Optional[datetime] = Field(None, description="开始时间")
     completed_at: Optional[datetime] = Field(None, description="完成时间")
 
@@ -273,13 +286,9 @@ class RecoveryPlan(BaseModel):
                 "description": "重试连接超时的任务",
                 "recovery_action": "retry",
                 "priority": 5,
-                "steps": [
-                    "检查网络连接",
-                    "重试任务执行",
-                    "验证执行结果"
-                ],
+                "steps": ["检查网络连接", "重试任务执行", "验证执行结果"],
                 "validation_criteria": ["任务成功完成"],
-                "status": "pending"
+                "status": "pending",
             }
         }
 
@@ -295,7 +304,9 @@ class RollbackStatistics(BaseModel):
 
     # 分类统计
     by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
-    by_trigger: Dict[str, int] = Field(default_factory=dict, description="按触发原因统计")
+    by_trigger: Dict[str, int] = Field(
+        default_factory=dict, description="按触发原因统计"
+    )
 
     # 时间统计
     avg_duration_seconds: float = Field(..., description="平均回滚耗时")
@@ -312,14 +323,9 @@ class RollbackStatistics(BaseModel):
                 "successful_rollbacks": 85,
                 "failed_rollbacks": 10,
                 "cancelled_rollbacks": 5,
-                "by_type": {
-                    "config": 40,
-                    "service": 30,
-                    "device": 20,
-                    "task": 10
-                },
+                "by_type": {"config": 40, "service": 30, "device": 20, "task": 10},
                 "avg_duration_seconds": 180,
-                "success_rate": 0.85
+                "success_rate": 0.85,
             }
         }
 
@@ -359,27 +365,36 @@ class FailureHandlingStrategies:
         "failure_types": [FailureType.NETWORK_FAILURE, FailureType.TIMEOUT_FAILURE],
         "action": RecoveryAction.RETRY,
         "max_attempts": 3,
-        "backoff_seconds": 5
+        "backoff_seconds": 5,
     }
 
     # 延迟重试策略
     DELAYED_RETRY = {
-        "failure_types": [FailureType.DEPENDENCY_FAILURE, FailureType.RESOURCE_EXHAUSTION],
+        "failure_types": [
+            FailureType.DEPENDENCY_FAILURE,
+            FailureType.RESOURCE_EXHAUSTION,
+        ],
         "action": RecoveryAction.RETRY,
         "max_attempts": 5,
-        "backoff_seconds": 30
+        "backoff_seconds": 30,
     }
 
     # 直接回滚策略
     IMMEDIATE_ROLLBACK = {
-        "failure_types": [FailureType.APPROVAL_REJECTED, FailureType.CONFIGURATION_ERROR],
+        "failure_types": [
+            FailureType.APPROVAL_REJECTED,
+            FailureType.CONFIGURATION_ERROR,
+        ],
         "action": RecoveryAction.ROLLBACK,
-        "rollback_plan": "default"
+        "rollback_plan": "default",
     }
 
     # 升级处理策略
     ESCALATE_STRATEGY = {
-        "failure_types": [FailureType.EXECUTION_FAILURE, FailureType.VALIDATION_FAILURE],
+        "failure_types": [
+            FailureType.EXECUTION_FAILURE,
+            FailureType.VALIDATION_FAILURE,
+        ],
         "action": RecoveryAction.ESCALATE,
-        "escalation_level": "operator"
+        "escalation_level": "operator",
     }

@@ -8,19 +8,22 @@ from typing import List, Optional
 from datetime import datetime
 
 from shared.models.task import (
-    Task, TaskCreateRequest, TaskUpdateRequest,
-    TaskQueryParams, TaskListResponse, TaskStats,
-    TaskDispatchRequest, TaskResultSubmit,
-    TaskType, TaskStatus, TaskPriority
+    Task,
+    TaskCreateRequest,
+    TaskUpdateRequest,
+    TaskQueryParams,
+    TaskListResponse,
+    TaskStats,
+    TaskDispatchRequest,
+    TaskResultSubmit,
+    TaskType,
+    TaskStatus,
+    TaskPriority,
 )
 from shared.services.task_service import get_task_service
 from shared.models.enums import ErrorCode, create_error_response
 
-
-router = APIRouter(
-    prefix="/api/v1/tasks",
-    tags=["tasks"]
-)
+router = APIRouter(prefix="/api/v1/tasks", tags=["tasks"])
 
 
 def get_current_user(authorization: Optional[str] = None) -> str:
@@ -35,11 +38,10 @@ def get_current_user(authorization: Optional[str] = None) -> str:
     response_model=Task,
     status_code=status.HTTP_201_CREATED,
     summary="创建任务",
-    description="创建新的任务并添加到调度队列"
+    description="创建新的任务并添加到调度队列",
 )
 async def create_task(
-    request: TaskCreateRequest,
-    authorization: Optional[str] = Header(None)
+    request: TaskCreateRequest, authorization: Optional[str] = Header(None)
 ):
     """
     创建任务
@@ -61,17 +63,15 @@ async def create_task(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=create_error_response(
-                ErrorCode.VALIDATION_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.VALIDATION_ERROR, details={"error": str(e)}
+            ),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -79,7 +79,7 @@ async def create_task(
     "",
     response_model=TaskListResponse,
     summary="列出任务",
-    description="获取任务列表，支持分页、搜索和过滤"
+    description="获取任务列表，支持分页、搜索和过滤",
 )
 async def list_tasks(
     task_type: Optional[TaskType] = Query(None, description="按任务类型过滤"),
@@ -93,7 +93,7 @@ async def list_tasks(
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页大小"),
     sort_by: str = Query("created_at", description="排序字段"),
-    sort_order: str = Query("desc", regex="^(asc|desc)$", description="排序方向")
+    sort_order: str = Query("desc", regex="^(asc|desc)$", description="排序方向"),
 ):
     """
     列出任务
@@ -127,7 +127,7 @@ async def list_tasks(
             page=page,
             page_size=page_size,
             sort_by=sort_by,
-            sort_order=sort_order
+            sort_order=sort_order,
         )
 
         return service.list_tasks(params)
@@ -135,9 +135,8 @@ async def list_tasks(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -145,7 +144,7 @@ async def list_tasks(
     "/stats",
     response_model=TaskStats,
     summary="获取任务统计",
-    description="获取任务统计信息，包括按类型、状态、优先级的分布"
+    description="获取任务统计信息，包括按类型、状态、优先级的分布",
 )
 async def get_task_stats():
     """
@@ -166,9 +165,8 @@ async def get_task_stats():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -176,7 +174,7 @@ async def get_task_stats():
     "/{task_id}",
     response_model=Task,
     summary="获取任务详情",
-    description="根据任务ID获取任务详细信息"
+    description="根据任务ID获取任务详细信息",
 )
 async def get_task(task_id: str):
     """
@@ -192,9 +190,8 @@ async def get_task(task_id: str):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.TASK_NOT_FOUND,
-                    details={"task_id": task_id}
-                )
+                    ErrorCode.TASK_NOT_FOUND, details={"task_id": task_id}
+                ),
             )
 
         return task
@@ -204,9 +201,8 @@ async def get_task(task_id: str):
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -214,7 +210,7 @@ async def get_task(task_id: str):
     "/{task_id}",
     response_model=Task,
     summary="更新任务",
-    description="更新任务信息（仅限非运行中的任务）"
+    description="更新任务信息（仅限非运行中的任务）",
 )
 async def update_task(task_id: str, request: TaskUpdateRequest):
     """
@@ -238,9 +234,8 @@ async def update_task(task_id: str, request: TaskUpdateRequest):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.TASK_NOT_FOUND,
-                    details={"task_id": task_id}
-                )
+                    ErrorCode.TASK_NOT_FOUND, details={"task_id": task_id}
+                ),
             )
 
         # 更新任务
@@ -253,17 +248,15 @@ async def update_task(task_id: str, request: TaskUpdateRequest):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=create_error_response(
-                ErrorCode.TASK_INVALID_STATE_TRANSITION,
-                details={"error": str(e)}
-            )
+                ErrorCode.TASK_INVALID_STATE_TRANSITION, details={"error": str(e)}
+            ),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -271,7 +264,7 @@ async def update_task(task_id: str, request: TaskUpdateRequest):
     "/{task_id}/cancel",
     response_model=Task,
     summary="取消任务",
-    description="取消任务执行"
+    description="取消任务执行",
 )
 async def cancel_task(task_id: str):
     """
@@ -290,9 +283,8 @@ async def cancel_task(task_id: str):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.TASK_NOT_FOUND,
-                    details={"task_id": task_id}
-                )
+                    ErrorCode.TASK_NOT_FOUND, details={"task_id": task_id}
+                ),
             )
 
         # 取消任务
@@ -305,17 +297,15 @@ async def cancel_task(task_id: str):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=create_error_response(
-                ErrorCode.TASK_CANCELLED,
-                details={"error": str(e)}
-            )
+                ErrorCode.TASK_CANCELLED, details={"error": str(e)}
+            ),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -323,7 +313,7 @@ async def cancel_task(task_id: str):
     "/dispatch",
     response_model=List[Task],
     summary="分发任务",
-    description="批量分发任务到指定节点"
+    description="批量分发任务到指定节点",
 )
 async def dispatch_tasks(request: TaskDispatchRequest):
     """
@@ -343,17 +333,15 @@ async def dispatch_tasks(request: TaskDispatchRequest):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=create_error_response(
-                ErrorCode.TASK_INVALID_TARGET,
-                details={"error": str(e)}
-            )
+                ErrorCode.TASK_INVALID_TARGET, details={"error": str(e)}
+            ),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -361,7 +349,7 @@ async def dispatch_tasks(request: TaskDispatchRequest):
     "/{task_id}/result",
     status_code=status.HTTP_200_OK,
     summary="提交任务结果",
-    description="边缘节点提交任务执行结果"
+    description="边缘节点提交任务执行结果",
 )
 async def submit_task_result(task_id: str, submission: TaskResultSubmit):
     """
@@ -385,9 +373,8 @@ async def submit_task_result(task_id: str, submission: TaskResultSubmit):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=create_error_response(
-                    ErrorCode.TASK_NOT_FOUND,
-                    details={"task_id": task_id}
-                )
+                    ErrorCode.TASK_NOT_FOUND, details={"task_id": task_id}
+                ),
             )
 
         return updated_task
@@ -398,17 +385,15 @@ async def submit_task_result(task_id: str, submission: TaskResultSubmit):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=create_error_response(
-                ErrorCode.TASK_EXECUTION_FAILED,
-                details={"error": str(e)}
-            )
+                ErrorCode.TASK_EXECUTION_FAILED, details={"error": str(e)}
+            ),
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
@@ -416,11 +401,10 @@ async def submit_task_result(task_id: str, submission: TaskResultSubmit):
     "/nodes/{node_id}/pending",
     response_model=List[Task],
     summary="获取节点待执行任务",
-    description="边缘节点获取分配给自己的待执行任务列表"
+    description="边缘节点获取分配给自己的待执行任务列表",
 )
 async def get_pending_tasks_for_node(
-    node_id: str,
-    limit: int = Query(10, ge=1, le=100, description="最大返回数量")
+    node_id: str, limit: int = Query(10, ge=1, le=100, description="最大返回数量")
 ):
     """
     获取节点待执行任务
@@ -438,29 +422,28 @@ async def get_pending_tasks_for_node(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=create_error_response(
-                ErrorCode.INT_INTERNAL_SERVICE_ERROR,
-                details={"error": str(e)}
-            )
+                ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
+            ),
         )
 
 
 # 兼容性端点：支持旧的 /api/v1/jobs 路径
-jobs_router = APIRouter(
-    prefix="/api/v1/jobs",
-    tags=["jobs"]
-)
+jobs_router = APIRouter(prefix="/api/v1/jobs", tags=["jobs"])
+
 
 @jobs_router.get("", include_in_schema=False)
 async def list_jobs_legacy(*args, **kwargs):
     """兼容性端点：列出任务（jobs 别名）"""
     return await list_tasks(*args, **kwargs)
 
+
 @jobs_router.get("/{job_id}", include_in_schema=False)
 async def get_job_legacy(*args, **kwargs):
     """兼容性端点：获取任务详情（jobs 别名）"""
     # 从路径参数中提取 job_id 并重命名为 task_id
-    job_id = kwargs.pop('job_id')
+    job_id = kwargs.pop("job_id")
     return await get_task(task_id=job_id)
+
 
 @jobs_router.post("", include_in_schema=False)
 async def create_job_legacy(*args, **kwargs):

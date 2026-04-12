@@ -17,16 +17,26 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from shared.models.permission import (
-    Permission, PermissionContext, PermissionCheckResult,
-    PermissionMatrix, ActionType, ResourceType, RiskLevel,
-    BuiltInRoles, CommonPermissions
+    Permission,
+    PermissionContext,
+    PermissionCheckResult,
+    PermissionMatrix,
+    ActionType,
+    ResourceType,
+    RiskLevel,
+    BuiltInRoles,
+    CommonPermissions,
 )
 from shared.security.risk_assessor import RiskAssessor, get_risk_assessor
 from shared.security.permission_checker import (
-    PermissionChecker, get_permission_checker, require_permission
+    PermissionChecker,
+    get_permission_checker,
+    require_permission,
 )
 from shared.security.permission_matrix import (
-    PermissionMatrixManager, initialize_default_permissions, get_matrix_manager
+    PermissionMatrixManager,
+    initialize_default_permissions,
+    get_matrix_manager,
 )
 
 
@@ -79,9 +89,7 @@ class TestRiskAssessor(unittest.TestCase):
 
         # 正常删除操作
         normal_risk = self.assessor.assess_risk(
-            ActionType.DELETE,
-            ResourceType.ASSET,
-            {"description": "删除单个服务器"}
+            ActionType.DELETE, ResourceType.ASSET, {"description": "删除单个服务器"}
         )
         self.assertEqual(normal_risk, RiskLevel.HIGH)
 
@@ -89,7 +97,7 @@ class TestRiskAssessor(unittest.TestCase):
         dangerous_risk = self.assessor.assess_risk(
             ActionType.DELETE,
             ResourceType.ASSET,
-            {"description": "delete all servers and shutdown system"}
+            {"description": "delete all servers and shutdown system"},
         )
         self.assertEqual(dangerous_risk, RiskLevel.HIGH)
 
@@ -145,7 +153,9 @@ class TestRiskAssessor(unittest.TestCase):
 
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0]["risk_level"], RiskLevel.LOW)
-        self.assertEqual(results[1]["risk_level"], RiskLevel.MEDIUM)  # TASK资源的UPDATE操作是中风险
+        self.assertEqual(
+            results[1]["risk_level"], RiskLevel.MEDIUM
+        )  # TASK资源的UPDATE操作是中风险
         self.assertEqual(results[2]["risk_level"], RiskLevel.HIGH)
 
         print("  ✅ 批量风险评估测试通过")
@@ -171,7 +181,8 @@ class TestPermissionChecker(unittest.TestCase):
     def tearDown(self):
         """清理临时资源"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_01_basic_permission_check(self):
@@ -183,7 +194,7 @@ class TestPermissionChecker(unittest.TestCase):
             user_id="operator-001",
             user_type="human",
             roles=[BuiltInRoles.OPERATOR],
-            tenant_id="tenant-001"
+            tenant_id="tenant-001",
         )
 
         # 操作员应该有读取资产的权限
@@ -206,16 +217,12 @@ class TestPermissionChecker(unittest.TestCase):
 
         # 创建查看者上下文
         viewer_context = PermissionContext(
-            user_id="viewer-001",
-            user_type="human",
-            roles=[BuiltInRoles.VIEWER]
+            user_id="viewer-001", user_type="human", roles=[BuiltInRoles.VIEWER]
         )
 
         # 创建操作员上下文
         operator_context = PermissionContext(
-            user_id="operator-001",
-            user_type="human",
-            roles=[BuiltInRoles.OPERATOR]
+            user_id="operator-001", user_type="human", roles=[BuiltInRoles.OPERATOR]
         )
 
         # 查看者只能读取
@@ -243,9 +250,7 @@ class TestPermissionChecker(unittest.TestCase):
 
         # 创建超级管理员上下文
         context = PermissionContext(
-            user_id="admin-001",
-            user_type="human",
-            roles=[BuiltInRoles.SUPER_ADMIN]
+            user_id="admin-001", user_type="human", roles=[BuiltInRoles.SUPER_ADMIN]
         )
 
         # 超级管理员应该拥有所有权限
@@ -267,9 +272,7 @@ class TestPermissionChecker(unittest.TestCase):
 
         # 创建普通用户上下文
         context = PermissionContext(
-            user_id="user-001",
-            user_type="human",
-            roles=[BuiltInRoles.VIEWER]
+            user_id="user-001", user_type="human", roles=[BuiltInRoles.VIEWER]
         )
 
         # 测试白名单（健康检查应该在白名单中）
@@ -290,7 +293,7 @@ class TestPermissionChecker(unittest.TestCase):
             user_type="human",
             roles=[BuiltInRoles.OPERATOR],
             tenant_id="tenant-a",
-            allowed_regions=["region-east"]
+            allowed_regions=["region-east"],
         )
 
         # 用户应该能访问自己租户的资源
@@ -298,7 +301,7 @@ class TestPermissionChecker(unittest.TestCase):
             ActionType.READ,
             ResourceType.ASSET,
             context,
-            additional_context={"tenant_id": "tenant-a"}
+            additional_context={"tenant_id": "tenant-a"},
         )
         self.assertTrue(result.allowed)
 
@@ -307,7 +310,7 @@ class TestPermissionChecker(unittest.TestCase):
             ActionType.READ,
             ResourceType.ASSET,
             context,
-            additional_context={"tenant_id": "tenant-b"}
+            additional_context={"tenant_id": "tenant-b"},
         )
         self.assertFalse(result.allowed)
 
@@ -322,7 +325,7 @@ class TestPermissionChecker(unittest.TestCase):
             user_id="server-operator",
             user_type="human",
             roles=[BuiltInRoles.OPERATOR],
-            allowed_asset_types=["server"]
+            allowed_asset_types=["server"],
         )
 
         # 操作员可以更新任务（操作员有UPDATE TASK权限）
@@ -330,7 +333,7 @@ class TestPermissionChecker(unittest.TestCase):
             ActionType.UPDATE,
             ResourceType.TASK,
             context,
-            additional_context={"task_type": "deployment"}
+            additional_context={"task_type": "deployment"},
         )
         self.assertTrue(result.allowed)
 
@@ -339,7 +342,7 @@ class TestPermissionChecker(unittest.TestCase):
             ActionType.READ,
             ResourceType.ASSET,
             context,
-            additional_context={"asset_type": "server"}
+            additional_context={"asset_type": "server"},
         )
         self.assertTrue(result.allowed)
 
@@ -356,7 +359,7 @@ class TestPermissionChecker(unittest.TestCase):
             user_type="human",
             roles=[BuiltInRoles.VIEWER],
             not_before=now - 3600,  # 1小时前生效
-            not_after=now + 3600    # 1小时后失效
+            not_after=now + 3600,  # 1小时后失效
         )
 
         # 当前时间应该在有效期内
@@ -371,7 +374,7 @@ class TestPermissionChecker(unittest.TestCase):
             user_type="human",
             roles=[BuiltInRoles.VIEWER],
             not_before=now - 7200,  # 2小时前生效
-            not_after=now - 3600    # 1小时前失效
+            not_after=now - 3600,  # 1小时前失效
         )
 
         result = self.permission_checker.check_permission(
@@ -389,24 +392,24 @@ class TestPermissionChecker(unittest.TestCase):
             user_id="operator-001",
             user_type="human",
             roles=[BuiltInRoles.OPERATOR],
-            tenant_id="tenant-001"
+            tenant_id="tenant-001",
         )
 
         operations = [
             {
                 "action": ActionType.READ,
                 "resource": ResourceType.ASSET,
-                "resource_id": "asset-001"
+                "resource_id": "asset-001",
             },
             {
                 "action": ActionType.EXECUTE,
                 "resource": ResourceType.TASK,
-                "resource_id": "task-001"
+                "resource_id": "task-001",
             },
             {
                 "action": ActionType.DELETE,
                 "resource": ResourceType.ASSET,
-                "resource_id": "asset-002"
+                "resource_id": "asset-002",
             },
         ]
 
@@ -436,7 +439,8 @@ class TestPermissionMatrixManager(unittest.TestCase):
     def tearDown(self):
         """清理临时资源"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_01_create_and_load_matrix(self):
@@ -447,7 +451,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
         matrix = self.manager.create_matrix(
             matrix_id="test-matrix",
             name="测试权限矩阵",
-            description="用于测试的权限矩阵"
+            description="用于测试的权限矩阵",
         )
 
         self.assertIsNotNone(matrix)
@@ -467,8 +471,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
 
         # 创建矩阵
         matrix = self.manager.create_matrix(
-            matrix_id="role-test-matrix",
-            name="角色权限测试矩阵"
+            matrix_id="role-test-matrix", name="角色权限测试矩阵"
         )
 
         # 添加角色权限
@@ -476,13 +479,11 @@ class TestPermissionMatrixManager(unittest.TestCase):
             action=ActionType.READ,
             resource=ResourceType.ASSET,
             risk_level=RiskLevel.LOW,
-            description="读取资产权限"
+            description="读取资产权限",
         )
 
         result = self.manager.add_role_permission(
-            "role-test-matrix",
-            "test_role",
-            permission
+            "role-test-matrix", "test_role", permission
         )
         self.assertTrue(result)
 
@@ -493,10 +494,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
 
         # 移除角色权限
         result = self.manager.remove_role_permission(
-            "role-test-matrix",
-            "test_role",
-            ActionType.READ,
-            ResourceType.ASSET
+            "role-test-matrix", "test_role", ActionType.READ, ResourceType.ASSET
         )
         self.assertTrue(result)
 
@@ -558,8 +556,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
 
         # 创建矩阵
         matrix = self.manager.create_matrix(
-            matrix_id="version-test-matrix",
-            name="版本测试矩阵"
+            matrix_id="version-test-matrix", name="版本测试矩阵"
         )
 
         original_version = matrix.version
@@ -567,18 +564,21 @@ class TestPermissionMatrixManager(unittest.TestCase):
 
         # 等待一秒确保时间戳变化
         import time
+
         time.sleep(1)
 
         # 修改矩阵（添加权限）
         permission = Permission(
             action=ActionType.READ,
             resource=ResourceType.ASSET,
-            risk_level=RiskLevel.LOW
+            risk_level=RiskLevel.LOW,
         )
         self.manager.add_role_permission("version-test-matrix", "test_role", permission)
 
         # 重新加载矩阵
-        updated_matrix = self.manager.load_matrix("version-test-matrix", force_reload=True)
+        updated_matrix = self.manager.load_matrix(
+            "version-test-matrix", force_reload=True
+        )
 
         # 验证更新时间变化
         self.assertGreater(updated_matrix.updated_at, original_updated_at)

@@ -11,25 +11,31 @@ from pydantic import BaseModel, Field, validator, root_validator
 
 class AssetType(str, Enum):
     """资产类型"""
-    EDGE_NODE = "edge_node"        # 边缘节点
-    LINUX_HOST = "linux_host"      # Linux 主机
+
+    EDGE_NODE = "edge_node"  # 边缘节点
+    LINUX_HOST = "linux_host"  # Linux 主机
     NETWORK_DEVICE = "network_device"  # 网络设备
-    IOT_DEVICE = "iot_device"      # IoT 设备
+    IOT_DEVICE = "iot_device"  # IoT 设备
 
 
 class AssetStatus(str, Enum):
     """资产状态"""
-    REGISTERED = "registered"      # 已注册，未关联运行节点
-    ACTIVE = "active"              # 活跃，有运行节点在线
-    ONLINE = "active"              # 兼容旧测试/旧API
-    INACTIVE = "inactive"          # 非活跃，运行节点离线
-    OFFLINE = "inactive"           # 兼容旧测试/旧API
-    MAINTENANCE = "inactive"       # 兼容旧测试/旧API（映射为非活跃）
+
+    REGISTERED = "registered"  # 已注册，未关联运行节点
+    ACTIVE = "active"  # 活跃，有运行节点在线
+    ONLINE = "active"  # 兼容旧测试/旧API
+    INACTIVE = "inactive"  # 非活跃，运行节点离线
+    OFFLINE = "inactive"  # 兼容旧测试/旧API
+    MAINTENANCE = "inactive"  # 兼容旧测试/旧API（映射为非活跃）
     DECOMMISSIONED = "decommissioned"  # 已退役
 
-    def can_transition_to(self, new_status: 'AssetStatus') -> bool:
+    def can_transition_to(self, new_status: "AssetStatus") -> bool:
         valid_transitions = {
-            AssetStatus.REGISTERED: [AssetStatus.ACTIVE, AssetStatus.INACTIVE, AssetStatus.DECOMMISSIONED],
+            AssetStatus.REGISTERED: [
+                AssetStatus.ACTIVE,
+                AssetStatus.INACTIVE,
+                AssetStatus.DECOMMISSIONED,
+            ],
             AssetStatus.ACTIVE: [AssetStatus.INACTIVE, AssetStatus.DECOMMISSIONED],
             AssetStatus.INACTIVE: [AssetStatus.ACTIVE, AssetStatus.DECOMMISSIONED],
             AssetStatus.DECOMMISSIONED: [],
@@ -39,6 +45,7 @@ class AssetStatus(str, Enum):
 
 class AssetMetadata(BaseModel):
     """资产元数据"""
+
     # 通用属性
     manufacturer: Optional[str] = Field(None, description="厂商")
     model: Optional[str] = Field(None, description="型号")
@@ -71,7 +78,9 @@ class AssetMetadata(BaseModel):
     groups: List[str] = Field(default_factory=list, description="分组列表")
 
     # 自定义属性
-    custom_properties: Dict[str, Any] = Field(default_factory=dict, description="自定义属性")
+    custom_properties: Dict[str, Any] = Field(
+        default_factory=dict, description="自定义属性"
+    )
 
     class Config:
         json_schema_extra = {
@@ -95,19 +104,22 @@ class AssetMetadata(BaseModel):
                 "groups": ["web-servers"],
                 "custom_properties": {
                     "support_contract": "Premium",
-                    "maintenance_window": "Sunday 2-4 AM"
-                }
+                    "maintenance_window": "Sunday 2-4 AM",
+                },
             }
         }
 
 
 class Asset(BaseModel):
     """资产模型"""
+
     asset_id: str = Field(..., description="资产唯一标识")
     name: str = Field(..., description="资产名称", min_length=1, max_length=255)
     asset_type: AssetType = Field(..., description="资产类型")
     status: AssetStatus = Field(default=AssetStatus.REGISTERED, description="资产状态")
-    metadata: AssetMetadata = Field(default_factory=AssetMetadata, description="资产元数据")
+    metadata: AssetMetadata = Field(
+        default_factory=AssetMetadata, description="资产元数据"
+    )
 
     # 关联节点（如果存在）
     associated_node_id: Optional[str] = Field(None, description="关联的运行节点ID")
@@ -116,8 +128,12 @@ class Asset(BaseModel):
     created_by: Optional[str] = Field(None, description="创建者")
 
     # 时间戳
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="更新时间")
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="创建时间"
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="更新时间"
+    )
     last_heartbeat: Optional[datetime] = Field(None, description="最后心跳时间")
 
     # 描述信息
@@ -134,21 +150,21 @@ class Asset(BaseModel):
                     "manufacturer": "Dell",
                     "model": "PowerEdge R740",
                     "ip_address": "192.168.1.100",
-                    "hostname": "web-001.prod.local"
+                    "hostname": "web-001.prod.local",
                 },
                 "associated_node_id": "node-001",
                 "created_at": "2026-04-12T10:00:00Z",
                 "updated_at": "2026-04-12T10:00:00Z",
                 "last_heartbeat": "2026-04-12T15:30:00Z",
-                "description": "主生产Web服务器"
+                "description": "主生产Web服务器",
             }
         }
 
-    @validator('asset_id')
+    @validator("asset_id")
     def validate_asset_id(cls, v):
         """验证资产ID格式"""
         if not v or len(v.strip()) == 0:
-            raise ValueError('asset_id cannot be empty')
+            raise ValueError("asset_id cannot be empty")
         return v.strip()
 
     @root_validator(pre=True)
@@ -171,21 +187,24 @@ class Asset(BaseModel):
                 values["metadata"] = AssetMetadata(**normalized)
         return values
 
-    @validator('name')
+    @validator("name")
     def validate_name(cls, v):
         """验证资产名称"""
         if not v or len(v.strip()) == 0:
-            raise ValueError('name cannot be empty')
+            raise ValueError("name cannot be empty")
         return v.strip()
 
 
 class AssetCreateRequest(BaseModel):
     """资产创建请求"""
+
     asset_id: Optional[str] = Field(None, description="资产ID（不指定则自动生成）")
     name: str = Field(..., description="资产名称", min_length=1, max_length=255)
     asset_type: AssetType = Field(..., description="资产类型")
     description: Optional[str] = Field(None, description="资产描述", max_length=1000)
-    metadata: Optional[AssetMetadata] = Field(default_factory=AssetMetadata, description="资产元数据")
+    metadata: Optional[AssetMetadata] = Field(
+        default_factory=AssetMetadata, description="资产元数据"
+    )
 
     class Config:
         json_schema_extra = {
@@ -197,15 +216,18 @@ class AssetCreateRequest(BaseModel):
                     "manufacturer": "Dell",
                     "model": "PowerEdge R740",
                     "ip_address": "192.168.1.100",
-                    "hostname": "web-001.prod.local"
-                }
+                    "hostname": "web-001.prod.local",
+                },
             }
         }
 
 
 class AssetUpdateRequest(BaseModel):
     """资产更新请求"""
-    name: Optional[str] = Field(None, description="资产名称", min_length=1, max_length=255)
+
+    name: Optional[str] = Field(
+        None, description="资产名称", min_length=1, max_length=255
+    )
     description: Optional[str] = Field(None, description="资产描述", max_length=1000)
     status: Optional[AssetStatus] = Field(None, description="资产状态")
     metadata: Optional[AssetMetadata] = Field(None, description="资产元数据")
@@ -217,14 +239,15 @@ class AssetUpdateRequest(BaseModel):
                 "status": "active",
                 "metadata": {
                     "ip_address": "192.168.1.101",
-                    "tags": ["production", "web", "updated"]
-                }
+                    "tags": ["production", "web", "updated"],
+                },
             }
         }
 
 
 class AssetListResponse(BaseModel):
     """资产列表响应"""
+
     total: int = Field(..., description="总数量")
     assets: List[Asset] = Field(..., description="资产列表")
     page: int = Field(..., description="当前页码")
@@ -238,13 +261,14 @@ class AssetListResponse(BaseModel):
                 "assets": [],
                 "page": 1,
                 "page_size": 20,
-                "total_pages": 5
+                "total_pages": 5,
             }
         }
 
 
 class AssetQueryParams(BaseModel):
     """资产查询参数"""
+
     asset_type: Optional[AssetType] = Field(None, description="按资产类型过滤")
     status: Optional[AssetStatus] = Field(None, description="按状态过滤")
     search: Optional[str] = Field(None, description="搜索关键词（名称、描述、IP地址）")
@@ -265,7 +289,7 @@ class AssetQueryParams(BaseModel):
                 "page": 1,
                 "page_size": 20,
                 "sort_by": "created_at",
-                "sort_order": "desc"
+                "sort_order": "desc",
             }
         }
 
@@ -273,6 +297,7 @@ class AssetQueryParams(BaseModel):
 # 资产状态统计
 class AssetStats(BaseModel):
     """资产统计信息"""
+
     total_assets: int = Field(..., description="总资产数")
     by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
     by_status: Dict[str, int] = Field(default_factory=dict, description="按状态统计")
@@ -287,15 +312,15 @@ class AssetStats(BaseModel):
                     "edge_node": 10,
                     "linux_host": 120,
                     "network_device": 15,
-                    "iot_device": 5
+                    "iot_device": 5,
                 },
                 "by_status": {
                     "registered": 5,
                     "active": 130,
                     "inactive": 10,
-                    "decommissioned": 5
+                    "decommissioned": 5,
                 },
                 "active_nodes": 130,
-                "inactive_nodes": 10
+                "inactive_nodes": 10,
             }
         }

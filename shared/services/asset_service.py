@@ -8,13 +8,23 @@ from datetime import datetime, timezone
 import uuid
 import math
 from shared.models.asset import (
-    Asset, AssetCreateRequest, AssetUpdateRequest,
-    AssetQueryParams, AssetListResponse, AssetStats,
-    AssetType, AssetStatus
+    Asset,
+    AssetCreateRequest,
+    AssetUpdateRequest,
+    AssetQueryParams,
+    AssetListResponse,
+    AssetStats,
+    AssetType,
+    AssetStatus,
 )
 from shared.models.enums import validate_state_transition
 from shared.dao.asset_dao import AssetDAO
-from shared.models.audit import AuditAction, AuditCategory, EventLevel, AuditLogCreateRequest
+from shared.models.audit import (
+    AuditAction,
+    AuditCategory,
+    EventLevel,
+    AuditLogCreateRequest,
+)
 
 
 class AssetService:
@@ -73,7 +83,7 @@ class AssetService:
                 description=request.description,
                 created_by=created_by,
                 created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc)
+                updated_at=datetime.now(timezone.utc),
             )
 
         # 检查ID是否已存在
@@ -110,7 +120,9 @@ class AssetService:
         else:
             return self._assets.get(asset_id)
 
-    def update_asset(self, asset_or_id, request: AssetUpdateRequest = None) -> Optional[Asset]:
+    def update_asset(
+        self, asset_or_id, request: AssetUpdateRequest = None
+    ) -> Optional[Asset]:
         """
         更新资产
 
@@ -132,17 +144,20 @@ class AssetService:
             # 从Asset对象构建AssetUpdateRequest
             if request is None:
                 from shared.models.asset import AssetUpdateRequest
+
                 request = AssetUpdateRequest(
                     name=asset.name,
                     description=asset.description,
                     status=asset.status,
-                    metadata=asset.metadata
+                    metadata=asset.metadata,
                 )
         else:
             # 第一个参数是asset_id
             asset_id = asset_or_id
             if request is None:
-                raise ValueError("request parameter is required when asset_id is provided")
+                raise ValueError(
+                    "request parameter is required when asset_id is provided"
+                )
 
         if self.asset_dao:
             # 使用数据库
@@ -294,7 +309,11 @@ class AssetService:
                 filters=filters,
                 limit=params.page_size,
                 offset=(params.page - 1) * params.page_size,
-                order_by=(f"-{params.sort_by}" if params.sort_order == "desc" else params.sort_by)
+                order_by=(
+                    f"-{params.sort_by}"
+                    if params.sort_order == "desc"
+                    else params.sort_by
+                ),
             )
             total = self.asset_dao.count(filters)
         else:
@@ -307,7 +326,7 @@ class AssetService:
             total=total,
             page=params.page,
             page_size=params.page_size,
-            total_pages=total_pages
+            total_pages=total_pages,
         )
 
     def get_asset_stats(self) -> AssetStats:
@@ -319,16 +338,26 @@ class AssetService:
         """
         if self.asset_dao:
             total = self.asset_dao.count({})
-            type_stats = {asset_type.value: self.asset_dao.count({"asset_type": asset_type}) for asset_type in AssetType}
-            status_stats = {status.value: self.asset_dao.count({"status": status}) for status in AssetStatus}
+            type_stats = {
+                asset_type.value: self.asset_dao.count({"asset_type": asset_type})
+                for asset_type in AssetType
+            }
+            status_stats = {
+                status.value: self.asset_dao.count({"status": status})
+                for status in AssetStatus
+            }
         else:
             assets = list(self._assets.values())
             total = len(assets)
             type_stats = {}
             status_stats = {}
             for asset in assets:
-                type_stats[asset.asset_type.value] = type_stats.get(asset.asset_type.value, 0) + 1
-                status_stats[asset.status.value] = status_stats.get(asset.status.value, 0) + 1
+                type_stats[asset.asset_type.value] = (
+                    type_stats.get(asset.asset_type.value, 0) + 1
+                )
+                status_stats[asset.status.value] = (
+                    status_stats.get(asset.status.value, 0) + 1
+                )
 
         active_nodes = status_stats.get(AssetStatus.ACTIVE.value, 0)
         inactive_nodes = status_stats.get(AssetStatus.INACTIVE.value, 0)
@@ -464,14 +493,27 @@ class AssetService:
         """
         if self.asset_dao:
             all_assets = self.asset_dao.list({})
-            return [a for a in all_assets if getattr(a.metadata, "custom_properties", {}).get("node_id") == node_id]
+            return [
+                a
+                for a in all_assets
+                if getattr(a.metadata, "custom_properties", {}).get("node_id")
+                == node_id
+            ]
         else:
-            return [a for a in self._assets.values() if getattr(a.metadata, "custom_properties", {}).get("node_id") == node_id]
+            return [
+                a
+                for a in self._assets.values()
+                if getattr(a.metadata, "custom_properties", {}).get("node_id")
+                == node_id
+            ]
 
-    def _audit_asset_event(self, asset: Asset, action: AuditAction, message: str) -> None:
+    def _audit_asset_event(
+        self, asset: Asset, action: AuditAction, message: str
+    ) -> None:
         if not self.database:
             return
         from shared.services.audit_service import AuditService
+
         audit_service = AuditService(database=self.database)
         audit_service.log_action(
             AuditLogCreateRequest(

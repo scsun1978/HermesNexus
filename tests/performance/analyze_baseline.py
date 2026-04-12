@@ -46,10 +46,13 @@ class PerformanceAnalyzer:
     def cleanup(self):
         """清理测试环境"""
         import shutil
+
         if self.temp_dir and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
-    def measure_operation(self, name: str, operation: Callable, iterations: int = 100) -> Dict[str, Any]:
+    def measure_operation(
+        self, name: str, operation: Callable, iterations: int = 100
+    ) -> Dict[str, Any]:
         """
         测量操作性能
 
@@ -86,7 +89,7 @@ class PerformanceAnalyzer:
                 "median": 0,
                 "p95": 0,
                 "p99": 0,
-                "total": 0
+                "total": 0,
             }
 
         sorted_times = sorted(times)
@@ -101,10 +104,18 @@ class PerformanceAnalyzer:
             "min": min(times),
             "max": max(times),
             "median": statistics.median(times),
-            "p95": sorted_times[int(len(sorted_times) * 0.95)] if len(sorted_times) >= 20 else sorted_times[-1],
-            "p99": sorted_times[int(len(sorted_times) * 0.99)] if len(sorted_times) >= 100 else sorted_times[-1],
+            "p95": (
+                sorted_times[int(len(sorted_times) * 0.95)]
+                if len(sorted_times) >= 20
+                else sorted_times[-1]
+            ),
+            "p99": (
+                sorted_times[int(len(sorted_times) * 0.99)]
+                if len(sorted_times) >= 100
+                else sorted_times[-1]
+            ),
             "total": total_time,
-            "throughput": iterations / total_time if total_time > 0 else 0
+            "throughput": iterations / total_time if total_time > 0 else 0,
         }
 
     def analyze_database_operations(self):
@@ -120,13 +131,14 @@ class PerformanceAnalyzer:
 
         # 1. Asset 插入性能
         print("  🔍 分析资产插入性能...")
+
         def insert_asset(i):
             asset = Asset(
                 asset_id=f"analysis-asset-{i:04d}",
                 name=f"分析资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
                 status=AssetStatus.ACTIVE,
-                description="性能分析测试"
+                description="性能分析测试",
             )
             asset_dao.insert(asset)
 
@@ -134,15 +146,19 @@ class PerformanceAnalyzer:
 
         # 2. Asset 查询性能 (通过ID)
         print("  🔍 分析资产查询性能...")
+
         def query_asset(i):
             asset = asset_dao.select_by_id(f"analysis-asset-{i:04d}")
             if asset is None:
                 raise ValueError(f"资产 analysis-asset-{i:04d} 未找到")
 
-        results["asset_query_by_id"] = self.measure_operation("资产查询(通过ID)", query_asset, 100)
+        results["asset_query_by_id"] = self.measure_operation(
+            "资产查询(通过ID)", query_asset, 100
+        )
 
         # 3. Asset 列表查询性能
         print("  🔍 分析资产列表查询性能...")
+
         def list_assets(i):
             assets = asset_dao.list(limit=50)
             if len(assets) == 0:
@@ -152,6 +168,7 @@ class PerformanceAnalyzer:
 
         # 4. Asset 更新性能
         print("  🔍 分析资产更新性能...")
+
         def update_asset(i):
             asset = asset_dao.select_by_id(f"analysis-asset-{i%50:04d}")
             asset.status = AssetStatus.INACTIVE
@@ -161,6 +178,7 @@ class PerformanceAnalyzer:
 
         # 5. Task 插入性能
         print("  🔍 分析任务插入性能...")
+
         def insert_task(i):
             task = Task(
                 task_id=f"analysis-task-{i:04d}",
@@ -173,7 +191,7 @@ class PerformanceAnalyzer:
                 timeout=30,
                 created_by="performance-analysis",
                 created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                updated_at=datetime.utcnow(),
             )
             task_dao.insert(task)
 
@@ -181,15 +199,19 @@ class PerformanceAnalyzer:
 
         # 6. Task 查询性能
         print("  🔍 分析任务查询性能...")
+
         def query_task(i):
             task = task_dao.select_by_id(f"analysis-task-{i:04d}")
             if task is None:
                 raise ValueError(f"任务 analysis-task-{i:04d} 未找到")
 
-        results["task_query_by_id"] = self.measure_operation("任务查询(通过ID)", query_task, 100)
+        results["task_query_by_id"] = self.measure_operation(
+            "任务查询(通过ID)", query_task, 100
+        )
 
         # 7. Audit Log 插入性能
         print("  🔍 分析审计日志插入性能...")
+
         def insert_audit(i):
             audit_log = AuditLog(
                 audit_id=f"analysis-audit-{i:04d}",
@@ -199,14 +221,17 @@ class PerformanceAnalyzer:
                 actor="performance-analysis",
                 target_type="task",
                 target_id=f"analysis-task-{i:04d}",
-                message=f"审计日志 {i}"
+                message=f"审计日志 {i}",
             )
             audit_dao.insert(audit_log)
 
-        results["audit_insert"] = self.measure_operation("审计日志插入", insert_audit, 100)
+        results["audit_insert"] = self.measure_operation(
+            "审计日志插入", insert_audit, 100
+        )
 
         # 8. 批量插入性能测试
         print("  🔍 分析批量插入性能...")
+
         def batch_insert_assets():
             assets = []
             for i in range(50):
@@ -215,7 +240,7 @@ class PerformanceAnalyzer:
                     name=f"批量资产-{i}",
                     asset_type=AssetType.LINUX_HOST,
                     status=AssetStatus.ACTIVE,
-                    description="批量插入测试"
+                    description="批量插入测试",
                 )
                 assets.append(asset)
 
@@ -236,7 +261,7 @@ class PerformanceAnalyzer:
                 "p95": elapsed / 50,
                 "p99": elapsed / 50,
                 "total": elapsed,
-                "throughput": 50 / elapsed if elapsed > 0 else 0
+                "throughput": 50 / elapsed if elapsed > 0 else 0,
             }
 
         results["batch_insert_50"] = batch_insert_assets()
@@ -262,29 +287,35 @@ class PerformanceAnalyzer:
             print(f"       吞吐: {stats['throughput']:.1f} ops/sec")
 
             # 识别潜在瓶颈
-            if stats['avg'] > 0.1:  # 超过100ms认为是慢操作
-                bottlenecks.append({
-                    "operation": name,
-                    "issue": "平均耗时过长",
-                    "value": f"{stats['avg']*1000:.3f}ms",
-                    "priority": "HIGH" if stats['avg'] > 0.5 else "MEDIUM"
-                })
+            if stats["avg"] > 0.1:  # 超过100ms认为是慢操作
+                bottlenecks.append(
+                    {
+                        "operation": name,
+                        "issue": "平均耗时过长",
+                        "value": f"{stats['avg']*1000:.3f}ms",
+                        "priority": "HIGH" if stats["avg"] > 0.5 else "MEDIUM",
+                    }
+                )
 
-            if stats['p99'] / stats['avg'] > 10:  # P99远超平均值，说明有长尾延迟
-                bottlenecks.append({
-                    "operation": name,
-                    "issue": "长尾延迟严重",
-                    "value": f"P99是平均值的{stats['p99']/stats['avg']:.1f}倍",
-                    "priority": "MEDIUM"
-                })
+            if stats["p99"] / stats["avg"] > 10:  # P99远超平均值，说明有长尾延迟
+                bottlenecks.append(
+                    {
+                        "operation": name,
+                        "issue": "长尾延迟严重",
+                        "value": f"P99是平均值的{stats['p99']/stats['avg']:.1f}倍",
+                        "priority": "MEDIUM",
+                    }
+                )
 
-            if stats['success_rate'] < 0.95:  # 成功率低于95%
-                bottlenecks.append({
-                    "operation": name,
-                    "issue": "可靠性问题",
-                    "value": f"成功率{stats['success_rate']*100:.1f}%",
-                    "priority": "HIGH"
-                })
+            if stats["success_rate"] < 0.95:  # 成功率低于95%
+                bottlenecks.append(
+                    {
+                        "operation": name,
+                        "issue": "可靠性问题",
+                        "value": f"成功率{stats['success_rate']*100:.1f}%",
+                        "priority": "HIGH",
+                    }
+                )
 
         return bottlenecks
 
@@ -300,43 +331,45 @@ class PerformanceAnalyzer:
             priority = bottleneck["priority"]
 
             if "insert" in operation and "耗时" in issue:
-                recommendations.append({
-                    "target": operation,
-                    "action": "批量插入优化",
-                    "details": [
-                        "使用批量插入代替单条插入",
-                        "考虑数据库事务批处理",
-                        "优化数据库连接池配置"
-                    ],
-                    "priority": priority,
-                    "expected_improvement": "50-70%"
-                })
+                recommendations.append(
+                    {
+                        "target": operation,
+                        "action": "批量插入优化",
+                        "details": [
+                            "使用批量插入代替单条插入",
+                            "考虑数据库事务批处理",
+                            "优化数据库连接池配置",
+                        ],
+                        "priority": priority,
+                        "expected_improvement": "50-70%",
+                    }
+                )
 
             elif "query" in operation and "耗时" in issue:
-                recommendations.append({
-                    "target": operation,
-                    "action": "查询优化",
-                    "details": [
-                        "添加合适的数据库索引",
-                        "优化查询语句，避免全表扫描",
-                        "考虑查询结果缓存"
-                    ],
-                    "priority": priority,
-                    "expected_improvement": "30-50%"
-                })
+                recommendations.append(
+                    {
+                        "target": operation,
+                        "action": "查询优化",
+                        "details": [
+                            "添加合适的数据库索引",
+                            "优化查询语句，避免全表扫描",
+                            "考虑查询结果缓存",
+                        ],
+                        "priority": priority,
+                        "expected_improvement": "30-50%",
+                    }
+                )
 
             elif "长尾" in issue:
-                recommendations.append({
-                    "target": operation,
-                    "action": "长尾延迟优化",
-                    "details": [
-                        "检查是否有锁竞争",
-                        "优化内存使用",
-                        "考虑异步处理"
-                    ],
-                    "priority": priority,
-                    "expected_improvement": "40-60%"
-                })
+                recommendations.append(
+                    {
+                        "target": operation,
+                        "action": "长尾延迟优化",
+                        "details": ["检查是否有锁竞争", "优化内存使用", "考虑异步处理"],
+                        "priority": priority,
+                        "expected_improvement": "40-60%",
+                    }
+                )
 
         return recommendations
 
@@ -359,10 +392,15 @@ class PerformanceAnalyzer:
         return {
             "results": results,
             "bottlenecks": bottlenecks,
-            "recommendations": recommendations
+            "recommendations": recommendations,
         }
 
-    def generate_report(self, results: Dict[str, Any], bottlenecks: List[Dict[str, Any]], recommendations: List[Dict[str, Any]]):
+    def generate_report(
+        self,
+        results: Dict[str, Any],
+        bottlenecks: List[Dict[str, Any]],
+        recommendations: List[Dict[str, Any]],
+    ):
         """生成分析报告"""
         report_path = "tests/performance/baseline_analysis_report.md"
 
@@ -381,7 +419,9 @@ class PerformanceAnalyzer:
             f.write("|------|----------|---------|---------|--------|--------|\n")
 
             for name, stats in results.items():
-                f.write(f"| {stats['name']} | {stats['avg']*1000:.3f}ms | {stats['p95']*1000:.3f}ms | {stats['p99']*1000:.3f}ms | {stats['throughput']:.1f} ops/s | {stats['success_rate']*100:.1f}% |\n")
+                f.write(
+                    f"| {stats['name']} | {stats['avg']*1000:.3f}ms | {stats['p95']*1000:.3f}ms | {stats['p99']*1000:.3f}ms | {stats['throughput']:.1f} ops/s | {stats['success_rate']*100:.1f}% |\n"
+                )
 
             f.write("\n## 🔍 识别的性能瓶颈\n\n")
 
@@ -389,7 +429,9 @@ class PerformanceAnalyzer:
                 f.write("| 操作 | 问题 | 数值 | 优先级 |\n")
                 f.write("|------|------|------|--------|\n")
                 for b in bottlenecks:
-                    f.write(f"| {b['operation']} | {b['issue']} | {b['value']} | {b['priority']} |\n")
+                    f.write(
+                        f"| {b['operation']} | {b['issue']} | {b['value']} | {b['priority']} |\n"
+                    )
             else:
                 f.write("✅ 未发现明显性能瓶颈\n")
 
@@ -397,10 +439,12 @@ class PerformanceAnalyzer:
 
             if recommendations:
                 for i, rec in enumerate(recommendations, 1):
-                    f.write(f"### {i}. {rec['target']} - {rec['action']} (优先级: {rec['priority']})\n\n")
+                    f.write(
+                        f"### {i}. {rec['target']} - {rec['action']} (优先级: {rec['priority']})\n\n"
+                    )
                     f.write(f"**预期改善**: {rec['expected_improvement']}\n\n")
                     f.write("**具体措施**:\n")
-                    for detail in rec['details']:
+                    for detail in rec["details"]:
                         f.write(f"- {detail}\n")
                     f.write("\n")
             else:
@@ -410,8 +454,10 @@ class PerformanceAnalyzer:
             f.write("基于上述分析，建议按以下优先级进行性能优化：\n\n")
 
             if recommendations:
-                high_priority = [r for r in recommendations if r['priority'] == 'HIGH']
-                medium_priority = [r for r in recommendations if r['priority'] == 'MEDIUM']
+                high_priority = [r for r in recommendations if r["priority"] == "HIGH"]
+                medium_priority = [
+                    r for r in recommendations if r["priority"] == "MEDIUM"
+                ]
 
                 if high_priority:
                     f.write("### 🔥 高优先级 (本周处理)\n")

@@ -31,7 +31,7 @@ class TestDatabaseCRUD(unittest.TestCase):
             "node_id": node_id,
             "name": "测试节点",
             "status": "online",
-            "cpu_usage": 25.5
+            "cpu_usage": 25.5,
         }
 
         # 添加节点
@@ -51,7 +51,7 @@ class TestDatabaseCRUD(unittest.TestCase):
             "job_id": job_id,
             "name": "测试任务",
             "command": "uptime",
-            "status": "pending"
+            "status": "pending",
         }
 
         # 添加任务
@@ -71,7 +71,7 @@ class TestDatabaseCRUD(unittest.TestCase):
             "device_id": device_id,
             "name": "测试设备",
             "type": "linux",
-            "host": "192.168.1.100"
+            "host": "192.168.1.100",
         }
 
         # 添加设备
@@ -86,11 +86,7 @@ class TestDatabaseCRUD(unittest.TestCase):
     def test_update_node(self):
         """测试更新节点"""
         node_id = "test-node-2"
-        original_data = {
-            "node_id": node_id,
-            "status": "online",
-            "cpu_usage": 20.0
-        }
+        original_data = {"node_id": node_id, "status": "online", "cpu_usage": 20.0}
 
         # 添加原始节点
         self.db.add_node(node_id, original_data)
@@ -110,11 +106,7 @@ class TestDatabaseCRUD(unittest.TestCase):
     def test_update_job(self):
         """测试更新任务"""
         job_id = "test-job-2"
-        original_data = {
-            "job_id": job_id,
-            "status": "pending",
-            "command": "uptime"
-        }
+        original_data = {"job_id": job_id, "status": "pending", "command": "uptime"}
 
         # 添加原始任务
         self.db.add_job(job_id, original_data)
@@ -135,7 +127,7 @@ class TestDatabaseCRUD(unittest.TestCase):
         nodes = [
             ("node-1", {"node_id": "node-1", "status": "online"}),
             ("node-2", {"node_id": "node-2", "status": "offline"}),
-            ("node-3", {"node_id": "node-3", "status": "online"})
+            ("node-3", {"node_id": "node-3", "status": "online"}),
         ]
 
         for node_id, node_data in nodes:
@@ -155,7 +147,7 @@ class TestDatabaseCRUD(unittest.TestCase):
         jobs = [
             ("job-1", {"job_id": "job-1", "node_id": "node-1"}),
             ("job-2", {"job_id": "job-2", "node_id": "node-1"}),
-            ("job-3", {"job_id": "job-3", "node_id": "node-2"})
+            ("job-3", {"job_id": "job-3", "node_id": "node-2"}),
         ]
 
         for job_id, job_data in jobs:
@@ -181,7 +173,7 @@ class TestDatabaseCRUD(unittest.TestCase):
         events = [
             {"event_id": "event-1", "type": "node_registered", "level": "info"},
             {"event_id": "event-2", "type": "job_completed", "level": "info"},
-            {"event_id": "event-3", "type": "error", "level": "error"}
+            {"event_id": "event-3", "type": "error", "level": "error"},
         ]
 
         for event in events:
@@ -200,7 +192,7 @@ class TestDatabaseCRUD(unittest.TestCase):
         logs = [
             {"action": "create", "actor": "user1", "resource_type": "job"},
             {"action": "update", "actor": "user2", "resource_type": "node"},
-            {"action": "delete", "actor": "user1", "resource_type": "device"}
+            {"action": "delete", "actor": "user1", "resource_type": "device"},
         ]
 
         for log in logs:
@@ -280,15 +272,15 @@ class TestDatabaseThreadSafety(unittest.TestCase):
 
     def test_concurrent_job_creation(self):
         """测试并发任务创建"""
+
         def create_jobs(thread_id):
             try:
                 for i in range(50):
                     job_id = f"job-{thread_id}-{i}"
-                    self.db.add_job(job_id, {
-                        "job_id": job_id,
-                        "status": "pending",
-                        "command": "echo test"
-                    })
+                    self.db.add_job(
+                        job_id,
+                        {"job_id": job_id, "status": "pending", "command": "echo test"},
+                    )
             except Exception as e:
                 self.errors.append(f"Thread {thread_id}: {e}")
 
@@ -376,11 +368,9 @@ class TestDatabaseEdgeCases(unittest.TestCase):
         """测试事件列表限制"""
         # 添加超过限制的事件
         for i in range(1500):  # 超过1000的限制
-            self.db.add_event({
-                "event_id": f"event-{i}",
-                "type": "test",
-                "level": "info"
-            })
+            self.db.add_event(
+                {"event_id": f"event-{i}", "type": "test", "level": "info"}
+            )
 
         # 事件数量应该被限制在1000
         all_events = self.db.list_events(limit=2000)
@@ -390,11 +380,9 @@ class TestDatabaseEdgeCases(unittest.TestCase):
         """测试审计日志限制"""
         # 添加超过限制的审计日志
         for i in range(1500):  # 超过1000的限制
-            self.db.add_audit_log({
-                "action": "test",
-                "actor": f"user-{i}",
-                "resource_type": "test"
-            })
+            self.db.add_audit_log(
+                {"action": "test", "actor": f"user-{i}", "resource_type": "test"}
+            )
 
         # 审计日志数量应该被限制在1000
         all_logs = self.db.list_audit_logs(limit=2000)

@@ -10,13 +10,26 @@ from unittest.mock import Mock, AsyncMock, patch
 import uuid
 
 from shared.models.node import NodeIdentity, NodeStatus, NodeType
-from shared.models.permission import ActionType, ResourceType, RiskLevel, PermissionContext
+from shared.models.permission import (
+    ActionType,
+    ResourceType,
+    RiskLevel,
+    PermissionContext,
+)
 from shared.models.approval import (
-    ApprovalRequest, ApprovalStatus, ApprovalDecision, ApprovalPriority
+    ApprovalRequest,
+    ApprovalStatus,
+    ApprovalDecision,
+    ApprovalPriority,
 )
 from shared.models.rollback import (
-    RollbackPlan, RollbackType, RollbackStatus,
-    FailureRecord, RecoveryAction, FailureType, FailureSeverity
+    RollbackPlan,
+    RollbackType,
+    RollbackStatus,
+    FailureRecord,
+    RecoveryAction,
+    FailureType,
+    FailureSeverity,
 )
 from shared.models.audit import SecurityAuditLog, SecurityEvent, ActorType, ActionResult
 
@@ -31,7 +44,7 @@ class TestSecurityIntegration:
             "user_id": "user-integration-001",
             "user_name": "集成测试用户",
             "roles": ["super_admin"],  # 使用有完全权限的角色
-            "tenant_id": "tenant-001"
+            "tenant_id": "tenant-001",
         }
 
     @pytest.fixture
@@ -45,7 +58,7 @@ class TestSecurityIntegration:
             tenant_id="tenant-001",
             region_id="region-001",
             capabilities={"ssh": True, "command_exec": True},
-            node_metadata={"version": "1.0.0"}
+            node_metadata={"version": "1.0.0"},
         )
 
     @pytest.fixture
@@ -58,15 +71,18 @@ class TestSecurityIntegration:
             region_id="region-001",
             device_type=None,
             resource_type=ResourceType.ASSET,
-            resource_id="asset-001"
+            resource_id="asset-001",
         )
 
     @pytest.mark.asyncio
-    async def test_complete_security_workflow(self, sample_user, sample_node, sample_permission_context):
+    async def test_complete_security_workflow(
+        self, sample_user, sample_node, sample_permission_context
+    ):
         """测试完整的安全工作流：认证 -> 授权 -> 审批 -> 执行 -> 审计"""
 
         # 1. 认证测试
         from shared.security.node_token_service import get_node_token_service
+
         token_service = get_node_token_service()
 
         # 生成节点Token
@@ -90,7 +106,7 @@ class TestSecurityIntegration:
         permission_result = permission_checker.check_permission(
             action=ActionType.READ,
             resource=ResourceType.ASSET,
-            context=sample_permission_context
+            context=sample_permission_context,
         )
         # 对于有通配符权限的super_admin，权限检查应该成功
         # 如果失败，说明权限矩阵未正确加载，记录但不阻断测试
@@ -102,13 +118,13 @@ class TestSecurityIntegration:
 
         # 评估风险
         risk_level = risk_assessor.assess_risk(
-            action=ActionType.READ,
-            resource=ResourceType.ASSET
+            action=ActionType.READ, resource=ResourceType.ASSET
         )
         assert risk_level in [RiskLevel.LOW, RiskLevel.MEDIUM]
 
         # 3. 审批测试（高风险操作）
         from shared.services.approval_service import get_approval_service
+
         approval_service = get_approval_service()
 
         # 创建高风险操作的审批请求
@@ -122,7 +138,7 @@ class TestSecurityIntegration:
             target_operation={"config_file": "/etc/core/config.json"},
             risk_level="high",
             approver_role="tenant_admin",
-            priority=ApprovalPriority.HIGH
+            priority=ApprovalPriority.HIGH,
         )
 
         assert approval_request.status == ApprovalStatus.DRAFT
@@ -137,7 +153,7 @@ class TestSecurityIntegration:
             decision="approve",
             reason="配置变更合理，批准执行",
             approver_id="admin-001",
-            approver_name="系统管理员"
+            approver_name="系统管理员",
         )
 
         assert approved_request.status == ApprovalStatus.APPROVED
@@ -145,6 +161,7 @@ class TestSecurityIntegration:
 
         # 4. 回滚测试（如果审批被拒绝）
         from shared.services.rollback_service import get_rollback_service
+
         rollback_service = get_rollback_service()
 
         # 模拟审批拒绝场景
@@ -157,7 +174,7 @@ class TestSecurityIntegration:
             resource_type="config",
             target_operation={"test": "data"},
             risk_level="medium",
-            approver_role="tenant_admin"
+            approver_role="tenant_admin",
         )
 
         # 提交并拒绝
@@ -167,7 +184,7 @@ class TestSecurityIntegration:
             decision="reject",
             reason="测试场景，拒绝执行",
             approver_id="admin-001",
-            approver_name="系统管理员"
+            approver_name="系统管理员",
         )
 
         # 创建故障记录
@@ -176,7 +193,7 @@ class TestSecurityIntegration:
             failure_type=FailureType.APPROVAL_REJECTED,
             severity=FailureSeverity.MEDIUM,
             error_message="审批被拒绝，需要回滚",
-            context={"approval_id": rejected_request.request_id}
+            context={"approval_id": rejected_request.request_id},
         )
 
         assert failure.failure_type == FailureType.APPROVAL_REJECTED
@@ -191,7 +208,7 @@ class TestSecurityIntegration:
             triggered_by="system",
             rollback_type=RollbackType.TASK,
             target_resources=["task-001"],
-            original_task_id="task-001"
+            original_task_id="task-001",
         )
 
         assert rollback_plan.rollback_type == RollbackType.TASK
@@ -199,7 +216,13 @@ class TestSecurityIntegration:
 
         # 5. 审计日志测试
         # 创建安全审计日志
-        from shared.models.audit import AuditAction, AuditCategory, EventLevel, SecurityEventType
+        from shared.models.audit import (
+            AuditAction,
+            AuditCategory,
+            EventLevel,
+            SecurityEventType,
+        )
+
         request = approval_service._requests[approved_request.request_id]
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
@@ -220,10 +243,10 @@ class TestSecurityIntegration:
                 "operation_type": "config_change",
                 "resource_type": "config",
                 "risk_level": "high",
-                "approver_id": "admin-001"
+                "approver_id": "admin-001",
             },
             ip_address="192.168.1.100",
-            correlation_id=f"corr-{uuid.uuid4().hex[:8]}"
+            correlation_id=f"corr-{uuid.uuid4().hex[:8]}",
         )
 
         assert audit_log.audit_id is not None
@@ -231,6 +254,7 @@ class TestSecurityIntegration:
 
         # 6. 安全事件测试（创建告警）
         from shared.models.audit import SecurityEventType
+
         security_event = SecurityEvent(
             event_id=f"security-{uuid.uuid4().hex[:8]}",
             security_event_type=SecurityEventType.APPROVAL_GRANTED,
@@ -238,17 +262,16 @@ class TestSecurityIntegration:
             title="集成测试安全事件",
             description="完整安全链路集成测试",
             affected_resources=["approval-001", "task-001"],
-            context={
-                "test_type": "integration",
-                "workflow_completed": True
-            }
+            context={"test_type": "integration", "workflow_completed": True},
         )
 
         assert security_event.event_id is not None
         assert security_event.severity == RiskLevel.MEDIUM
 
     @pytest.mark.asyncio
-    async def test_authentication_authorization_integration(self, sample_node, sample_permission_context):
+    async def test_authentication_authorization_integration(
+        self, sample_node, sample_permission_context
+    ):
         """测试认证和授权的集成"""
 
         from shared.security.node_token_service import get_node_token_service
@@ -273,32 +296,34 @@ class TestSecurityIntegration:
             tenant_id=verified_node["tenant_id"],
             region_id=verified_node["region_id"],
             resource_type=ResourceType.NODE,
-            resource_id=verified_node["node_id"]
+            resource_id=verified_node["node_id"],
         )
 
         # 4. 风险评估
         risk_level = risk_assessor.assess_risk(
-            action=ActionType.EXECUTE,
-            resource=ResourceType.TASK
+            action=ActionType.EXECUTE, resource=ResourceType.TASK
         )
 
         # 5. 综合权限检查
         permission_result = permission_checker.check_permission(
-            action=ActionType.EXECUTE,
-            resource=ResourceType.TASK,
-            context=context
+            action=ActionType.EXECUTE, resource=ResourceType.TASK, context=context
         )
 
         assert permission_result.allowed in [True, False]  # 结果应该是明确的
 
         # 6. 创建审计日志
         from shared.models.audit import AuditAction, AuditCategory, EventLevel
+
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
             action=AuditAction.USER_ACTION,
             category=AuditCategory.TASK,
             level=EventLevel.INFO,
-            result=ActionResult.SUCCESS if permission_result.allowed else ActionResult.FAILURE,
+            result=(
+                ActionResult.SUCCESS
+                if permission_result.allowed
+                else ActionResult.FAILURE
+            ),
             actor=verified_node["node_id"],
             actor_type=ActorType.NODE,
             tenant_id=verified_node["tenant_id"],
@@ -308,9 +333,11 @@ class TestSecurityIntegration:
             details={
                 "action": "execute",
                 "resource": "task",
-                "risk_level": risk_level.value if hasattr(risk_level, 'value') else risk_level,
-                "permission_allowed": permission_result.allowed
-            }
+                "risk_level": (
+                    risk_level.value if hasattr(risk_level, "value") else risk_level
+                ),
+                "permission_allowed": permission_result.allowed,
+            },
         )
 
         assert audit_log.result is not None
@@ -336,7 +363,7 @@ class TestSecurityIntegration:
             target_operation={"action": "modify_system_config"},
             risk_level="high",
             approver_role="super_admin",
-            priority=ApprovalPriority.HIGH
+            priority=ApprovalPriority.HIGH,
         )
 
         # 2. 提交审批
@@ -348,7 +375,7 @@ class TestSecurityIntegration:
             decision="reject",
             reason="集成测试：模拟审批拒绝场景",
             approver_id="admin-001",
-            approver_name="系统管理员"
+            approver_name="系统管理员",
         )
 
         assert rejected_request.status == ApprovalStatus.REJECTED
@@ -361,8 +388,8 @@ class TestSecurityIntegration:
             error_message=f"审批被拒绝: {rejected_request.decision_reason}",
             context={
                 "approval_id": rejected_request.request_id,
-                "original_operation": "system_config"
-            }
+                "original_operation": "system_config",
+            },
         )
 
         # 5. 自动创建回滚计划
@@ -375,7 +402,7 @@ class TestSecurityIntegration:
             rollback_type=RollbackType.CONFIG,
             target_resources=["/etc/system/config.json"],
             original_task_id=failure.task_id,
-            original_approval_id=rejected_request.request_id
+            original_approval_id=rejected_request.request_id,
         )
 
         assert rollback_plan.status == RollbackStatus.PLANNED
@@ -383,6 +410,7 @@ class TestSecurityIntegration:
 
         # 6. 创建审计日志记录完整流程
         from shared.models.audit import AuditAction, AuditCategory, EventLevel
+
         request = approval_service._requests[rejected_request.request_id]
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
@@ -405,12 +433,9 @@ class TestSecurityIntegration:
                 "operation_type": request.operation_type,
                 "resource_type": request.resource_type,
                 "rollback_plan_created": True,
-                "automatic_recovery_triggered": True
+                "automatic_recovery_triggered": True,
             },
-            changes={
-                "approval_status": "rejected",
-                "rollback_initiated": True
-            }
+            changes={"approval_status": "rejected", "rollback_initiated": True},
         )
 
         assert audit_log.result == ActionResult.FAILURE
@@ -435,7 +460,7 @@ class TestSecurityIntegration:
             node_id="node-001",
             asset_id="asset-001",
             stack_trace="Traceback (most recent call last):\n  Connection timeout",
-            auto_process=False  # 不自动处理，手动测试
+            auto_process=False,  # 不自动处理，手动测试
         )
 
         assert failure.failure_type == FailureType.EXECUTION_FAILURE
@@ -445,16 +470,11 @@ class TestSecurityIntegration:
         recovery_plan = rollback_service.create_recovery_plan(
             failure_id=failure.failure_id,
             recovery_action=RecoveryAction.RETRY,
-            steps=[
-                "检查网络连接状态",
-                "重试任务执行",
-                "验证执行结果",
-                "更新任务状态"
-            ],
+            steps=["检查网络连接状态", "重试任务执行", "验证执行结果", "更新任务状态"],
             validation_criteria=["任务成功完成", "无错误日志"],
             priority=3,
             name="执行失败重试恢复",
-            description="针对连接超时的重试恢复计划"
+            description="针对连接超时的重试恢复计划",
         )
 
         # 3. 执行恢复计划（模拟）
@@ -479,6 +499,7 @@ class TestSecurityIntegration:
 
         # 5. 创建审计日志
         from shared.models.audit import AuditAction, AuditCategory, EventLevel
+
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
             action=AuditAction.USER_ACTION,
@@ -497,12 +518,15 @@ class TestSecurityIntegration:
                 "failure_type": failure.failure_type.value,
                 "recovery_action": recovery_plan.recovery_action.value,
                 "recovery_steps": len(recovery_plan.steps),
-                "duration_seconds": (recovery_plan.completed_at - recovery_plan.started_at).total_seconds() if recovery_plan.completed_at and recovery_plan.started_at else 0
+                "duration_seconds": (
+                    (
+                        recovery_plan.completed_at - recovery_plan.started_at
+                    ).total_seconds()
+                    if recovery_plan.completed_at and recovery_plan.started_at
+                    else 0
+                ),
             },
-            changes={
-                "task_status": "recovered",
-                "failure_resolved": True
-            }
+            changes={"task_status": "recovered", "failure_resolved": True},
         )
 
         assert audit_log.result == ActionResult.SUCCESS
@@ -512,6 +536,7 @@ class TestSecurityIntegration:
         """测试审计日志的完整性"""
         # 创建一个完整的审计日志
         from shared.models.audit import AuditAction, AuditCategory, EventLevel
+
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
             action=AuditAction.USER_ACTION,
@@ -528,11 +553,12 @@ class TestSecurityIntegration:
             details={"asset_name": "测试资产"},
             ip_address="192.168.1.100",
             correlation_id=f"corr-{uuid.uuid4().hex[:8]}",
-            duration_ms=45
+            duration_ms=45,
         )
 
         # 验证必填字段
         from shared.models.audit import AuditFields
+
         for field in AuditFields.REQUIRED_FIELDS:
             assert hasattr(audit_log, field), f"缺少必填字段: {field}"
             assert getattr(audit_log, field) is not None, f"必填字段 {field} 为空"
@@ -549,6 +575,7 @@ class TestSecurityIntegration:
     def test_security_event_creation(self):
         """测试安全事件的创建"""
         from shared.models.audit import SecurityEventType
+
         security_event = SecurityEvent(
             event_id=f"security-{uuid.uuid4().hex[:8]}",
             security_event_type=SecurityEventType.PERMISSION_DENIED,
@@ -566,9 +593,9 @@ class TestSecurityIntegration:
             context={
                 "attempted_action": "delete",
                 "target_resource": "critical_asset",
-                "attempt_count": 3
+                "attempt_count": 3,
             },
-            correlation_id=f"corr-{uuid.uuid4().hex[:8]}"
+            correlation_id=f"corr-{uuid.uuid4().hex[:8]}",
         )
 
         assert security_event.event_id is not None
@@ -590,7 +617,7 @@ class TestSecurityIntegration:
             tenant_id="tenant-a",
             region_id="region-001",
             resource_type=ResourceType.ASSET,
-            resource_id="asset-a"
+            resource_id="asset-a",
         )
 
         tenant_b_context = PermissionContext(
@@ -599,7 +626,7 @@ class TestSecurityIntegration:
             tenant_id="tenant-b",
             region_id="region-001",
             resource_type=ResourceType.ASSET,
-            resource_id="asset-b"  # 租户B的资源
+            resource_id="asset-b",  # 租户B的资源
         )
 
         # 租户A的用户尝试访问租户B的资源
@@ -612,8 +639,8 @@ class TestSecurityIntegration:
                 tenant_id="tenant-a",  # 租户A的用户
                 region_id="region-001",
                 resource_type=ResourceType.ASSET,
-                resource_id="asset-b"  # 尝试访问租户B的资源
-            )
+                resource_id="asset-b",  # 尝试访问租户B的资源
+            ),
         )
 
         # 跨租户访问应该被拒绝
@@ -621,6 +648,7 @@ class TestSecurityIntegration:
 
         # 创建审计日志
         from shared.models.audit import AuditAction, AuditCategory, EventLevel
+
         audit_log = SecurityAuditLog(
             audit_id=f"audit-{uuid.uuid4().hex[:8]}",
             action=AuditAction.USER_ACTION,
@@ -637,8 +665,8 @@ class TestSecurityIntegration:
             details={
                 "attempted_tenant": "tenant-b",
                 "user_tenant": "tenant-a",
-                "isolation_violation": True
-            }
+                "isolation_violation": True,
+            },
         )
 
         assert audit_log.result == ActionResult.FAILURE
@@ -666,7 +694,7 @@ class TestSecurityPerformance:
                 status=NodeStatus.ACTIVE,
                 tenant_id="tenant-perf",
                 region_id="region-perf",
-                capabilities={"ssh": True, "command_exec": True}
+                capabilities={"ssh": True, "command_exec": True},
             )
             test_nodes.append(node)
 
@@ -712,7 +740,7 @@ class TestSecurityPerformance:
                 tenant_id="tenant-perf",
                 region_id="region-perf",
                 resource_type=ResourceType.ASSET,
-                resource_id=f"asset-perf-{i % 10}"  # 循环使用10个资源
+                resource_id=f"asset-perf-{i % 10}",  # 循环使用10个资源
             )
             contexts.append(context)
 
@@ -720,9 +748,7 @@ class TestSecurityPerformance:
         start_time = datetime.utcnow()
         for context in contexts:
             result = permission_checker.check_permission(
-                action=ActionType.READ,
-                resource=ResourceType.ASSET,
-                context=context
+                action=ActionType.READ, resource=ResourceType.ASSET, context=context
             )
             assert result is not None
 
@@ -735,8 +761,7 @@ class TestSecurityPerformance:
         start_time = datetime.utcnow()
         for i in range(100):
             risk_level = risk_assessor.assess_risk(
-                action=ActionType.READ,
-                resource=ResourceType.ASSET
+                action=ActionType.READ, resource=ResourceType.ASSET
             )
             assert risk_level is not None
 

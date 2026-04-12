@@ -11,9 +11,16 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from shared.models.rollback import (
-    RollbackPlan, RollbackStep, RollbackType, RollbackStatus,
-    RollbackStatistics, FailureRecord, RecoveryPlan,
-    FailureType, FailureSeverity, RecoveryAction
+    RollbackPlan,
+    RollbackStep,
+    RollbackType,
+    RollbackStatus,
+    RollbackStatistics,
+    FailureRecord,
+    RecoveryPlan,
+    FailureType,
+    FailureSeverity,
+    RecoveryAction,
 )
 
 
@@ -29,7 +36,7 @@ class RollbackServiceConfig:
         auto_rollback_on_failure: bool = True,
         require_confirmation: bool = True,
         simulate_execution_success_rate: float = 1.0,
-        simulate_validation_success_rate: float = 1.0
+        simulate_validation_success_rate: float = 1.0,
     ):
         self.config_dir = Path(config_dir)
         self.default_timeout_seconds = default_timeout_seconds
@@ -76,7 +83,7 @@ class RollbackService:
         """加载回滚策略配置"""
         strategy_file = self.config.config_dir / "rollback_strategies.json"
         if strategy_file.exists():
-            with open(strategy_file, 'r', encoding='utf-8') as f:
+            with open(strategy_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 return data.get("strategies", {})
         return {}
@@ -85,7 +92,7 @@ class RollbackService:
         """加载故障处理配置"""
         handler_file = self.config.config_dir / "failure_handlers.json"
         if handler_file.exists():
-            with open(handler_file, 'r', encoding='utf-8') as f:
+            with open(handler_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 return data.get("handlers", {})
         return {}
@@ -103,7 +110,7 @@ class RollbackService:
         original_approval_id: Optional[str] = None,
         priority: int = 5,
         estimated_duration_seconds: int = 300,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> RollbackPlan:
         """
         创建回滚计划
@@ -131,7 +138,7 @@ class RollbackService:
         steps = self._generate_rollback_steps(
             plan_id=plan_id,
             rollback_type=rollback_type,
-            target_resources=target_resources
+            target_resources=target_resources,
         )
 
         # 估算风险等级
@@ -153,17 +160,14 @@ class RollbackService:
             current_step=0,
             estimated_duration_seconds=estimated_duration_seconds,
             estimated_risk_level=risk_level,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         self._plans[plan_id] = plan
         return plan
 
     def _generate_rollback_steps(
-        self,
-        plan_id: str,
-        rollback_type: RollbackType,
-        target_resources: List[str]
+        self, plan_id: str, rollback_type: RollbackType, target_resources: List[str]
     ) -> List[RollbackStep]:
         """
         生成回滚步骤
@@ -198,7 +202,7 @@ class RollbackService:
                 parameters=self._get_step_parameters(operation, rollback_type),
                 status=RollbackStatus.PLANNED,
                 requires_backup=self._requires_backup(operation),
-                validation_criteria=strategy.get("validation_steps", [])
+                validation_criteria=strategy.get("validation_steps", []),
             )
 
             steps.append(step)
@@ -232,17 +236,21 @@ class RollbackService:
             "reset_task_status": "重置任务状态",
             "release_resources": "释放资源",
             "notify_stakeholders": "通知相关人员",
-            "verify_system_state": "验证系统状态"
+            "verify_system_state": "验证系统状态",
         }
         return descriptions.get(operation, f"执行{operation}")
 
-    def _get_step_parameters(self, operation: str, rollback_type: RollbackType) -> Dict[str, Any]:
+    def _get_step_parameters(
+        self, operation: str, rollback_type: RollbackType
+    ) -> Dict[str, Any]:
         """获取步骤参数"""
         # 根据操作类型返回不同的参数
         params = {}
 
         if "backup" in operation:
-            params["backup_path"] = f"/backup/{rollback_type.value}/{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
+            params["backup_path"] = (
+                f"/backup/{rollback_type.value}/{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
+            )
         elif "restore" in operation:
             params["backup_path"] = f"/backup/{rollback_type.value}/latest"
         elif "stop" in operation or "start" in operation:
@@ -256,13 +264,15 @@ class RollbackService:
         backup_operations = ["restore", "deploy", "update", "firmware", "config"]
         return any(op in operation for op in backup_operations)
 
-    def _estimate_rollback_risk(self, rollback_type: RollbackType, steps: List[RollbackStep]) -> str:
+    def _estimate_rollback_risk(
+        self, rollback_type: RollbackType, steps: List[RollbackStep]
+    ) -> str:
         """估算回滚风险等级"""
         risk_scores = {
             RollbackType.CONFIG: 2,
             RollbackType.SERVICE: 3,
             RollbackType.DEVICE: 4,
-            RollbackType.TASK: 1
+            RollbackType.TASK: 1,
         }
 
         base_risk = risk_scores.get(rollback_type, 2)
@@ -279,9 +289,7 @@ class RollbackService:
             return "high"
 
     async def execute_rollback_plan(
-        self,
-        plan_id: str,
-        auto_confirm: bool = False
+        self, plan_id: str, auto_confirm: bool = False
     ) -> RollbackPlan:
         """
         执行回滚计划
@@ -332,7 +340,9 @@ class RollbackService:
                         await self._execute_step(plan, step)
                     else:
                         # 重试次数用完，回滚失败
-                        raise Exception(f"步骤 {step.step_id} 执行失败: {step.error_message}")
+                        raise Exception(
+                            f"步骤 {step.step_id} 执行失败: {step.error_message}"
+                        )
 
             # 所有步骤成功完成
             plan.status = RollbackStatus.COMPLETED
@@ -394,7 +404,7 @@ class RollbackService:
             "validate": 1,
             "verify": 1,
             "health_check": 2,
-            "test": 3
+            "test": 3,
         }
 
         base_time = execution_times.get(step.operation.split("_")[0], 2)
@@ -403,6 +413,7 @@ class RollbackService:
         # 使用配置的成功率（实际实现中应基于真实执行结果）
         success_rate = self.config.simulate_execution_success_rate
         import random
+
         if random.random() > success_rate:
             raise Exception(f"步骤执行失败（模拟）: {step.operation}")
 
@@ -414,6 +425,7 @@ class RollbackService:
         # 使用配置的验证成功率
         success_rate = self.config.simulate_validation_success_rate
         import random
+
         if random.random() > success_rate:
             raise Exception(f"步骤验证失败: {step.operation}")
 
@@ -460,7 +472,7 @@ class RollbackService:
         self,
         status: Optional[RollbackStatus] = None,
         rollback_type: Optional[RollbackType] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[RollbackPlan]:
         """
         列出回滚计划
@@ -479,7 +491,11 @@ class RollbackService:
         if status:
             plans = [p for p in plans if p.status == status]
         if rollback_type:
-            plans = [p for p in plans if any(step.rollback_type == rollback_type for step in p.steps)]
+            plans = [
+                p
+                for p in plans
+                if any(step.rollback_type == rollback_type for step in p.steps)
+            ]
 
         # 按触发时间倒序排序
         plans.sort(key=lambda x: x.triggered_at, reverse=True)
@@ -496,7 +512,7 @@ class RollbackService:
         asset_id: Optional[str] = None,
         stack_trace: Optional[str] = None,
         context: Optional[Dict[str, Any]] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> FailureRecord:
         """
         创建故障记录
@@ -533,13 +549,15 @@ class RollbackService:
             recovery_action=recovery_action,
             recovery_status="pending",
             context=context or {},
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         self._failures[failure_id] = failure
         return failure
 
-    def _determine_recovery_action(self, failure_type: FailureType, severity: FailureSeverity) -> RecoveryAction:
+    def _determine_recovery_action(
+        self, failure_type: FailureType, severity: FailureSeverity
+    ) -> RecoveryAction:
         """确定恢复动作"""
         handler = self._failure_handlers.get(failure_type.value, {})
         severity_mapping = handler.get("severity_mapping", {})
@@ -556,7 +574,7 @@ class RollbackService:
         validation_criteria: List[str],
         priority: int = 5,
         name: Optional[str] = None,
-        description: Optional[str] = None
+        description: Optional[str] = None,
     ) -> RecoveryPlan:
         """
         创建恢复计划
@@ -595,7 +613,7 @@ class RollbackService:
             steps=steps,
             validation_criteria=validation_criteria,
             status="pending",
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(timezone.utc),
         )
 
         self._recovery_plans[plan_id] = plan
@@ -614,7 +632,7 @@ class RollbackService:
         task_id: Optional[str] = None,
         failure_type: Optional[FailureType] = None,
         severity: Optional[FailureSeverity] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[FailureRecord]:
         """列出故障记录"""
         failures = list(self._failures.values())
@@ -684,7 +702,7 @@ class RollbackService:
             avg_duration_seconds=avg_duration,
             max_duration_seconds=max_duration,
             min_duration_seconds=min_duration,
-            success_rate=success_rate
+            success_rate=success_rate,
         )
 
     def _get_plan(self, plan_id: str) -> RollbackPlan:

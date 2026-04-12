@@ -12,8 +12,13 @@ import random
 import time
 
 from shared.models.rollback import (
-    RollbackPlan, RollbackType, RollbackStatus,
-    FailureRecord, RecoveryAction, FailureType, FailureSeverity
+    RollbackPlan,
+    RollbackType,
+    RollbackStatus,
+    FailureRecord,
+    RecoveryAction,
+    FailureType,
+    FailureSeverity,
 )
 from shared.services.rollback_service import get_rollback_service
 from shared.services.recovery_service import get_recovery_service
@@ -26,7 +31,9 @@ class FaultInjector:
         self.injected_faults = []
         self.fault_history = []
 
-    def inject_network_failure(self, node_id: str, severity: FailureSeverity = FailureSeverity.MEDIUM):
+    def inject_network_failure(
+        self, node_id: str, severity: FailureSeverity = FailureSeverity.MEDIUM
+    ):
         """注入网络故障"""
         fault = {
             "fault_id": f"fault-network-{uuid.uuid4().hex[:8]}",
@@ -34,12 +41,14 @@ class FaultInjector:
             "severity": severity,
             "target": node_id,
             "description": f"网络连接故障: {node_id}",
-            "simulation": lambda: self._simulate_network_timeout(node_id)
+            "simulation": lambda: self._simulate_network_timeout(node_id),
         }
         self.injected_faults.append(fault)
         return fault
 
-    def inject_execution_failure(self, task_id: str, severity: FailureSeverity = FailureSeverity.HIGH):
+    def inject_execution_failure(
+        self, task_id: str, severity: FailureSeverity = FailureSeverity.HIGH
+    ):
         """注入执行失败"""
         fault = {
             "fault_id": f"fault-exec-{uuid.uuid4().hex[:8]}",
@@ -47,12 +56,14 @@ class FaultInjector:
             "severity": severity,
             "target": task_id,
             "description": f"任务执行失败: {task_id}",
-            "simulation": lambda: self._simulate_execution_error(task_id)
+            "simulation": lambda: self._simulate_execution_error(task_id),
         }
         self.injected_faults.append(fault)
         return fault
 
-    def inject_timeout_failure(self, operation: str, severity: FailureSeverity = FailureSeverity.MEDIUM):
+    def inject_timeout_failure(
+        self, operation: str, severity: FailureSeverity = FailureSeverity.MEDIUM
+    ):
         """注入超时故障"""
         fault = {
             "fault_id": f"fault-timeout-{uuid.uuid4().hex[:8]}",
@@ -60,12 +71,14 @@ class FaultInjector:
             "severity": severity,
             "target": operation,
             "description": f"操作超时: {operation}",
-            "simulation": lambda: self._simulate_timeout(operation)
+            "simulation": lambda: self._simulate_timeout(operation),
         }
         self.injected_faults.append(fault)
         return fault
 
-    def inject_approval_rejection(self, request_id: str, severity: FailureSeverity = FailureSeverity.HIGH):
+    def inject_approval_rejection(
+        self, request_id: str, severity: FailureSeverity = FailureSeverity.HIGH
+    ):
         """注入审批拒绝"""
         fault = {
             "fault_id": f"fault-approval-{uuid.uuid4().hex[:8]}",
@@ -73,12 +86,14 @@ class FaultInjector:
             "severity": severity,
             "target": request_id,
             "description": f"审批被拒绝: {request_id}",
-            "simulation": lambda: self._simulate_approval_rejection(request_id)
+            "simulation": lambda: self._simulate_approval_rejection(request_id),
         }
         self.injected_faults.append(fault)
         return fault
 
-    def inject_configuration_error(self, config_file: str, severity: FailureSeverity = FailureSeverity.HIGH):
+    def inject_configuration_error(
+        self, config_file: str, severity: FailureSeverity = FailureSeverity.HIGH
+    ):
         """注入配置错误"""
         fault = {
             "fault_id": f"fault-config-{uuid.uuid4().hex[:8]}",
@@ -86,12 +101,14 @@ class FaultInjector:
             "severity": severity,
             "target": config_file,
             "description": f"配置错误: {config_file}",
-            "simulation": lambda: self._simulate_config_error(config_file)
+            "simulation": lambda: self._simulate_config_error(config_file),
         }
         self.injected_faults.append(fault)
         return fault
 
-    def inject_resource_exhaustion(self, resource_type: str, severity: FailureSeverity = FailureSeverity.CRITICAL):
+    def inject_resource_exhaustion(
+        self, resource_type: str, severity: FailureSeverity = FailureSeverity.CRITICAL
+    ):
         """注入资源耗尽"""
         fault = {
             "fault_id": f"fault-resource-{uuid.uuid4().hex[:8]}",
@@ -99,7 +116,7 @@ class FaultInjector:
             "severity": severity,
             "target": resource_type,
             "description": f"资源耗尽: {resource_type}",
-            "simulation": lambda: self._simulate_resource_exhaustion(resource_type)
+            "simulation": lambda: self._simulate_resource_exhaustion(resource_type),
         }
         self.injected_faults.append(fault)
         return fault
@@ -134,11 +151,13 @@ class FaultInjector:
         """触发指定的故障"""
         for fault in self.injected_faults:
             if fault["fault_id"] == fault_id:
-                self.fault_history.append({
-                    "fault_id": fault_id,
-                    "triggered_at": datetime.utcnow(),
-                    "fault_type": fault["fault_type"]
-                })
+                self.fault_history.append(
+                    {
+                        "fault_id": fault_id,
+                        "triggered_at": datetime.utcnow(),
+                        "fault_type": fault["fault_type"],
+                    }
+                )
                 return fault["simulation"]()
 
         raise ValueError(f"Fault not found: {fault_id}")
@@ -170,7 +189,9 @@ class TestFaultInjection:
     async def test_network_failure_recovery(self, fault_injector, recovery_service):
         """测试网络故障的恢复"""
         # 1. 注入网络故障
-        fault = fault_injector.inject_network_failure("node-001", FailureSeverity.MEDIUM)
+        fault = fault_injector.inject_network_failure(
+            "node-001", FailureSeverity.MEDIUM
+        )
 
         # 2. 触发故障并创建故障记录
         try:
@@ -183,11 +204,14 @@ class TestFaultInjection:
                 severity=FailureSeverity.MEDIUM,
                 error_message=str(e),
                 node_id="node-001",
-                auto_process=False
+                auto_process=False,
             )
 
             assert failure.failure_type == FailureType.NETWORK_FAILURE
-            assert failure.recovery_action in [RecoveryAction.RETRY, RecoveryAction.ESCALATE]
+            assert failure.recovery_action in [
+                RecoveryAction.RETRY,
+                RecoveryAction.ESCALATE,
+            ]
 
             # 4. 验证故障被正确分类
             assert failure.severity == FailureSeverity.MEDIUM
@@ -196,7 +220,9 @@ class TestFaultInjection:
     async def test_execution_failure_recovery(self, fault_injector, recovery_service):
         """测试执行失败的恢复"""
         # 1. 注入执行失败
-        fault = fault_injector.inject_execution_failure("task-exec-001", FailureSeverity.HIGH)
+        fault = fault_injector.inject_execution_failure(
+            "task-exec-001", FailureSeverity.HIGH
+        )
 
         # 2. 触发故障
         try:
@@ -208,18 +234,23 @@ class TestFaultInjection:
                 failure_type=FailureType.EXECUTION_FAILURE,
                 severity=FailureSeverity.HIGH,
                 error_message=str(e),
-                auto_process=False
+                auto_process=False,
             )
 
             assert failure.failure_type == FailureType.EXECUTION_FAILURE
             # 高严重程度的执行失败应该触发回滚或升级
-            assert failure.recovery_action in [RecoveryAction.ROLLBACK, RecoveryAction.ESCALATE]
+            assert failure.recovery_action in [
+                RecoveryAction.ROLLBACK,
+                RecoveryAction.ESCALATE,
+            ]
 
     @pytest.mark.asyncio
     async def test_timeout_failure_recovery(self, fault_injector, recovery_service):
         """测试超时故障的恢复"""
         # 1. 注入超时故障
-        fault = fault_injector.inject_timeout_failure("api_call", FailureSeverity.MEDIUM)
+        fault = fault_injector.inject_timeout_failure(
+            "api_call", FailureSeverity.MEDIUM
+        )
 
         # 2. 触发故障
         try:
@@ -231,7 +262,7 @@ class TestFaultInjection:
                 failure_type=FailureType.TIMEOUT_FAILURE,
                 severity=FailureSeverity.MEDIUM,
                 error_message=str(e),
-                auto_process=False
+                auto_process=False,
             )
 
             assert failure.failure_type == FailureType.TIMEOUT_FAILURE
@@ -241,7 +272,9 @@ class TestFaultInjection:
     async def test_approval_rejection_rollback(self, fault_injector, rollback_service):
         """测试审批拒绝触发回滚"""
         # 1. 注入审批拒绝
-        fault = fault_injector.inject_approval_rejection("approval-001", FailureSeverity.MEDIUM)
+        fault = fault_injector.inject_approval_rejection(
+            "approval-001", FailureSeverity.MEDIUM
+        )
 
         # 2. 触发故障
         result = fault_injector.trigger_fault(fault["fault_id"])
@@ -253,7 +286,7 @@ class TestFaultInjection:
                 failure_type=FailureType.APPROVAL_REJECTED,
                 severity=FailureSeverity.MEDIUM,
                 error_message=f"审批被拒绝: {result.get('reason')}",
-                context={"approval_id": "approval-001"}
+                context={"approval_id": "approval-001"},
             )
 
             assert failure.failure_type == FailureType.APPROVAL_REJECTED
@@ -268,7 +301,7 @@ class TestFaultInjection:
                 triggered_by="system",
                 rollback_type=RollbackType.TASK,
                 target_resources=["task-approval-001"],
-                original_task_id=failure.task_id
+                original_task_id=failure.task_id,
             )
 
             assert rollback_plan.status == RollbackStatus.PLANNED
@@ -278,7 +311,9 @@ class TestFaultInjection:
     async def test_configuration_error_recovery(self, fault_injector, recovery_service):
         """测试配置错误的恢复"""
         # 1. 注入配置错误
-        fault = fault_injector.inject_configuration_error("/etc/app/config.json", FailureSeverity.HIGH)
+        fault = fault_injector.inject_configuration_error(
+            "/etc/app/config.json", FailureSeverity.HIGH
+        )
 
         # 2. 触发故障
         try:
@@ -290,7 +325,7 @@ class TestFaultInjection:
                 failure_type=FailureType.CONFIGURATION_ERROR,
                 severity=FailureSeverity.MEDIUM,
                 error_message=str(e),
-                auto_process=False
+                auto_process=False,
             )
 
             assert failure.failure_type == FailureType.CONFIGURATION_ERROR
@@ -301,7 +336,9 @@ class TestFaultInjection:
     async def test_resource_exhaustion_recovery(self, fault_injector, recovery_service):
         """测试资源耗尽的恢复"""
         # 1. 注入资源耗尽
-        fault = fault_injector.inject_resource_exhaustion("memory", FailureSeverity.HIGH)
+        fault = fault_injector.inject_resource_exhaustion(
+            "memory", FailureSeverity.HIGH
+        )
 
         # 2. 触发故障
         try:
@@ -313,7 +350,7 @@ class TestFaultInjection:
                 failure_type=FailureType.RESOURCE_EXHAUSTION,
                 severity=FailureSeverity.HIGH,
                 error_message=str(e),
-                auto_process=False
+                auto_process=False,
             )
 
             assert failure.failure_type == FailureType.RESOURCE_EXHAUSTION
@@ -324,9 +361,15 @@ class TestFaultInjection:
     async def test_cascading_failures(self, fault_injector, recovery_service):
         """测试级联故障"""
         # 1. 注入多个相关故障
-        network_fault = fault_injector.inject_network_failure("node-001", FailureSeverity.MEDIUM)
-        timeout_fault = fault_injector.inject_timeout_failure("api_call", FailureSeverity.MEDIUM)
-        exec_fault = fault_injector.inject_execution_failure("task-cascade-001", FailureSeverity.HIGH)
+        network_fault = fault_injector.inject_network_failure(
+            "node-001", FailureSeverity.MEDIUM
+        )
+        timeout_fault = fault_injector.inject_timeout_failure(
+            "api_call", FailureSeverity.MEDIUM
+        )
+        exec_fault = fault_injector.inject_execution_failure(
+            "task-cascade-001", FailureSeverity.HIGH
+        )
 
         # 2. 模拟级联故障场景
         failures = []
@@ -359,20 +402,28 @@ class TestFaultInjection:
             error_message="级联故障：网络->超时->执行失败",
             context={
                 "cascade_chain": [f[1].value for f in failures],
-                "root_cause": FailureType.NETWORK_FAILURE.value
+                "root_cause": FailureType.NETWORK_FAILURE.value,
             },
-            auto_process=False
+            auto_process=False,
         )
 
-        assert final_failure.context["cascade_chain"] == ["network_failure", "timeout_failure", "execution_failure"]
+        assert final_failure.context["cascade_chain"] == [
+            "network_failure",
+            "timeout_failure",
+            "execution_failure",
+        ]
 
     @pytest.mark.asyncio
-    async def test_recovery_action_effectiveness(self, fault_injector, recovery_service, rollback_service):
+    async def test_recovery_action_effectiveness(
+        self, fault_injector, recovery_service, rollback_service
+    ):
         """测试恢复动作的有效性"""
         # 测试每种恢复动作
 
         # 1. RETRY - 针对网络故障
-        network_fault = fault_injector.inject_network_failure("node-retry", FailureSeverity.LOW)
+        network_fault = fault_injector.inject_network_failure(
+            "node-retry", FailureSeverity.LOW
+        )
         try:
             fault_injector.trigger_fault(network_fault["fault_id"])
         except ConnectionError:
@@ -381,24 +432,28 @@ class TestFaultInjection:
                 failure_type=FailureType.NETWORK_FAILURE,
                 severity=FailureSeverity.LOW,
                 error_message="网络故障，需要重试",
-                auto_process=False
+                auto_process=False,
             )
             assert failure.recovery_action == RecoveryAction.RETRY
 
         # 2. ROLLBACK - 针对审批拒绝
-        approval_fault = fault_injector.inject_approval_rejection("approval-rollback", FailureSeverity.MEDIUM)
+        approval_fault = fault_injector.inject_approval_rejection(
+            "approval-rollback", FailureSeverity.MEDIUM
+        )
         result = fault_injector.trigger_fault(approval_fault["fault_id"])
         if result.get("status") == "rejected":
             failure = rollback_service.create_failure_record(
                 task_id="task-rollback-001",
                 failure_type=FailureType.APPROVAL_REJECTED,
                 severity=FailureSeverity.MEDIUM,
-                error_message="审批拒绝，需要回滚"
+                error_message="审批拒绝，需要回滚",
             )
             assert failure.recovery_action == RecoveryAction.ROLLBACK
 
         # 3. ESCALATE - 针对资源耗尽
-        resource_fault = fault_injector.inject_resource_exhaustion("cpu", FailureSeverity.MEDIUM)
+        resource_fault = fault_injector.inject_resource_exhaustion(
+            "cpu", FailureSeverity.MEDIUM
+        )
         try:
             fault_injector.trigger_fault(resource_fault["fault_id"])
         except MemoryError:
@@ -407,7 +462,7 @@ class TestFaultInjection:
                 failure_type=FailureType.RESOURCE_EXHAUSTION,
                 severity=FailureSeverity.MEDIUM,
                 error_message="资源耗尽，需要升级处理",
-                auto_process=False
+                auto_process=False,
             )
             assert failure.recovery_action == RecoveryAction.ESCALATE
 
@@ -427,7 +482,9 @@ class TestFaultInjectionStress:
         # 1. 同时注入多个故障
         faults = []
         for i in range(10):
-            fault = fault_injector.inject_network_failure(f"node-concurrent-{i}", FailureSeverity.MEDIUM)
+            fault = fault_injector.inject_network_failure(
+                f"node-concurrent-{i}", FailureSeverity.MEDIUM
+            )
             faults.append(fault)
 
         # 2. 并发触发故障
@@ -435,6 +492,7 @@ class TestFaultInjectionStress:
         tasks = []
 
         for fault in faults:
+
             async def trigger_and_handle(f):
                 try:
                     fault_injector.trigger_fault(f["fault_id"])
@@ -444,7 +502,7 @@ class TestFaultInjectionStress:
                         failure_type=FailureType.NETWORK_FAILURE,
                         severity=FailureSeverity.MEDIUM,
                         error_message="并发网络故障",
-                        auto_process=False
+                        auto_process=False,
                     )
                     return failure
 
@@ -468,16 +526,22 @@ class TestFaultInjectionStress:
             fault_types = [
                 FailureType.NETWORK_FAILURE,
                 FailureType.TIMEOUT_FAILURE,
-                FailureType.EXECUTION_FAILURE
+                FailureType.EXECUTION_FAILURE,
             ]
             fault_type = random.choice(fault_types)
 
             if fault_type == FailureType.NETWORK_FAILURE:
-                fault = fault_injector.inject_network_failure(f"node-rapid-{i}", FailureSeverity.MEDIUM)
+                fault = fault_injector.inject_network_failure(
+                    f"node-rapid-{i}", FailureSeverity.MEDIUM
+                )
             elif fault_type == FailureType.TIMEOUT_FAILURE:
-                fault = fault_injector.inject_timeout_failure(f"op-rapid-{i}", FailureSeverity.MEDIUM)
+                fault = fault_injector.inject_timeout_failure(
+                    f"op-rapid-{i}", FailureSeverity.MEDIUM
+                )
             else:
-                fault = fault_injector.inject_execution_failure(f"task-rapid-{i}", FailureSeverity.HIGH)
+                fault = fault_injector.inject_execution_failure(
+                    f"task-rapid-{i}", FailureSeverity.HIGH
+                )
 
             # 触发并处理故障
             try:
@@ -488,7 +552,7 @@ class TestFaultInjectionStress:
                     failure_type=fault_type,
                     severity=FailureSeverity.MEDIUM,
                     error_message=str(e),
-                    auto_process=False
+                    auto_process=False,
                 )
 
                 # 验证故障被正确记录
@@ -518,12 +582,9 @@ class TestFaultRecoveryScenarios:
             severity=FailureSeverity.HIGH,
             error_message="新配置导致服务启动失败",
             context={
-                "config_change": {
-                    "from": original_config,
-                    "to": new_config
-                },
-                "impact": "service_unavailable"
-            }
+                "config_change": {"from": original_config, "to": new_config},
+                "impact": "service_unavailable",
+            },
         )
 
         # 3. 创建回滚计划
@@ -536,7 +597,7 @@ class TestFaultRecoveryScenarios:
             rollback_type=RollbackType.CONFIG,
             target_resources=["/etc/app/config.json"],
             original_task_id=failure.task_id,
-            estimated_duration_seconds=300
+            estimated_duration_seconds=300,
         )
 
         # 4. 验证回滚计划内容
@@ -555,18 +616,14 @@ class TestFaultRecoveryScenarios:
             failure_type=FailureType.RESOURCE_EXHAUSTION,
             severity=FailureSeverity.MEDIUM,
             error_message="CPU使用率过高，服务性能下降",
-            context={
-                "cpu_usage": 95.0,
-                "memory_usage": 85.0,
-                "response_time_ms": 5000
-            },
-            auto_process=False
+            context={"cpu_usage": 95.0, "memory_usage": 85.0, "response_time_ms": 5000},
+            auto_process=False,
         )
 
         # 2. 验证恢复策略
         assert performance_degradation_failure.recovery_action in [
             RecoveryAction.ESCALATE,
-            RecoveryAction.MANUAL_INTERVENTION
+            RecoveryAction.MANUAL_INTERVENTION,
         ]
 
     @pytest.mark.asyncio
@@ -584,8 +641,8 @@ class TestFaultRecoveryScenarios:
                 "batch_size": 100,
                 "failed_count": 15,
                 "success_count": 85,
-                "failure_rate": 0.15
-            }
+                "failure_rate": 0.15,
+            },
         )
 
         # 2. 创建针对性恢复计划
@@ -596,10 +653,10 @@ class TestFaultRecoveryScenarios:
                 "识别失败的任务",
                 "重新执行失败的任务",
                 "验证批量操作结果",
-                "生成详细报告"
+                "生成详细报告",
             ],
             validation_criteria=["失败率 < 5%", "总成功率 > 95%"],
-            priority=4
+            priority=4,
         )
 
         assert recovery_plan.recovery_action == RecoveryAction.RETRY

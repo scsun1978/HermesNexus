@@ -9,6 +9,7 @@ from enum import Enum
 
 class NodeStatus(str, Enum):
     """节点状态"""
+
     ONLINE = "online"
     OFFLINE = "offline"
     ERROR = "error"
@@ -18,6 +19,7 @@ class NodeStatus(str, Enum):
 
 class DeviceType(str, Enum):
     """设备类型"""
+
     LINUX_HOST = "linux_host"
     NETWORK_DEVICE = "network_device"
     IOT_DEVICE = "iot_device"
@@ -25,6 +27,7 @@ class DeviceType(str, Enum):
 
 class DeviceProtocol(str, Enum):
     """设备协议"""
+
     SSH = "ssh"
     SNMP = "snmp"
     HTTP = "http"
@@ -33,6 +36,7 @@ class DeviceProtocol(str, Enum):
 
 class DeviceStatus(str, Enum):
     """设备状态"""
+
     ONLINE = "online"
     OFFLINE = "offline"
     UNKNOWN = "unknown"
@@ -41,6 +45,7 @@ class DeviceStatus(str, Enum):
 
 class JobStatus(str, Enum):
     """任务状态"""
+
     PENDING = "pending"
     RUNNING = "running"
     SUCCESS = "success"
@@ -51,6 +56,7 @@ class JobStatus(str, Enum):
 
 class JobType(str, Enum):
     """任务类型"""
+
     INSPECTION = "inspection"
     RESTART = "restart"
     BASIC_EXEC = "basic_exec"
@@ -62,6 +68,7 @@ class JobType(str, Enum):
 
 class TaskType(str, Enum):
     """任务执行类型"""
+
     EXEC = "exec"  # 执行单条命令
     SCRIPT = "script"  # 执行脚本
     FILE_TRANSFER = "file_transfer"  # 文件传输
@@ -70,6 +77,7 @@ class TaskType(str, Enum):
 
 class TaskPriority(str, Enum):
     """任务优先级"""
+
     CRITICAL = "critical"
     HIGH = "high"
     NORMAL = "normal"
@@ -78,6 +86,7 @@ class TaskPriority(str, Enum):
 
 class EventType(str, Enum):
     """事件类型"""
+
     NODE_REGISTERED = "node_registered"
     NODE_HEARTBEAT = "node_heartbeat"
     NODE_OFFLINE = "node_offline"
@@ -93,6 +102,7 @@ class EventType(str, Enum):
 
 class EventLevel(str, Enum):
     """事件级别"""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -102,6 +112,7 @@ class EventLevel(str, Enum):
 
 class UserRole(str, Enum):
     """用户角色"""
+
     ADMIN = "admin"
     OPERATOR = "operator"
     VIEWER = "viewer"
@@ -109,6 +120,7 @@ class UserRole(str, Enum):
 
 class AuditAction(str, Enum):
     """审计操作类型"""
+
     CREATE = "create"
     UPDATE = "update"
     DELETE = "delete"

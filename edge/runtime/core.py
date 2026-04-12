@@ -16,7 +16,7 @@ from shared.protocol.messages import (
     HeartbeatMessage,
     TaskMessage,
     ResultMessage,
-    ErrorMessage
+    ErrorMessage,
 )
 from shared.protocol.error_codes import ErrorCode
 from shared.schemas.models import NodeStatus, JobStatus, TaskType
@@ -39,7 +39,7 @@ class EdgeRuntime:
         node_name: str,
         cloud_server_url: str,
         api_key: str,
-        heartbeat_interval: int = 30
+        heartbeat_interval: int = 30,
     ):
         self.node_id = node_id
         self.node_name = node_name
@@ -64,7 +64,7 @@ class EdgeRuntime:
             "tasks_processed": 0,
             "tasks_succeeded": 0,
             "tasks_failed": 0,
-            "started_at": None
+            "started_at": None,
         }
 
     async def start(self):
@@ -74,9 +74,7 @@ class EdgeRuntime:
         try:
             # 初始化组件
             self.cloud_client = CloudClient(
-                self.cloud_server_url,
-                self.api_key,
-                self.node_id
+                self.cloud_server_url, self.api_key, self.node_id
             )
             await self.cloud_client.start()
 
@@ -95,7 +93,7 @@ class EdgeRuntime:
                 "protocols": ["ssh"],
                 "device_types": ["linux_host"],
                 "max_concurrent_tasks": 5,
-                "version": "0.1.0"
+                "version": "0.1.0",
             }
 
             if await self.register(capabilities):
@@ -105,7 +103,9 @@ class EdgeRuntime:
                 # 启动后台任务
                 self.running = True
                 self.heartbeat_task = asyncio.create_task(self._heartbeat_loop())
-                self.task_processor_task = asyncio.create_task(self._task_processor_loop())
+                self.task_processor_task = asyncio.create_task(
+                    self._task_processor_loop()
+                )
 
                 logger.info(f"✅ 边缘节点启动完成: {self.node_id}")
             else:
@@ -151,10 +151,7 @@ class EdgeRuntime:
         """注册到云端"""
         logger.info(f"📝 注册到云端: {self.node_id}")
 
-        success = await self.cloud_client.register_node(
-            self.node_name,
-            capabilities
-        )
+        success = await self.cloud_client.register_node(self.node_name, capabilities)
 
         if success:
             logger.info(f"✅ 注册成功: {self.node_id}")
@@ -192,7 +189,7 @@ class EdgeRuntime:
             "status": self.status.value,
             "cpu_usage": cpu_usage,
             "memory_usage": memory_usage,
-            "active_tasks": active_tasks
+            "active_tasks": active_tasks,
         }
 
         success = await self.cloud_client.send_heartbeat(heartbeat_data)
@@ -267,7 +264,7 @@ class EdgeRuntime:
                 status=JobStatus.FAILED.value,
                 error=str(e),
                 error_code=ErrorCode.TASK_EXECUTION_FAILED.value,
-                execution_time=0.0
+                execution_time=0.0,
             )
             await self.cloud_client.report_result(error_result)
 
@@ -292,7 +289,7 @@ class EdgeRuntime:
                 status=JobStatus.FAILED.value,
                 error=str(e),
                 error_code=ErrorCode.TASK_EXECUTION_FAILED.value,
-                execution_time=execution_time
+                execution_time=execution_time,
             )
 
     async def _execute_command(self, task: TaskMessage) -> ResultMessage:
@@ -311,7 +308,7 @@ class EdgeRuntime:
             port=task.target_port,
             username=ssh_username,
             password=ssh_password,
-            key_filename=ssh_key_path
+            key_filename=ssh_key_path,
         )
 
         if not executor:
@@ -324,7 +321,7 @@ class EdgeRuntime:
                     host=task.target_host,
                     username=ssh_username,
                     success=False,
-                    error_message=error_msg
+                    error_message=error_msg,
                 )
 
             raise Exception(error_msg)
@@ -333,25 +330,18 @@ class EdgeRuntime:
             # 记录连接审计
             if self.audit_logger:
                 self.audit_logger.log_ssh_connection(
-                    host=task.target_host,
-                    username=ssh_username,
-                    success=True
+                    host=task.target_host, username=ssh_username, success=True
                 )
 
             # 执行命令
             start_time = datetime.now(timezone.utc)
-            exec_result = await executor.execute_command(
-                task.command,
-                task.timeout
-            )
+            exec_result = await executor.execute_command(task.command, task.timeout)
             execution_time = (datetime.now(timezone.utc) - start_time).total_seconds()
 
             # 记录命令审计
             if self.audit_logger:
                 self.audit_logger.log_ssh_command(
-                    host=task.target_host,
-                    command=task.command,
-                    result=exec_result
+                    host=task.target_host, command=task.command, result=exec_result
                 )
 
             # 构建结果
@@ -370,8 +360,8 @@ class EdgeRuntime:
                     metadata={
                         "host": task.target_host,
                         "command": task.command,
-                        "executor_stats": executor.get_stats()
-                    }
+                        "executor_stats": executor.get_stats(),
+                    },
                 )
             else:
                 return ResultMessage(
@@ -386,7 +376,7 @@ class EdgeRuntime:
                     exit_code=exec_result.get("exit_code", -1),
                     execution_time=execution_time,
                     started_at=start_time.isoformat(),
-                    completed_at=datetime.now(timezone.utc).isoformat()
+                    completed_at=datetime.now(timezone.utc).isoformat(),
                 )
 
         except Exception as e:
@@ -402,7 +392,7 @@ class EdgeRuntime:
                 error_code=ErrorCode.SSH_COMMAND_FAILED.value,
                 execution_time=execution_time,
                 started_at=start_time.isoformat(),
-                completed_at=datetime.now(timezone.utc).isoformat()
+                completed_at=datetime.now(timezone.utc).isoformat(),
             )
 
     async def _execute_script(self, task: TaskMessage) -> ResultMessage:
@@ -414,7 +404,7 @@ class EdgeRuntime:
             job_id=task.job_id,
             status=JobStatus.FAILED.value,
             error="脚本执行功能暂未实现",
-            execution_time=0.0
+            execution_time=0.0,
         )
 
 
@@ -423,14 +413,14 @@ async def main():
     """主函数"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     runtime = EdgeRuntime(
         node_id="edge-node-1",
         node_name="开发测试边缘节点",
         cloud_server_url="http://localhost:8080",
-        api_key="dev_api_key_change_in_production"
+        api_key="dev_api_key_change_in_production",
     )
 
     try:

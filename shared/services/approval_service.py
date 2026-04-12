@@ -8,9 +8,14 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta, timezone
 
 from shared.models.approval import (
-    ApprovalRequest, ApprovalDecision, ApprovalComment, ApprovalStatus,
-    ApprovalPriority, ApprovalStatistics, ApprovalConfig,
-    ApprovalStateTransition
+    ApprovalRequest,
+    ApprovalDecision,
+    ApprovalComment,
+    ApprovalStatus,
+    ApprovalPriority,
+    ApprovalStatistics,
+    ApprovalConfig,
+    ApprovalStateTransition,
 )
 from shared.models.permission import RiskLevel, ActionType, ResourceType
 
@@ -50,7 +55,7 @@ class ApprovalService:
         resource_id: Optional[str] = None,
         priority: ApprovalPriority = ApprovalPriority.MEDIUM,
         timeout_seconds: Optional[int] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> ApprovalRequest:
         """
         创建审批请求
@@ -97,7 +102,7 @@ class ApprovalService:
             status=ApprovalStatus.DRAFT,
             timeout_seconds=timeout,
             expires_at=expires_at,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         # 保存请求
@@ -121,7 +126,9 @@ class ApprovalService:
         request = self._get_request(request_id)
 
         # 检查状态转换
-        if not ApprovalStateTransition.can_transition(request.status, ApprovalStatus.PENDING):
+        if not ApprovalStateTransition.can_transition(
+            request.status, ApprovalStatus.PENDING
+        ):
             raise ValueError(f"当前状态 {request.status} 不允许提交")
 
         # 更新状态
@@ -143,7 +150,7 @@ class ApprovalService:
         decision: str,
         reason: str,
         approver_id: str,
-        approver_name: str
+        approver_name: str,
     ) -> ApprovalRequest:
         """
         进行审批决策
@@ -173,7 +180,11 @@ class ApprovalService:
             raise ValueError(f"无效的决策值: {decision}，必须是: {valid_decisions}")
 
         # 确定目标状态
-        target_status = ApprovalStatus.APPROVED if decision == "approve" else ApprovalStatus.REJECTED
+        target_status = (
+            ApprovalStatus.APPROVED
+            if decision == "approve"
+            else ApprovalStatus.REJECTED
+        )
 
         # 更新请求状态
         request.status = target_status
@@ -195,7 +206,7 @@ class ApprovalService:
             reason=reason,
             approver_id=approver_id,
             approver_name=approver_name,
-            decided_at=datetime.now(timezone.utc)
+            decided_at=datetime.now(timezone.utc),
         )
 
         # 保存决策
@@ -209,11 +220,7 @@ class ApprovalService:
         return request
 
     def withdraw_request(
-        self,
-        request_id: str,
-        withdrawer_id: str,
-        withdrawer_name: str,
-        reason: str
+        self, request_id: str, withdrawer_id: str, withdrawer_name: str, reason: str
     ) -> ApprovalRequest:
         """
         撤回审批请求
@@ -233,7 +240,9 @@ class ApprovalService:
         request = self._get_request(request_id)
 
         # 检查状态转换
-        if not ApprovalStateTransition.can_transition(request.status, ApprovalStatus.WITHDRAWN):
+        if not ApprovalStateTransition.can_transition(
+            request.status, ApprovalStatus.WITHDRAWN
+        ):
             raise ValueError(f"当前状态 {request.status} 不允许撤回")
 
         # 更新状态
@@ -308,7 +317,7 @@ class ApprovalService:
         content: str,
         author_id: str,
         author_name: str,
-        is_internal: bool = False
+        is_internal: bool = False,
     ) -> ApprovalComment:
         """
         添加审批评论
@@ -337,7 +346,7 @@ class ApprovalService:
             author_id=author_id,
             author_name=author_name,
             is_internal=is_internal,
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(timezone.utc),
         )
 
         # 保存评论
@@ -365,7 +374,7 @@ class ApprovalService:
         requester_id: Optional[str] = None,
         approver_id: Optional[str] = None,
         priority: Optional[ApprovalPriority] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> List[ApprovalRequest]:
         """
         列出审批请求
@@ -465,10 +474,14 @@ class ApprovalService:
             by_priority[priority_str] = by_priority.get(priority_str, 0) + 1
 
             # 按风险等级统计
-            by_risk_level[request.risk_level] = by_risk_level.get(request.risk_level, 0) + 1
+            by_risk_level[request.risk_level] = (
+                by_risk_level.get(request.risk_level, 0) + 1
+            )
 
             # 按操作类型统计
-            by_operation_type[request.operation_type] = by_operation_type.get(request.operation_type, 0) + 1
+            by_operation_type[request.operation_type] = (
+                by_operation_type.get(request.operation_type, 0) + 1
+            )
 
         return ApprovalStatistics(
             total_requests=total,
@@ -481,7 +494,7 @@ class ApprovalService:
             min_approval_time_seconds=min_time,
             by_priority=by_priority,
             by_risk_level=by_risk_level,
-            by_operation_type=by_operation_type
+            by_operation_type=by_operation_type,
         )
 
     def _get_request(self, request_id: str) -> ApprovalRequest:

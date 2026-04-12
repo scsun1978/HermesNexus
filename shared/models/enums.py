@@ -8,27 +8,29 @@ HermesNexus Phase 2 - 统一枚举定义
 from enum import Enum
 from typing import Dict, Any
 
-
 # =============================================================================
 # Asset 相关枚举
 # =============================================================================
 
+
 class AssetType(str, Enum):
     """资产类型定义"""
-    EDGE_NODE = "edge_node"        # 边缘节点
-    LINUX_HOST = "linux_host"      # Linux 主机
+
+    EDGE_NODE = "edge_node"  # 边缘节点
+    LINUX_HOST = "linux_host"  # Linux 主机
     NETWORK_DEVICE = "network_device"  # 网络设备
-    IOT_DEVICE = "iot_device"      # IoT 设备
+    IOT_DEVICE = "iot_device"  # IoT 设备
 
 
 class AssetStatus(str, Enum):
     """资产状态"""
-    REGISTERED = "registered"      # 已注册，未关联运行节点
-    ACTIVE = "active"              # 活跃，有运行节点在线
-    INACTIVE = "inactive"          # 非活跃，运行节点离线
+
+    REGISTERED = "registered"  # 已注册，未关联运行节点
+    ACTIVE = "active"  # 活跃，有运行节点在线
+    INACTIVE = "inactive"  # 非活跃，运行节点离线
     DECOMMISSIONED = "decommissioned"  # 已退役
 
-    def can_transition_to(self, new_status: 'AssetStatus') -> bool:
+    def can_transition_to(self, new_status: "AssetStatus") -> bool:
         """检查状态转换是否合法"""
         valid_transitions = {
             AssetStatus.REGISTERED: [AssetStatus.ACTIVE, AssetStatus.DECOMMISSIONED],
@@ -43,20 +45,30 @@ class AssetStatus(str, Enum):
 # Node 相关枚举
 # =============================================================================
 
+
 class NodeStatus(str, Enum):
     """运行节点状态"""
-    REGISTERED = "registered"      # 已注册，首次连接
-    ONLINE = "online"              # 在线，可接收任务
-    BUSY = "busy"                  # 忙碌，正在执行任务
-    OFFLINE = "offline"            # 离线，心跳超时
-    DEGRADED = "degraded"          # 降级，部分功能不可用
 
-    def can_transition_to(self, new_status: 'NodeStatus') -> bool:
+    REGISTERED = "registered"  # 已注册，首次连接
+    ONLINE = "online"  # 在线，可接收任务
+    BUSY = "busy"  # 忙碌，正在执行任务
+    OFFLINE = "offline"  # 离线，心跳超时
+    DEGRADED = "degraded"  # 降级，部分功能不可用
+
+    def can_transition_to(self, new_status: "NodeStatus") -> bool:
         """检查状态转换是否合法"""
         valid_transitions = {
             NodeStatus.REGISTERED: [NodeStatus.ONLINE, NodeStatus.OFFLINE],
-            NodeStatus.ONLINE: [NodeStatus.BUSY, NodeStatus.OFFLINE, NodeStatus.DEGRADED],
-            NodeStatus.BUSY: [NodeStatus.ONLINE, NodeStatus.OFFLINE, NodeStatus.DEGRADED],
+            NodeStatus.ONLINE: [
+                NodeStatus.BUSY,
+                NodeStatus.OFFLINE,
+                NodeStatus.DEGRADED,
+            ],
+            NodeStatus.BUSY: [
+                NodeStatus.ONLINE,
+                NodeStatus.OFFLINE,
+                NodeStatus.DEGRADED,
+            ],
             NodeStatus.OFFLINE: [NodeStatus.ONLINE, NodeStatus.DEGRADED],
             NodeStatus.DEGRADED: [NodeStatus.ONLINE, NodeStatus.OFFLINE],
         }
@@ -67,24 +79,27 @@ class NodeStatus(str, Enum):
 # Task 相关枚举
 # =============================================================================
 
+
 class TaskType(str, Enum):
     """任务类型"""
-    BASIC_EXEC = "basic_exec"      # 基础命令执行
+
+    BASIC_EXEC = "basic_exec"  # 基础命令执行
     SCRIPT_TRANSFER = "script_transfer"  # 脚本传输执行
-    FILE_TRANSFER = "file_transfer"      # 文件传输
-    SYSTEM_INFO = "system_info"    # 系统信息查询
+    FILE_TRANSFER = "file_transfer"  # 文件传输
+    SYSTEM_INFO = "system_info"  # 系统信息查询
 
 
 class TaskStatus(str, Enum):
     """任务状态"""
-    PENDING = "pending"            # 待调度
-    ASSIGNED = "assigned"          # 已分配给节点
-    RUNNING = "running"            # 执行中
-    SUCCEEDED = "succeeded"        # 成功完成
-    COMPLETED = "succeeded"        # 兼容旧测试/旧API
-    FAILED = "failed"              # 执行失败
-    TIMEOUT = "timeout"            # 执行超时
-    CANCELLED = "cancelled"        # 已取消
+
+    PENDING = "pending"  # 待调度
+    ASSIGNED = "assigned"  # 已分配给节点
+    RUNNING = "running"  # 执行中
+    SUCCEEDED = "succeeded"  # 成功完成
+    COMPLETED = "succeeded"  # 兼容旧测试/旧API
+    FAILED = "failed"  # 执行失败
+    TIMEOUT = "timeout"  # 执行超时
+    CANCELLED = "cancelled"  # 已取消
 
     @classmethod
     def _missing_(cls, value):
@@ -92,32 +107,42 @@ class TaskStatus(str, Enum):
             return cls.SUCCEEDED
         return super()._missing_(value)
 
-    def can_transition_to(self, new_status: 'TaskStatus') -> bool:
+    def can_transition_to(self, new_status: "TaskStatus") -> bool:
         """检查状态转换是否合法"""
         valid_transitions = {
             TaskStatus.PENDING: [TaskStatus.ASSIGNED, TaskStatus.CANCELLED],
             TaskStatus.ASSIGNED: [TaskStatus.RUNNING, TaskStatus.CANCELLED],
-            TaskStatus.RUNNING: [TaskStatus.SUCCEEDED, TaskStatus.FAILED,
-                                  TaskStatus.TIMEOUT, TaskStatus.CANCELLED],
+            TaskStatus.RUNNING: [
+                TaskStatus.SUCCEEDED,
+                TaskStatus.FAILED,
+                TaskStatus.TIMEOUT,
+                TaskStatus.CANCELLED,
+            ],
             TaskStatus.SUCCEEDED: [],  # 终态
-            TaskStatus.FAILED: [],     # 终态
-            TaskStatus.TIMEOUT: [],    # 终态
+            TaskStatus.FAILED: [],  # 终态
+            TaskStatus.TIMEOUT: [],  # 终态
             TaskStatus.CANCELLED: [],  # 终态
         }
         return new_status in valid_transitions.get(self, [])
 
     def is_terminal(self) -> bool:
         """是否为终态"""
-        return self in [TaskStatus.SUCCEEDED, TaskStatus.FAILED,
-                       TaskStatus.TIMEOUT, TaskStatus.CANCELLED]
+        return self in [
+            TaskStatus.SUCCEEDED,
+            TaskStatus.FAILED,
+            TaskStatus.TIMEOUT,
+            TaskStatus.CANCELLED,
+        ]
 
 
 # =============================================================================
 # Audit 相关枚举
 # =============================================================================
 
+
 class AuditAction(str, Enum):
     """审计动作类型"""
+
     # Task lifecycle
     TASK_CREATED = "task_created"
     TASK_ASSIGNED = "task_assigned"
@@ -140,6 +165,7 @@ class AuditAction(str, Enum):
 
 class EventLevel(str, Enum):
     """事件级别"""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -150,17 +176,20 @@ class EventLevel(str, Enum):
 # 错误码定义
 # =============================================================================
 
+
 class ErrorCodeCategory(str, Enum):
     """错误分类"""
+
     VALIDATION_ERROR = "validation_error"  # 输入验证失败
-    NOT_FOUND = "not_found"               # 资源不存在
-    CONFLICT = "conflict"                 # 状态冲突
-    RATE_LIMIT = "rate_limit"             # 超出配额
-    INTERNAL_ERROR = "internal_error"     # 内部错误
+    NOT_FOUND = "not_found"  # 资源不存在
+    CONFLICT = "conflict"  # 状态冲突
+    RATE_LIMIT = "rate_limit"  # 超出配额
+    INTERNAL_ERROR = "internal_error"  # 内部错误
 
 
 class ErrorCode(str, Enum):
     """具体错误码"""
+
     # Asset errors (ASSET_xxx)
     ASSET_NOT_FOUND = "ASSET_001"
     ASSET_ALREADY_EXISTS = "ASSET_002"
@@ -199,18 +228,20 @@ class ErrorCode(str, Enum):
 
     def get_category(self) -> ErrorCodeCategory:
         """获取错误码所属分类"""
-        prefix = self.value.split('_')[0]
+        prefix = self.value.split("_")[0]
         mapping = {
-            'ASSET': ErrorCodeCategory.NOT_FOUND,
-            'NODE': ErrorCodeCategory.NOT_FOUND,
-            'TASK': ErrorCodeCategory.NOT_FOUND,
-            'VAL': ErrorCodeCategory.VALIDATION_ERROR,
-            'RATE': ErrorCodeCategory.RATE_LIMIT,
-            'INT': ErrorCodeCategory.INTERNAL_ERROR,
+            "ASSET": ErrorCodeCategory.NOT_FOUND,
+            "NODE": ErrorCodeCategory.NOT_FOUND,
+            "TASK": ErrorCodeCategory.NOT_FOUND,
+            "VAL": ErrorCodeCategory.VALIDATION_ERROR,
+            "RATE": ErrorCodeCategory.RATE_LIMIT,
+            "INT": ErrorCodeCategory.INTERNAL_ERROR,
         }
         return mapping.get(prefix, ErrorCodeCategory.INTERNAL_ERROR)
 
-    def to_dict(self, details: Dict[str, Any] = None, request_id: str = None) -> Dict[str, Any]:
+    def to_dict(
+        self, details: Dict[str, Any] = None, request_id: str = None
+    ) -> Dict[str, Any]:
         """转换为标准错误响应格式"""
         from datetime import datetime, timezone
 
@@ -221,7 +252,7 @@ class ErrorCode(str, Enum):
                 "message": self._get_default_message(),
                 "details": details or {},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "request_id": request_id or "N/A"
+                "request_id": request_id or "N/A",
             }
         }
 
@@ -233,14 +264,12 @@ class ErrorCode(str, Enum):
             ErrorCode.ASSET_ALREADY_EXISTS: "Asset already exists",
             ErrorCode.ASSET_INVALID_TYPE: "Invalid asset type",
             ErrorCode.ASSET_INVALID_STATE_TRANSITION: "Invalid asset state transition",
-
             # Node errors
             ErrorCode.NODE_NOT_FOUND: "Node not found",
             ErrorCode.NODE_OFFLINE: "Node is offline",
             ErrorCode.NODE_BUSY: "Node is busy",
             ErrorCode.NODE_HEARTBEAT_TIMEOUT: "Node heartbeat timeout",
             ErrorCode.NODE_ALREADY_REGISTERED: "Node already registered",
-
             # Task errors
             ErrorCode.TASK_NOT_FOUND: "Task not found",
             ErrorCode.TASK_INVALID_TARGET: "Invalid target node for task",
@@ -248,17 +277,14 @@ class ErrorCode(str, Enum):
             ErrorCode.TASK_EXECUTION_FAILED: "Task execution failed",
             ErrorCode.TASK_CANCELLED: "Task was cancelled",
             ErrorCode.TASK_INVALID_STATE_TRANSITION: "Invalid task state transition",
-
             # Validation errors
             ErrorCode.VAL_MISSING_REQUIRED_FIELD: "Missing required field",
             ErrorCode.VAL_INVALID_ENUM_VALUE: "Invalid enum value",
             ErrorCode.VAL_INVALID_JSON_FORMAT: "Invalid JSON format",
             ErrorCode.VAL_INVALID_PARAMETER: "Invalid parameter",
-
             # Rate limit errors
             ErrorCode.RATE_TOO_MANY_REQUESTS: "Too many requests",
             ErrorCode.RATE_TASK_LIMIT_EXCEEDED: "Task limit exceeded",
-
             # Internal errors
             ErrorCode.INT_DATABASE_ERROR: "Database error",
             ErrorCode.INT_INTERNAL_SERVICE_ERROR: "Internal service error",
@@ -271,10 +297,9 @@ class ErrorCode(str, Enum):
 # 常用工具函数
 # =============================================================================
 
+
 def validate_state_transition(
-    current_status: Enum,
-    new_status: Enum,
-    entity_type: str = "entity"
+    current_status: Enum, new_status: Enum, entity_type: str = "entity"
 ) -> None:
     """
     验证状态转换是否合法
@@ -295,9 +320,7 @@ def validate_state_transition(
 
 
 def create_error_response(
-    error_code: ErrorCode,
-    details: Dict[str, Any] = None,
-    request_id: str = None
+    error_code: ErrorCode, details: Dict[str, Any] = None, request_id: str = None
 ) -> Dict[str, Any]:
     """
     创建标准错误响应

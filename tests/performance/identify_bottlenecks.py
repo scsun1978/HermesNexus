@@ -25,7 +25,7 @@ class PerformanceBottleneckAnalyzer:
         dao_files = [
             "shared/dao/asset_dao.py",
             "shared/dao/task_dao.py",
-            "shared/dao/audit_dao.py"
+            "shared/dao/audit_dao.py",
         ]
 
         issues = []
@@ -35,37 +35,43 @@ class PerformanceBottleneckAnalyzer:
             if not file_path.exists():
                 continue
 
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # 检查潜在的性能问题
-            if 'select()' in content or 'query.all()' in content:
-                issues.append({
-                    "component": dao_file,
-                    "issue": "可能的N+1查询问题",
-                    "severity": "HIGH",
-                    "description": "存在可能导致N+1查询的代码模式",
-                    "recommendation": "考虑使用JOIN或批量查询优化"
-                })
+            if "select()" in content or "query.all()" in content:
+                issues.append(
+                    {
+                        "component": dao_file,
+                        "issue": "可能的N+1查询问题",
+                        "severity": "HIGH",
+                        "description": "存在可能导致N+1查询的代码模式",
+                        "recommendation": "考虑使用JOIN或批量查询优化",
+                    }
+                )
 
-            if 'for ' in content and '.select_by_id(' in content:
-                issues.append({
-                    "component": dao_file,
-                    "issue": "循环查询模式",
-                    "severity": "HIGH",
-                    "description": "在循环中进行单条查询",
-                    "recommendation": "使用批量查询或预加载"
-                })
+            if "for " in content and ".select_by_id(" in content:
+                issues.append(
+                    {
+                        "component": dao_file,
+                        "issue": "循环查询模式",
+                        "severity": "HIGH",
+                        "description": "在循环中进行单条查询",
+                        "recommendation": "使用批量查询或预加载",
+                    }
+                )
 
             # 检查索引使用
-            if 'def list(' in content:
-                issues.append({
-                    "component": dao_file,
-                    "issue": "列表查询需要索引优化",
-                    "severity": "MEDIUM",
-                    "description": "列表查询可能需要合适的索引",
-                    "recommendation": "为常用过滤条件添加索引"
-                })
+            if "def list(" in content:
+                issues.append(
+                    {
+                        "component": dao_file,
+                        "issue": "列表查询需要索引优化",
+                        "severity": "MEDIUM",
+                        "description": "列表查询可能需要合适的索引",
+                        "recommendation": "为常用过滤条件添加索引",
+                    }
+                )
 
         return issues
 
@@ -76,7 +82,7 @@ class PerformanceBottleneckAnalyzer:
         service_files = [
             "shared/services/asset_service.py",
             "shared/services/task_service.py",
-            "shared/services/audit_service.py"
+            "shared/services/audit_service.py",
         ]
 
         issues = []
@@ -86,29 +92,33 @@ class PerformanceBottleneckAnalyzer:
             if not file_path.exists():
                 continue
 
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # 检查缓存使用
-            if 'cache' not in content.lower() and 'list' in content:
-                issues.append({
-                    "component": service_file,
-                    "issue": "缺少查询结果缓存",
-                    "severity": "MEDIUM",
-                    "description": "频繁查询的结果未缓存",
-                    "recommendation": "考虑添加缓存层"
-                })
+            if "cache" not in content.lower() and "list" in content:
+                issues.append(
+                    {
+                        "component": service_file,
+                        "issue": "缺少查询结果缓存",
+                        "severity": "MEDIUM",
+                        "description": "频繁查询的结果未缓存",
+                        "recommendation": "考虑添加缓存层",
+                    }
+                )
 
             # 检查批量操作
-            if 'def create_' in content or 'def insert' in content:
-                if 'batch' not in content.lower():
-                    issues.append({
-                        "component": service_file,
-                        "issue": "缺少批量操作支持",
-                        "severity": "MEDIUM",
-                        "description": "创建/插入操作缺少批量处理",
-                        "recommendation": "实现批量插入接口以提高吞吐量"
-                    })
+            if "def create_" in content or "def insert" in content:
+                if "batch" not in content.lower():
+                    issues.append(
+                        {
+                            "component": service_file,
+                            "issue": "缺少批量操作支持",
+                            "severity": "MEDIUM",
+                            "description": "创建/插入操作缺少批量处理",
+                            "recommendation": "实现批量插入接口以提高吞吐量",
+                        }
+                    )
 
         return issues
 
@@ -121,28 +131,32 @@ class PerformanceBottleneckAnalyzer:
         # 检查数据库模型文件
         model_file = self.project_root / "shared/database/models.py"
         if model_file.exists():
-            with open(model_file, 'r', encoding='utf-8') as f:
+            with open(model_file, "r", encoding="utf-8") as f:
                 content = f.read()
 
             # 检查索引定义
-            if 'Index' not in content:
-                issues.append({
-                    "component": "数据库Schema",
-                    "issue": "缺少数据库索引",
-                    "severity": "HIGH",
-                    "description": "未发现明确的索引定义",
-                    "recommendation": "为常用查询字段添加索引"
-                })
+            if "Index" not in content:
+                issues.append(
+                    {
+                        "component": "数据库Schema",
+                        "issue": "缺少数据库索引",
+                        "severity": "HIGH",
+                        "description": "未发现明确的索引定义",
+                        "recommendation": "为常用查询字段添加索引",
+                    }
+                )
 
             # 检查外键关系
-            if 'ForeignKey' not in content and 'relationship' in content:
-                issues.append({
-                    "component": "数据库Schema",
-                    "issue": "关系查询可能低效",
-                    "severity": "MEDIUM",
-                    "description": "缺少外键约束可能影响查询优化",
-                    "recommendation": "考虑添加适当的外键约束"
-                })
+            if "ForeignKey" not in content and "relationship" in content:
+                issues.append(
+                    {
+                        "component": "数据库Schema",
+                        "issue": "关系查询可能低效",
+                        "severity": "MEDIUM",
+                        "description": "缺少外键约束可能影响查询优化",
+                        "recommendation": "考虑添加适当的外键约束",
+                    }
+                )
 
         return issues
 
@@ -160,28 +174,32 @@ class PerformanceBottleneckAnalyzer:
                 continue
 
             for api_file in api_path.glob("*.py"):
-                with open(api_file, 'r', encoding='utf-8') as f:
+                with open(api_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
                 # 检查分页
-                if 'list' in content.lower() and 'limit' not in content.lower():
-                    issues.append({
-                        "component": str(api_file),
-                        "issue": "列表API缺少分页",
-                        "severity": "HIGH",
-                        "description": "列表查询没有分页限制",
-                        "recommendation": "添加分页和限制查询数量"
-                    })
+                if "list" in content.lower() and "limit" not in content.lower():
+                    issues.append(
+                        {
+                            "component": str(api_file),
+                            "issue": "列表API缺少分页",
+                            "severity": "HIGH",
+                            "description": "列表查询没有分页限制",
+                            "recommendation": "添加分页和限制查询数量",
+                        }
+                    )
 
                 # 检查异步处理
-                if 'async ' not in content and 'def ' in content:
-                    issues.append({
-                        "component": str(api_file),
-                        "issue": "API未使用异步处理",
-                        "severity": "LOW",
-                        "description": "同步API可能影响并发性能",
-                        "recommendation": "考虑使用异步处理提高并发能力"
-                    })
+                if "async " not in content and "def " in content:
+                    issues.append(
+                        {
+                            "component": str(api_file),
+                            "issue": "API未使用异步处理",
+                            "severity": "LOW",
+                            "description": "同步API可能影响并发性能",
+                            "recommendation": "考虑使用异步处理提高并发能力",
+                        }
+                    )
 
         return issues
 
@@ -197,32 +215,32 @@ class PerformanceBottleneckAnalyzer:
                 "pattern": "循环中的数据库查询",
                 "impact": "HIGH",
                 "typical_improvement": "70-90%",
-                "fix_complexity": "MEDIUM"
+                "fix_complexity": "MEDIUM",
             },
             {
                 "pattern": "缺少索引的大表扫描",
                 "impact": "HIGH",
                 "typical_improvement": "50-80%",
-                "fix_complexity": "LOW"
+                "fix_complexity": "LOW",
             },
             {
                 "pattern": "N+1查询问题",
                 "impact": "HIGH",
                 "typical_improvement": "60-85%",
-                "fix_complexity": "MEDIUM"
+                "fix_complexity": "MEDIUM",
             },
             {
                 "pattern": "缺少查询结果缓存",
                 "impact": "MEDIUM",
                 "typical_improvement": "30-50%",
-                "fix_complexity": "LOW"
+                "fix_complexity": "LOW",
             },
             {
                 "pattern": "同步阻塞操作",
                 "impact": "MEDIUM",
                 "typical_improvement": "40-60%",
-                "fix_complexity": "HIGH"
-            }
+                "fix_complexity": "HIGH",
+            },
         ]
 
         return common_patterns
@@ -241,8 +259,12 @@ class PerformanceBottleneckAnalyzer:
         all_issues = dao_issues + service_issues + schema_issues + api_issues
 
         # 按严重程度排序
-        high_priority = [issue for issue in all_issues if issue.get("severity") == "HIGH"]
-        medium_priority = [issue for issue in all_issues if issue.get("severity") == "MEDIUM"]
+        high_priority = [
+            issue for issue in all_issues if issue.get("severity") == "HIGH"
+        ]
+        medium_priority = [
+            issue for issue in all_issues if issue.get("severity") == "MEDIUM"
+        ]
         low_priority = [issue for issue in all_issues if issue.get("severity") == "LOW"]
 
         return {
@@ -250,7 +272,7 @@ class PerformanceBottleneckAnalyzer:
             "medium_priority": medium_priority,
             "low_priority": low_priority,
             "hotspots": hotspots,
-            "total_issues": len(all_issues)
+            "total_issues": len(all_issues),
         }
 
     def create_baseline_report(self):
@@ -275,8 +297,8 @@ class PerformanceBottleneckAnalyzer:
 
             f.write("## 🔥 高优先级问题 (本周必须处理)\n\n")
 
-            if plan['high_priority']:
-                for i, issue in enumerate(plan['high_priority'], 1):
+            if plan["high_priority"]:
+                for i, issue in enumerate(plan["high_priority"], 1):
                     f.write(f"### {i}. {issue['component']} - {issue['issue']}\n\n")
                     f.write(f"**描述**: {issue['description']}\n\n")
                     f.write(f"**建议**: {issue['recommendation']}\n\n")
@@ -286,8 +308,8 @@ class PerformanceBottleneckAnalyzer:
 
             f.write("## 🟡 中优先级问题 (本周尽量处理)\n\n")
 
-            if plan['medium_priority']:
-                for i, issue in enumerate(plan['medium_priority'], 1):
+            if plan["medium_priority"]:
+                for i, issue in enumerate(plan["medium_priority"], 1):
                     f.write(f"### {i}. {issue['component']} - {issue['issue']}\n\n")
                     f.write(f"**描述**: {issue['description']}\n\n")
                     f.write(f"**建议**: {issue['recommendation']}\n\n")
@@ -297,8 +319,8 @@ class PerformanceBottleneckAnalyzer:
 
             f.write("## 🟢 低优先级问题 (可延后处理)\n\n")
 
-            if plan['low_priority']:
-                for i, issue in enumerate(plan['low_priority'], 1):
+            if plan["low_priority"]:
+                for i, issue in enumerate(plan["low_priority"], 1):
                     f.write(f"### {i}. {issue['component']} - {issue['issue']}\n\n")
                     f.write(f"**描述**: {issue['description']}\n\n")
                     f.write(f"**建议**: {issue['recommendation']}\n\n")
@@ -308,11 +330,13 @@ class PerformanceBottleneckAnalyzer:
 
             f.write("## 🎯 性能热点与预期收益\n\n")
 
-            if plan['hotspots']:
+            if plan["hotspots"]:
                 f.write("| 性能热点 | 影响程度 | 预期改善 | 修复难度 |\n")
                 f.write("|----------|----------|----------|----------|\n")
-                for hotspot in plan['hotspots']:
-                    f.write(f"| {hotspot['pattern']} | {hotspot['impact']} | {hotspot['typical_improvement']} | {hotspot['fix_complexity']} |\n")
+                for hotspot in plan["hotspots"]:
+                    f.write(
+                        f"| {hotspot['pattern']} | {hotspot['impact']} | {hotspot['typical_improvement']} | {hotspot['fix_complexity']} |\n"
+                    )
             else:
                 f.write("✅ 未发现明显性能热点\n")
 
@@ -320,16 +344,24 @@ class PerformanceBottleneckAnalyzer:
 
             f.write("基于上述分析，建议Day 2重点关注以下优化：\n\n")
 
-            if plan['high_priority']:
+            if plan["high_priority"]:
                 f.write("### 🔥 必做项\n")
-                for i, issue in enumerate(plan['high_priority'][:3], 1):  # 最多3个必做项
-                    f.write(f"{i}. **{issue['component']}**: {issue['recommendation']}\n")
+                for i, issue in enumerate(
+                    plan["high_priority"][:3], 1
+                ):  # 最多3个必做项
+                    f.write(
+                        f"{i}. **{issue['component']}**: {issue['recommendation']}\n"
+                    )
                 f.write("\n")
 
-            if plan['medium_priority']:
+            if plan["medium_priority"]:
                 f.write("### 🟡 尽量做\n")
-                for i, issue in enumerate(plan['medium_priority'][:2], 1):  # 最多2个尽量做项
-                    f.write(f"{i}. **{issue['component']}**: {issue['recommendation']}\n")
+                for i, issue in enumerate(
+                    plan["medium_priority"][:2], 1
+                ):  # 最多2个尽量做项
+                    f.write(
+                        f"{i}. **{issue['component']}**: {issue['recommendation']}\n"
+                    )
                 f.write("\n")
 
             f.write("### 📈 验收标准\n")
@@ -341,9 +373,10 @@ class PerformanceBottleneckAnalyzer:
         print(f"✅ 基线分析报告已生成: {report_path}")
         return plan
 
+
 if __name__ == "__main__":
     print("🚀 开始HermesNexus性能基线分析")
-    print("="*50)
+    print("=" * 50)
 
     analyzer = PerformanceBottleneckAnalyzer()
     plan = analyzer.create_baseline_report()

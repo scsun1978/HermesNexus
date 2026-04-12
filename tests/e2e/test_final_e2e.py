@@ -20,8 +20,7 @@ import httpx
 from cloud.database.db import db
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -73,13 +72,13 @@ class FinalE2ETest:
                     "capabilities": {
                         "ssh": True,
                         "max_tasks": 3,
-                        "supported_commands": ["exec", "script"]
-                    }
+                        "supported_commands": ["exec", "script"],
+                    },
                 }
 
                 response = await client.post(
                     f"{self.cloud_url}/api/v1/nodes/{node_id}/register",
-                    json=registration_data
+                    json=registration_data,
                 )
 
                 if response.status_code in [200, 201]:
@@ -87,7 +86,9 @@ class FinalE2ETest:
 
                     # 验证节点可以查询
                     await asyncio.sleep(1)
-                    node_response = await client.get(f"{self.cloud_url}/api/v1/nodes/{node_id}")
+                    node_response = await client.get(
+                        f"{self.cloud_url}/api/v1/nodes/{node_id}"
+                    )
 
                     if node_response.status_code == 200:
                         node_data = node_response.json()
@@ -132,15 +133,17 @@ class FinalE2ETest:
                                 "type": "linux",
                                 "host": "localhost",
                                 "port": 22,
-                                "enabled": True
-                            }
+                                "enabled": True,
+                            },
                         )
 
                         if create_response.status_code in [200, 201]:
                             logger.info(f"✅ 创建测试设备: {device_id}")
                             return device_id
                         else:
-                            logger.error(f"❌ 设备创建失败: {create_response.status_code}")
+                            logger.error(
+                                f"❌ 设备创建失败: {create_response.status_code}"
+                            )
                             return None
                 else:
                     logger.error(f"❌ 获取设备列表失败: {response.status_code}")
@@ -168,12 +171,11 @@ class FinalE2ETest:
                     "command": "echo 'Hello from E2E Test'",
                     "priority": "normal",
                     "timeout": 30,
-                    "created_by": "e2e_test"
+                    "created_by": "e2e_test",
                 }
 
                 response = await client.post(
-                    f"{self.cloud_url}/api/v1/jobs",
-                    json=task_data
+                    f"{self.cloud_url}/api/v1/jobs", json=task_data
                 )
 
                 if response.status_code in [200, 201]:
@@ -185,7 +187,9 @@ class FinalE2ETest:
                     await asyncio.sleep(5)
 
                     # 检查任务状态
-                    status_response = await client.get(f"{self.cloud_url}/api/v1/jobs/{created_job_id}")
+                    status_response = await client.get(
+                        f"{self.cloud_url}/api/v1/jobs/{created_job_id}"
+                    )
 
                     if status_response.status_code == 200:
                         job_status = status_response.json()
@@ -194,13 +198,17 @@ class FinalE2ETest:
 
                         # 检查任务是否被分配到节点
                         if "node_id" in job_status:
-                            logger.info(f"✅ 任务已分配到节点: {job_status.get('node_id')}")
+                            logger.info(
+                                f"✅ 任务已分配到节点: {job_status.get('node_id')}"
+                            )
                         else:
                             logger.warning("⚠️  任务未被分配节点")
 
                         return created_job_id, status
                     else:
-                        logger.error(f"❌ 获取任务状态失败: {status_response.status_code}")
+                        logger.error(
+                            f"❌ 获取任务状态失败: {status_response.status_code}"
+                        )
                         return None, None
                 else:
                     logger.error(f"❌ 任务创建失败: {response.status_code}")
@@ -242,12 +250,14 @@ class FinalE2ETest:
                         "target_device_id": device_id,
                         "command": "sleep 60",
                         "timeout": 120,
-                        "created_by": "e2e_test"
-                    }
+                        "created_by": "e2e_test",
+                    },
                 )
 
                 if create_response.status_code not in [200, 201]:
-                    logger.error(f"❌ 创建取消测试任务失败: {create_response.status_code}")
+                    logger.error(
+                        f"❌ 创建取消测试任务失败: {create_response.status_code}"
+                    )
                     return False
 
                 # 等待任务开始
@@ -256,7 +266,7 @@ class FinalE2ETest:
                 # 取消任务
                 cancel_response = await client.patch(
                     f"{self.cloud_url}/api/v1/jobs/{job_id}/cancel",
-                    json={"reason": "E2E测试取消"}
+                    json={"reason": "E2E测试取消"},
                 )
 
                 if cancel_response.status_code == 200:
@@ -264,7 +274,9 @@ class FinalE2ETest:
 
                     # 验证任务状态
                     await asyncio.sleep(2)
-                    status_response = await client.get(f"{self.cloud_url}/api/v1/jobs/{job_id}")
+                    status_response = await client.get(
+                        f"{self.cloud_url}/api/v1/jobs/{job_id}"
+                    )
 
                     if status_response.status_code == 200:
                         job_status = status_response.json()
@@ -275,7 +287,9 @@ class FinalE2ETest:
                             logger.warning(f"⚠️  任务状态: {job_status.get('status')}")
                             return False
                     else:
-                        logger.error(f"❌ 获取取消后状态失败: {status_response.status_code}")
+                        logger.error(
+                            f"❌ 获取取消后状态失败: {status_response.status_code}"
+                        )
                         return False
                 else:
                     logger.error(f"❌ 任务取消失败: {cancel_response.status_code}")
@@ -304,8 +318,11 @@ class FinalE2ETest:
 
                     # 验证统计数据完整性
                     required_fields = [
-                        "total_nodes", "online_nodes", "total_jobs",
-                        "pending_jobs", "total_events"
+                        "total_nodes",
+                        "online_nodes",
+                        "total_jobs",
+                        "pending_jobs",
+                        "total_events",
                     ]
 
                     for field in required_fields:
@@ -430,7 +447,7 @@ class FinalE2ETest:
     async def run_all_tests(self):
         """运行所有端到端测试"""
         logger.info("🚀 开始最终端到端测试")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         self.start_time = time.time()
 
@@ -443,7 +460,7 @@ class FinalE2ETest:
             ("系统统计信息", self.test_6_system_statistics),
             ("事件日志记录", self.test_7_event_logging),
             ("控制台访问", self.test_8_console_access),
-            ("数据一致性", self.test_9_data_consistency)
+            ("数据一致性", self.test_9_data_consistency),
         ]
 
         # 存储测试结果
@@ -490,9 +507,9 @@ class FinalE2ETest:
         """生成测试报告"""
         elapsed_time = time.time() - self.start_time
 
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("📊 最终端到端测试报告")
-        logger.info("="*60)
+        logger.info("=" * 60)
         logger.info(f"总耗时: {elapsed_time:.2f}秒")
         logger.info("")
 
@@ -513,7 +530,7 @@ class FinalE2ETest:
 
             logger.info(f"{status}: {test_name}")
 
-        logger.info("="*60)
+        logger.info("=" * 60)
         logger.info(f"总计: {len(self.test_results)} 个测试")
         logger.info(f"通过: {passed} | 失败: {failed} | 跳过: {skipped}")
 
@@ -537,9 +554,11 @@ async def main():
     """主函数"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='HermesNexus 最终端到端测试')
-    parser.add_argument('--cloud-url', default='http://localhost:8080', help='云端API URL')
-    parser.add_argument('--quick', action='store_true', help='快速测试模式')
+    parser = argparse.ArgumentParser(description="HermesNexus 最终端到端测试")
+    parser.add_argument(
+        "--cloud-url", default="http://localhost:8080", help="云端API URL"
+    )
+    parser.add_argument("--quick", action="store_true", help="快速测试模式")
 
     args = parser.parse_args()
 

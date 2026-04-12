@@ -46,7 +46,8 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
     def tearDown(self):
         """测试后清理 - 删除临时数据库"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_complete_asset_lifecycle(self):
@@ -61,7 +62,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
             asset_type=AssetType.LINUX_HOST,
             status=AssetStatus.ACTIVE,
             description="用于集成测试的资产",
-            meta_data={"ip": "192.168.1.100", "ssh_port": 22}
+            meta_data={"ip": "192.168.1.100", "ssh_port": 22},
         )
 
         created_asset = self.asset_service.create_asset(asset)
@@ -69,7 +70,9 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
         self.assertEqual(created_asset.asset_id, "test-asset-integration-001")
 
         # 验证审计日志
-        audit_logs = self.audit_service.query_by_asset("test-asset-integration-001", limit=5)
+        audit_logs = self.audit_service.query_by_asset(
+            "test-asset-integration-001", limit=5
+        )
         self.assertGreater(len(audit_logs), 0, "应该有审计日志记录")
 
         # Step 2: 创建并执行任务
@@ -87,7 +90,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
             description="用于集成测试的任务",
             created_by="integration-test-user",
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         created_task = self.task_service.create_task(task)
@@ -95,7 +98,9 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
         self.assertEqual(created_task.status, TaskStatus.PENDING)
 
         # 验证任务相关的审计日志
-        task_audit_logs = self.audit_service.query_by_task("test-task-integration-001", limit=5)
+        task_audit_logs = self.audit_service.query_by_task(
+            "test-task-integration-001", limit=5
+        )
         self.assertGreater(len(task_audit_logs), 0, "应该有任务相关的审计日志")
 
         # Step 3: 模拟任务状态变更
@@ -103,25 +108,29 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
 
         # 分配任务
         updated_task = self.task_service.assign_node_to_task(
-            "test-task-integration-001",
-            "test-node-001"
+            "test-task-integration-001", "test-node-001"
         )
         self.assertEqual(updated_task.status, TaskStatus.ASSIGNED)
 
         # 开始执行
-        updated_task = self.task_service.start_task("test-task-integration-001", "test-node-001")
+        updated_task = self.task_service.start_task(
+            "test-task-integration-001", "test-node-001"
+        )
         self.assertEqual(updated_task.status, TaskStatus.RUNNING)
         self.assertIsNotNone(updated_task.started_at)
 
         # 完成任务
         from shared.models.task import TaskExecutionResult
+
         result = TaskExecutionResult(
             exit_code=0,
             stdout=" load average: 0.01, 0.02, 0.05",
             stderr="",
-            completed_at=datetime.utcnow()
+            completed_at=datetime.utcnow(),
         )
-        updated_task = self.task_service.complete_task("test-task-integration-001", result)
+        updated_task = self.task_service.complete_task(
+            "test-task-integration-001", result
+        )
         self.assertEqual(updated_task.status, TaskStatus.COMPLETED)
         self.assertIsNotNone(updated_task.completed_at)
 
@@ -129,14 +138,18 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
         print("Step 4: 验证审计追踪完整性")
 
         # 查询资产相关的所有审计日志
-        asset_audit_logs = self.audit_service.query_by_asset("test-asset-integration-001")
+        asset_audit_logs = self.audit_service.query_by_asset(
+            "test-asset-integration-001"
+        )
         print(f"资产相关审计日志数量: {len(asset_audit_logs)}")
 
         # 应该包含: 资产创建、任务创建、任务分配、任务开始、任务完成等
         audit_actions = [log.action for log in asset_audit_logs]
         print(f"审计操作类型: {audit_actions}")
 
-        self.assertIn(AuditAction.ASSET_REGISTERED, audit_actions, "应该包含资产创建操作")
+        self.assertIn(
+            AuditAction.ASSET_REGISTERED, audit_actions, "应该包含资产创建操作"
+        )
         self.assertIn(AuditAction.TASK_CREATED, audit_actions, "应该包含任务创建操作")
 
         # Step 5: 验证资产状态变更
@@ -164,7 +177,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
             asset_type=AssetType.LINUX_HOST,
             status=AssetStatus.ACTIVE,
             description="用于测试失败流程的资产",
-            meta_data={"ip": "192.168.1.101"}
+            meta_data={"ip": "192.168.1.101"},
         )
 
         self.asset_service.create_asset(asset)
@@ -182,7 +195,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
             description="测试失败处理",
             created_by="integration-test-user",
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         self.task_service.create_task(task)
@@ -193,11 +206,12 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
 
         # 标记任务失败
         from shared.models.task import TaskExecutionResult
+
         result = TaskExecutionResult(
             exit_code=1,
             stdout="",
             stderr="Command failed with exit code 1",
-            completed_at=datetime.utcnow()
+            completed_at=datetime.utcnow(),
         )
 
         failed_task = self.task_service.complete_task("test-task-fail-001", result)
@@ -225,7 +239,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
                 asset_type=AssetType.LINUX_HOST,
                 status=AssetStatus.ACTIVE,
                 description=f"并发测试资产 {i}",
-                meta_data={"index": i}
+                meta_data={"index": i},
             )
             assets.append(asset)
 
@@ -248,7 +262,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
                 description=f"并发测试任务 {i}",
                 created_by="integration-test-user",
                 created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                updated_at=datetime.utcnow(),
             )
             tasks.append(task)
 
@@ -282,7 +296,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
             asset_type=AssetType.LINUX_HOST,
             status=AssetStatus.ACTIVE,
             description="测试数据一致性",
-            meta_data={"test": "consistency"}
+            meta_data={"test": "consistency"},
         )
 
         created_asset = self.asset_service.create_asset(asset)
@@ -298,7 +312,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
             timeout=30,
             created_by="consistency-test-user",
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         created_task = self.task_service.create_task(task)

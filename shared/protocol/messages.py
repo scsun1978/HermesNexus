@@ -14,38 +14,44 @@ import uuid
 
 class MessageType(str, Enum):
     """消息类型枚举"""
+
     # 边缘 → 云端
-    HEARTBEAT = "heartbeat"           # 心跳消息
-    REGISTER = "register"             # 节点注册
-    TASK_RESULT = "task_result"       # 任务执行结果
-    ERROR = "error"                   # 错误报告
-    DEVICE_STATUS = "device_status"   # 设备状态上报
+    HEARTBEAT = "heartbeat"  # 心跳消息
+    REGISTER = "register"  # 节点注册
+    TASK_RESULT = "task_result"  # 任务执行结果
+    ERROR = "error"  # 错误报告
+    DEVICE_STATUS = "device_status"  # 设备状态上报
 
     # 云端 → 边缘
-    TASK_ASSIGN = "task_assign"       # 任务分配
-    CONFIG_UPDATE = "config_update"   # 配置更新
-    SHUTDOWN = "shutdown"             # 关闭指令
-    HEARTBEAT_ACK = "heartbeat_ack"   # 心跳确认
-    TASK_CANCEL = "task_cancel"       # 任务取消
+    TASK_ASSIGN = "task_assign"  # 任务分配
+    CONFIG_UPDATE = "config_update"  # 配置更新
+    SHUTDOWN = "shutdown"  # 关闭指令
+    HEARTBEAT_ACK = "heartbeat_ack"  # 心跳确认
+    TASK_CANCEL = "task_cancel"  # 任务取消
 
 
 @dataclass
 class BaseMessage:
     """消息基类"""
+
     type: MessageType
-    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    timestamp: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
     node_id: Optional[str] = None
     message_id: str = field(default_factory=lambda: str(uuid.uuid4()))
 
     def to_json(self) -> str:
         """转换为 JSON 字符串"""
-        return json.dumps({
-            "type": self.type.value,
-            "timestamp": self.timestamp,
-            "node_id": self.node_id,
-            "message_id": self.message_id,
-            "data": self.to_dict()
-        })
+        return json.dumps(
+            {
+                "type": self.type.value,
+                "timestamp": self.timestamp,
+                "node_id": self.node_id,
+                "message_id": self.message_id,
+                "data": self.to_dict(),
+            }
+        )
 
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
@@ -55,6 +61,7 @@ class BaseMessage:
 @dataclass
 class HeartbeatMessage(BaseMessage):
     """心跳消息"""
+
     type: MessageType = MessageType.HEARTBEAT
     status: str = "online"
     cpu_usage: float = 0.0
@@ -66,13 +73,14 @@ class HeartbeatMessage(BaseMessage):
             "status": self.status,
             "cpu_usage": self.cpu_usage,
             "memory_usage": self.memory_usage,
-            "active_tasks": self.active_tasks
+            "active_tasks": self.active_tasks,
         }
 
 
 @dataclass
 class TaskMessage(BaseMessage):
     """任务消息"""
+
     type: MessageType = MessageType.TASK_ASSIGN
     task_id: str = ""
     job_id: str = ""  # 关联的作业ID
@@ -102,13 +110,14 @@ class TaskMessage(BaseMessage):
             "timeout": self.timeout,
             "priority": self.priority,
             "retry_policy": self.retry_policy,
-            "created_by": self.created_by
+            "created_by": self.created_by,
         }
 
 
 @dataclass
 class ResultMessage(BaseMessage):
     """任务结果消息"""
+
     type: MessageType = MessageType.TASK_RESULT
     task_id: str = ""
     job_id: str = ""
@@ -138,13 +147,14 @@ class ResultMessage(BaseMessage):
             "execution_time": self.execution_time,
             "started_at": self.started_at,
             "completed_at": self.completed_at,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
 
 @dataclass
 class RegisterMessage(BaseMessage):
     """节点注册消息"""
+
     type: MessageType = MessageType.REGISTER
     node_id: str = ""
     node_name: str = ""
@@ -158,13 +168,14 @@ class RegisterMessage(BaseMessage):
             "node_name": self.node_name,
             "node_type": self.node_type,
             "capabilities": self.capabilities,
-            "version": self.version
+            "version": self.version,
         }
 
 
 @dataclass
 class ErrorMessage(BaseMessage):
     """错误消息"""
+
     type: MessageType = MessageType.ERROR
     error_code: str = ""
     error_message: str = ""
@@ -180,13 +191,14 @@ class ErrorMessage(BaseMessage):
             "error_category": self.error_category,
             "context": self.context,
             "retry_able": self.retry_able,
-            "retry_after": self.retry_after
+            "retry_after": self.retry_after,
         }
 
 
 @dataclass
 class DeviceStatusMessage(BaseMessage):
     """设备状态消息"""
+
     type: MessageType = MessageType.DEVICE_STATUS
     device_id: str = ""
     status: str = "unknown"  # online, offline, error
@@ -196,5 +208,5 @@ class DeviceStatusMessage(BaseMessage):
         return {
             "device_id": self.device_id,
             "status": self.status,
-            "metrics": self.metrics
+            "metrics": self.metrics,
         }

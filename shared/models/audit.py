@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field, root_validator
 
 class AuditAction(str, Enum):
     """审计动作类型"""
+
     # Task lifecycle
     TASK_CREATED = "task_created"
     TASK_ASSIGNED = "task_assigned"
@@ -56,6 +57,7 @@ class AuditAction(str, Enum):
 
 class EventLevel(str, Enum):
     """事件级别"""
+
     DEBUG = "debug"
     INFO = "info"
     WARNING = "warning"
@@ -65,16 +67,18 @@ class EventLevel(str, Enum):
 
 class AuditCategory(str, Enum):
     """审计分类"""
-    TASK = "task"              # 任务相关
-    NODE = "node"              # 节点相关
-    ASSET = "asset"            # 资产相关
-    SYSTEM = "system"          # 系统相关
-    SECURITY = "security"      # 安全相关
-    USER = "user"              # 用户相关
+
+    TASK = "task"  # 任务相关
+    NODE = "node"  # 节点相关
+    ASSET = "asset"  # 资产相关
+    SYSTEM = "system"  # 系统相关
+    SECURITY = "security"  # 安全相关
+    USER = "user"  # 用户相关
 
 
 class AuditLog(BaseModel):
     """审计日志模型"""
+
     audit_id: str = Field(..., description="审计日志唯一标识")
     action: AuditAction = Field(..., description="审计动作类型")
     category: AuditCategory = Field(..., description="审计分类")
@@ -82,7 +86,9 @@ class AuditLog(BaseModel):
 
     # 操作者信息
     actor: str = Field(..., description="操作发起者")
-    actor_type: str = Field(default="user", description="操作者类型: user, system, node")
+    actor_type: str = Field(
+        default="user", description="操作者类型: user, system, node"
+    )
 
     # 目标信息
     target_type: str = Field(..., description="目标对象类型: task, node, asset, system")
@@ -103,8 +109,12 @@ class AuditLog(BaseModel):
     request_id: Optional[str] = Field(None, description="请求ID")
 
     # 时间戳
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="事件时间戳")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="记录创建时间")
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="事件时间戳"
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="记录创建时间"
+    )
 
     class Config:
         json_schema_extra = {
@@ -121,18 +131,19 @@ class AuditLog(BaseModel):
                 "details": {
                     "task_name": "系统信息查询",
                     "task_type": "basic_exec",
-                    "target_asset": "asset-001"
+                    "target_asset": "asset-001",
                 },
                 "message": "创建任务: 系统信息查询",
                 "ip_address": "192.168.1.100",
                 "request_id": "req-001",
-                "timestamp": "2026-04-12T15:30:00Z"
+                "timestamp": "2026-04-12T15:30:00Z",
             }
         }
 
 
 class AuditLogCreateRequest(BaseModel):
     """审计日志创建请求"""
+
     action: AuditAction = Field(..., description="审计动作类型")
     category: AuditCategory = Field(..., description="审计分类")
     level: EventLevel = Field(default=EventLevel.INFO, description="事件级别")
@@ -161,7 +172,11 @@ class AuditLogCreateRequest(BaseModel):
 
     @root_validator(pre=True)
     def _compat_metadata_alias(cls, values):
-        if isinstance(values, dict) and "details" not in values and "metadata" in values:
+        if (
+            isinstance(values, dict)
+            and "details" not in values
+            and "metadata" in values
+        ):
             values["details"] = values.pop("metadata")
         return values
 
@@ -175,15 +190,14 @@ class AuditLogCreateRequest(BaseModel):
                 "target_type": "task",
                 "target_id": "task-001",
                 "message": "创建任务: 系统信息查询",
-                "details": {
-                    "task_name": "系统信息查询"
-                }
+                "details": {"task_name": "系统信息查询"},
             }
         }
 
 
 class AuditLogQueryParams(BaseModel):
     """审计日志查询参数"""
+
     action: Optional[AuditAction] = Field(None, description="按动作类型过滤")
     category: Optional[AuditCategory] = Field(None, description="按分类过滤")
     level: Optional[EventLevel] = Field(None, description="按级别过滤")
@@ -212,13 +226,14 @@ class AuditLogQueryParams(BaseModel):
                 "start_time": "2026-04-12T00:00:00Z",
                 "end_time": "2026-04-12T23:59:59Z",
                 "page": 1,
-                "page_size": 50
+                "page_size": 50,
             }
         }
 
 
 class AuditLogListResponse(BaseModel):
     """审计日志列表响应"""
+
     total: int = Field(..., description="总数量")
     audit_logs: List[AuditLog] = Field(..., description="审计日志列表")
     page: int = Field(..., description="当前页码")
@@ -232,13 +247,14 @@ class AuditLogListResponse(BaseModel):
                 "audit_logs": [],
                 "page": 1,
                 "page_size": 50,
-                "total_pages": 100
+                "total_pages": 100,
             }
         }
 
 
 class AuditStats(BaseModel):
     """审计统计信息"""
+
     total_events: int = Field(..., description="总事件数")
     by_category: Dict[str, int] = Field(default_factory=dict, description="按分类统计")
     by_action: Dict[str, int] = Field(default_factory=dict, description="按动作统计")
@@ -263,31 +279,32 @@ class AuditStats(BaseModel):
                     "asset": 5000,
                     "system": 3000,
                     "security": 1500,
-                    "user": 500
+                    "user": 500,
                 },
                 "by_action": {
                     "task_created": 15000,
                     "task_succeeded": 12000,
                     "task_failed": 2000,
-                    "node_heartbeat": 8000
+                    "node_heartbeat": 8000,
                 },
                 "by_level": {
                     "info": 40000,
                     "warning": 8000,
                     "error": 1500,
-                    "critical": 500
+                    "critical": 500,
                 },
                 "events_last_hour": 1000,
                 "events_last_day": 15000,
                 "events_last_week": 50000,
                 "error_events": 2000,
-                "critical_events": 500
+                "critical_events": 500,
             }
         }
 
 
 class AuditExportRequest(BaseModel):
     """审计日志导出请求"""
+
     start_time: Optional[datetime] = Field(None, description="开始时间")
     end_time: Optional[datetime] = Field(None, description="结束时间")
     category: Optional[AuditCategory] = Field(None, description="审计分类")
@@ -303,15 +320,17 @@ class AuditExportRequest(BaseModel):
                 "category": "task",
                 "level": "error",
                 "format": "json",
-                "limit": 10000
+                "limit": 10000,
             }
         }
 
 
 # ===== Phase 3: 统一安全审计扩展 =====
 
+
 class ActorType(str, Enum):
     """操作者类型枚举（Phase 3扩展）"""
+
     USER = "user"  # 人类用户
     NODE = "node"  # 边缘节点
     SYSTEM = "system"  # 系统自动
@@ -321,6 +340,7 @@ class ActorType(str, Enum):
 
 class SecurityEventType(str, Enum):
     """安全事件类型枚举（Phase 3扩展）"""
+
     # 认证事件
     AUTH_TOKEN_ISSUED = "auth_token_issued"
     AUTH_TOKEN_VALIDATED = "auth_token_validated"
@@ -365,6 +385,7 @@ class SecurityEventType(str, Enum):
 
 class ActionResult(str, Enum):
     """操作结果枚举（Phase 3扩展）"""
+
     SUCCESS = "success"
     FAILURE = "failure"
     PARTIAL = "partial"
@@ -374,6 +395,7 @@ class ActionResult(str, Enum):
 
 class RiskLevel(str, Enum):
     """风险等级枚举（Phase 3扩展）"""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -394,7 +416,9 @@ class SecurityAuditLog(BaseModel):
     level: EventLevel = Field(default=EventLevel.INFO, description="事件级别")
 
     # Phase 3 扩展字段
-    security_event_type: Optional[SecurityEventType] = Field(None, description="安全事件类型")
+    security_event_type: Optional[SecurityEventType] = Field(
+        None, description="安全事件类型"
+    )
     result: ActionResult = Field(default=ActionResult.SUCCESS, description="操作结果")
     risk_level: Optional[RiskLevel] = Field(None, description="风险等级")
 
@@ -441,8 +465,12 @@ class SecurityAuditLog(BaseModel):
     cpu_usage_percent: Optional[float] = Field(None, description="CPU使用率（%）")
 
     # 时间戳
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="事件时间戳")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="记录创建时间")
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="事件时间戳"
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="记录创建时间"
+    )
 
     class Config:
         json_schema_extra = {
@@ -464,12 +492,12 @@ class SecurityAuditLog(BaseModel):
                 "details": {
                     "operation_type": "config_change",
                     "resource_type": "config",
-                    "risk_level": "medium"
+                    "risk_level": "medium",
                 },
                 "ip_address": "192.168.1.100",
                 "request_id": "req-001",
                 "correlation_id": "corr-001",
-                "duration_ms": 125
+                "duration_ms": 125,
             }
         }
 
@@ -480,12 +508,16 @@ class SecurityEvent(BaseModel):
     event_id: str = Field(..., description="安全事件ID")
     security_event_type: SecurityEventType = Field(..., description="安全事件类型")
     severity: RiskLevel = Field(..., description="严重程度")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="事件时间")
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="事件时间"
+    )
 
     # 事件详情
     title: str = Field(..., description="事件标题")
     description: str = Field(..., description="事件描述")
-    affected_resources: List[str] = Field(default_factory=list, description="受影响的资源")
+    affected_resources: List[str] = Field(
+        default_factory=list, description="受影响的资源"
+    )
 
     # 攻击者信息
     attacker_id: Optional[str] = Field(None, description="攻击者ID")
@@ -498,12 +530,16 @@ class SecurityEvent(BaseModel):
 
     # 响应信息
     response_status: str = Field(default="detected", description="响应状态")
-    response_actions: List[str] = Field(default_factory=list, description="已采取的响应动作")
+    response_actions: List[str] = Field(
+        default_factory=list, description="已采取的响应动作"
+    )
 
     # 上下文
     context: Dict[str, Any] = Field(default_factory=dict, description="事件上下文")
     correlation_id: Optional[str] = Field(None, description="关联ID")
-    related_audit_logs: List[str] = Field(default_factory=list, description="相关审计日志ID")
+    related_audit_logs: List[str] = Field(
+        default_factory=list, description="相关审计日志ID"
+    )
 
     class Config:
         json_schema_extra = {
@@ -518,7 +554,7 @@ class SecurityEvent(BaseModel):
                 "attack_vector": "privilege_escalation",
                 "defense_mechanism": "rbac",
                 "blocking_action": "access_blocked",
-                "response_status": "blocked"
+                "response_status": "blocked",
             }
         }
 
@@ -530,13 +566,21 @@ class ComplianceReport(BaseModel):
     report_type: str = Field(..., description="报告类型")
     period_start: datetime = Field(..., description="报告期间开始时间")
     period_end: datetime = Field(..., description="报告期间结束时间")
-    generated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="生成时间")
+    generated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="生成时间"
+    )
 
     # 统计信息
     total_events: int = Field(..., description="总事件数")
-    events_by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
-    events_by_severity: Dict[str, int] = Field(default_factory=dict, description="按严重程度统计")
-    events_by_actor: Dict[str, int] = Field(default_factory=dict, description="按操作者统计")
+    events_by_type: Dict[str, int] = Field(
+        default_factory=dict, description="按类型统计"
+    )
+    events_by_severity: Dict[str, int] = Field(
+        default_factory=dict, description="按严重程度统计"
+    )
+    events_by_actor: Dict[str, int] = Field(
+        default_factory=dict, description="按操作者统计"
+    )
 
     # 安全指标
     auth_success_rate: float = Field(..., description="认证成功率")
@@ -546,7 +590,9 @@ class ComplianceReport(BaseModel):
     incident_count: int = Field(default=0, description="安全事件数量")
 
     # 合规检查
-    compliance_checks: List[Dict[str, Any]] = Field(default_factory=list, description="合规检查结果")
+    compliance_checks: List[Dict[str, Any]] = Field(
+        default_factory=list, description="合规检查结果"
+    )
     compliance_score: float = Field(..., description="合规评分（0-100）")
     compliance_status: str = Field(..., description="合规状态")
 
@@ -567,7 +613,7 @@ class ComplianceReport(BaseModel):
                 "rollback_success_rate": 0.95,
                 "incident_count": 3,
                 "compliance_score": 92.5,
-                "compliance_status": "compliant"
+                "compliance_status": "compliant",
             }
         }
 
@@ -577,20 +623,34 @@ class AuditStatisticsExtended(BaseModel):
 
     # 总体统计
     total_events: int = Field(..., description="总事件数")
-    events_by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
-    events_by_result: Dict[str, int] = Field(default_factory=dict, description="按结果统计")
-    events_by_risk_level: Dict[str, int] = Field(default_factory=dict, description="按风险等级统计")
+    events_by_type: Dict[str, int] = Field(
+        default_factory=dict, description="按类型统计"
+    )
+    events_by_result: Dict[str, int] = Field(
+        default_factory=dict, description="按结果统计"
+    )
+    events_by_risk_level: Dict[str, int] = Field(
+        default_factory=dict, description="按风险等级统计"
+    )
 
     # 时间统计
-    events_by_hour: Dict[str, int] = Field(default_factory=dict, description="按小时统计")
+    events_by_hour: Dict[str, int] = Field(
+        default_factory=dict, description="按小时统计"
+    )
     events_by_day: Dict[str, int] = Field(default_factory=dict, description="按天统计")
 
     # 操作者统计
-    top_actors: List[Dict[str, Any]] = Field(default_factory=list, description="最活跃的操作者")
-    actors_by_type: Dict[str, int] = Field(default_factory=dict, description="按操作者类型统计")
+    top_actors: List[Dict[str, Any]] = Field(
+        default_factory=list, description="最活跃的操作者"
+    )
+    actors_by_type: Dict[str, int] = Field(
+        default_factory=dict, description="按操作者类型统计"
+    )
 
     # 资源统计
-    most_accessed_resources: List[Dict[str, Any]] = Field(default_factory=list, description="访问最多的资源")
+    most_accessed_resources: List[Dict[str, Any]] = Field(
+        default_factory=list, description="访问最多的资源"
+    )
 
     # 安全统计
     failed_auth_count: int = Field(default=0, description="认证失败次数")
@@ -609,17 +669,13 @@ class AuditStatisticsExtended(BaseModel):
                     "auth_login": 5200,
                     "permission_check": 3200,
                     "approval_granted": 1500,
-                    "rollback_completed": 720
+                    "rollback_completed": 720,
                 },
-                "events_by_result": {
-                    "success": 14850,
-                    "failure": 520,
-                    "timeout": 50
-                },
+                "events_by_result": {"success": 14850, "failure": 520, "timeout": 50},
                 "failed_auth_count": 308,
                 "permission_denied_count": 95,
                 "security_events_count": 12,
-                "avg_duration_ms": 125.5
+                "avg_duration_ms": 125.5,
             }
         }
 
@@ -637,7 +693,7 @@ class AuditFields:
         "actor",
         "actor_type",
         "target_type",
-        "message"
+        "message",
     ]
 
     # 推荐字段
@@ -648,7 +704,7 @@ class AuditFields:
         "result",
         "ip_address",
         "request_id",
-        "correlation_id"
+        "correlation_id",
     ]
 
     # 敏感操作字段
@@ -659,15 +715,11 @@ class AuditFields:
         "old_values",
         "new_values",
         "approval_id",
-        "rollback_plan_id"
+        "rollback_plan_id",
     ]
 
     # 性能监控字段
-    PERFORMANCE_FIELDS = [
-        "duration_ms",
-        "memory_usage_mb",
-        "cpu_usage_percent"
-    ]
+    PERFORMANCE_FIELDS = ["duration_ms", "memory_usage_mb", "cpu_usage_percent"]
 
 
 # 审计事件优先级定义（Phase 3新增）
@@ -682,7 +734,7 @@ class AuditPriority:
         "rollback_failed",  # SecurityEventType.ROLLBACK_FAILED
         "recovery_failed",  # SecurityEventType.RECOVERY_FAILED
         "manual_intervention_required",  # SecurityEventType.MANUAL_INTERVENTION_REQUIRED
-        "system_error"  # AuditAction.SYSTEM_ERROR
+        "system_error",  # AuditAction.SYSTEM_ERROR
     ]
 
     # 重要事件（需要记录和分析）- 使用字符串类型以支持两种枚举
@@ -692,12 +744,12 @@ class AuditPriority:
         "node_registered",  # AuditAction.NODE_REGISTERED
         "approval_granted",  # SecurityEventType.APPROVAL_GRANTED
         "rollback_plan_created",  # SecurityEventType.ROLLBACK_PLAN_CREATED
-        "failure_detected"  # SecurityEventType.FAILURE_DETECTED
+        "failure_detected",  # SecurityEventType.FAILURE_DETECTED
     ]
 
     # 一般事件（正常记录）- 使用字符串类型以支持两种枚举
     NORMAL_EVENTS = [
         "user_logout",  # AuditAction.USER_LOGOUT
         "auth_token_validated",  # SecurityEventType.AUTH_TOKEN_VALIDATED
-        "permission_check"  # SecurityEventType.PERMISSION_CHECK
+        "permission_check",  # SecurityEventType.PERMISSION_CHECK
     ]

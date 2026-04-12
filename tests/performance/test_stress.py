@@ -66,7 +66,7 @@ class StressTestResult:
                 "p95_time": 0,
                 "p99_time": 0,
                 "throughput": 0,
-                "duration": 0
+                "duration": 0,
             }
 
         sorted_times = sorted(self.timings)
@@ -81,10 +81,18 @@ class StressTestResult:
             "min_time": min(self.timings),
             "max_time": max(self.timings),
             "median_time": statistics.median(self.timings),
-            "p95_time": sorted_times[int(len(sorted_times) * 0.95)] if len(sorted_times) >= 20 else sorted_times[-1],
-            "p99_time": sorted_times[int(len(sorted_times) * 0.99)] if len(sorted_times) >= 100 else sorted_times[-1],
+            "p95_time": (
+                sorted_times[int(len(sorted_times) * 0.95)]
+                if len(sorted_times) >= 20
+                else sorted_times[-1]
+            ),
+            "p99_time": (
+                sorted_times[int(len(sorted_times) * 0.99)]
+                if len(sorted_times) >= 100
+                else sorted_times[-1]
+            ),
             "throughput": self.operations / duration if duration > 0 else 0,
-            "duration": duration
+            "duration": duration,
         }
 
 
@@ -94,9 +102,9 @@ class TestStressPerformance(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """压力测试初始化"""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("🔥 HermesNexus 压力测试 - 验证性能优化效果")
-        print("="*70)
+        print("=" * 70)
 
     def setUp(self):
         """每个测试前的设置"""
@@ -117,7 +125,8 @@ class TestStressPerformance(unittest.TestCase):
     def tearDown(self):
         """清理临时资源"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_01_concurrent_asset_operations(self):
@@ -133,7 +142,7 @@ class TestStressPerformance(unittest.TestCase):
                 name=f"压力测试资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
                 status=AssetStatus.ACTIVE,
-                description="压力测试基础数据"
+                description="压力测试基础数据",
             )
             base_assets.append(asset)
 
@@ -172,8 +181,8 @@ class TestStressPerformance(unittest.TestCase):
         print(f"     P99耗时: {summary['p99_time']*1000:.2f}ms")
 
         # 验证性能要求
-        self.assertGreater(summary['success_rate'], 99.0, "读取成功率应该>99%")
-        self.assertGreater(summary['throughput'], 100.0, "吞吐量应该>100 ops/sec")
+        self.assertGreater(summary["success_rate"], 99.0, "读取成功率应该>99%")
+        self.assertGreater(summary["throughput"], 100.0, "吞吐量应该>100 ops/sec")
 
         print("  ✅ 并发读取压力测试通过")
 
@@ -190,7 +199,7 @@ class TestStressPerformance(unittest.TestCase):
                 asset_id=f"single-perf-{i:04d}",
                 name=f"单个插入性能测试-{i}",
                 asset_type=AssetType.LINUX_HOST,
-                status=AssetStatus.ACTIVE
+                status=AssetStatus.ACTIVE,
             )
 
             start = time.time()
@@ -214,7 +223,7 @@ class TestStressPerformance(unittest.TestCase):
                 asset_id=f"batch-perf-{i:04d}",
                 name=f"批量插入性能测试-{i}",
                 asset_type=AssetType.LINUX_HOST,
-                status=AssetStatus.ACTIVE
+                status=AssetStatus.ACTIVE,
             )
             batch_assets.append(asset)
 
@@ -233,11 +242,15 @@ class TestStressPerformance(unittest.TestCase):
         print("  📈 性能对比:")
         print(f"     单个插入总耗时: {single_summary['duration']:.3f}秒")
         print(f"     批量插入总耗时: {batch_summary['duration']:.3f}秒")
-        print(f"     性能提升: {single_summary['duration'] / batch_summary['duration']:.1f}x")
-        print(f"     时间节省: {((single_summary['duration'] - batch_summary['duration']) / single_summary['duration']) * 100:.1f}%")
+        print(
+            f"     性能提升: {single_summary['duration'] / batch_summary['duration']:.1f}x"
+        )
+        print(
+            f"     时间节省: {((single_summary['duration'] - batch_summary['duration']) / single_summary['duration']) * 100:.1f}%"
+        )
 
         # 验证批量操作的性能优势
-        speedup = single_summary['duration'] / batch_summary['duration']
+        speedup = single_summary["duration"] / batch_summary["duration"]
         self.assertGreater(speedup, 1.5, "批量插入应该至少快1.5倍")
 
         print("  ✅ 批量操作性能对比测试通过")
@@ -253,9 +266,17 @@ class TestStressPerformance(unittest.TestCase):
             asset = Asset(
                 asset_id=f"query-stress-{i:04d}",
                 name=f"查询压力测试-{i}",
-                asset_type=[AssetType.LINUX_HOST, AssetType.NETWORK_DEVICE, AssetType.IOT_DEVICE][i % 3],
-                status=[AssetStatus.ACTIVE, AssetStatus.INACTIVE, AssetStatus.DECOMMISSIONED][i % 3],
-                description="查询压力测试"
+                asset_type=[
+                    AssetType.LINUX_HOST,
+                    AssetType.NETWORK_DEVICE,
+                    AssetType.IOT_DEVICE,
+                ][i % 3],
+                status=[
+                    AssetStatus.ACTIVE,
+                    AssetStatus.INACTIVE,
+                    AssetStatus.DECOMMISSIONED,
+                ][i % 3],
+                description="查询压力测试",
             )
             test_assets.append(asset)
 
@@ -272,8 +293,7 @@ class TestStressPerformance(unittest.TestCase):
             try:
                 # 执行带过滤条件的列表查询
                 assets = self.asset_dao.list(
-                    filters={"asset_type": AssetType.LINUX_HOST},
-                    limit=50
+                    filters={"asset_type": AssetType.LINUX_HOST}, limit=50
                 )
                 duration = time.time() - start
                 result.record_operation(duration, len(assets) > 0)
@@ -290,8 +310,8 @@ class TestStressPerformance(unittest.TestCase):
         print(f"     查询吞吐: {summary['throughput']:.1f} queries/sec")
 
         # 验证查询性能
-        self.assertGreater(summary['success_rate'], 99.0, "查询成功率应该>99%")
-        self.assertLess(summary['p95_time']*1000, 100.0, "P95查询时间应该<100ms")
+        self.assertGreater(summary["success_rate"], 99.0, "查询成功率应该>99%")
+        self.assertLess(summary["p95_time"] * 1000, 100.0, "P95查询时间应该<100ms")
 
         print("  ✅ 高负载查询性能测试通过")
 
@@ -311,7 +331,7 @@ class TestStressPerformance(unittest.TestCase):
                     asset_id=f"mixed-worker-{worker_id}-{i:04d}",
                     name=f"混合测试资产-{worker_id}-{i}",
                     asset_type=AssetType.LINUX_HOST,
-                    status=AssetStatus.ACTIVE
+                    status=AssetStatus.ACTIVE,
                 )
 
                 start = time.time()
@@ -341,9 +361,9 @@ class TestStressPerformance(unittest.TestCase):
         print(f"     系统吞吐: {summary['throughput']:.1f} ops/sec")
 
         # 验证系统稳定性
-        self.assertEqual(summary['operations'], 100, "应该完成100个操作")
-        self.assertGreaterEqual(summary['success_rate'], 95.0, "成功率应该>=95%")
-        self.assertGreater(summary['throughput'], 50.0, "吞吐量应该>50 ops/sec")
+        self.assertEqual(summary["operations"], 100, "应该完成100个操作")
+        self.assertGreaterEqual(summary["success_rate"], 95.0, "成功率应该>=95%")
+        self.assertGreater(summary["throughput"], 50.0, "吞吐量应该>50 ops/sec")
 
         print("  ✅ 混合工作负载稳定性测试通过")
 
@@ -357,9 +377,13 @@ def generate_stress_test_report():
 
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("# HermesNexus 压力测试报告\n\n")
-        f.write(f"**生成时间**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n\n")
+        f.write(
+            f"**生成时间**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n\n"
+        )
         f.write("## 测试目的\n\n")
-        f.write("验证Week 4性能优化在实际高负载场景下的效果，确保系统在压力下稳定运行。\n\n")
+        f.write(
+            "验证Week 4性能优化在实际高负载场景下的效果，确保系统在压力下稳定运行。\n\n"
+        )
 
         f.write("## 测试场景\n\n")
         f.write("### 1. 并发资产操作压力测试\n")
@@ -402,9 +426,9 @@ def generate_stress_test_report():
 
 
 if __name__ == "__main__":
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🚀 HermesNexus 压力测试执行")
-    print("="*70)
+    print("=" * 70)
 
     # 运行压力测试
     loader = unittest.TestLoader()
@@ -417,19 +441,19 @@ if __name__ == "__main__":
     generate_stress_test_report()
 
     # 输出最终结果
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     if result.wasSuccessful():
         print("✅ 压力测试全部通过")
-        print("="*70)
+        print("=" * 70)
         print("📈 Week 4 性能优化验证完成")
         print("  - 批量操作性能提升得到验证")
         print("  - 高负载下系统稳定性良好")
         print("  - 查询性能符合预期目标")
-        print("="*70)
+        print("=" * 70)
         exit_code = 0
     else:
         print("❌ 压力测试存在失败")
-        print("="*70)
+        print("=" * 70)
         exit_code = 1
 
     sys.exit(exit_code)

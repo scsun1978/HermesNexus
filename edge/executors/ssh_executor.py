@@ -33,7 +33,7 @@ class SSHExecutor:
         key_filename: Optional[str] = None,
         timeout: int = 30,
         max_output_size: int = 10 * 1024 * 1024,  # 10MB
-        keep_alive: bool = False
+        keep_alive: bool = False,
     ):
         self.host = host
         self.port = port
@@ -55,7 +55,7 @@ class SSHExecutor:
             "commands_succeeded": 0,
             "commands_failed": 0,
             "total_execution_time": 0.0,
-            "connection_errors": 0
+            "connection_errors": 0,
         }
 
     async def connect(self) -> bool:
@@ -76,14 +76,16 @@ class SSHExecutor:
                 key_filename=self.key_filename,
                 timeout=self.timeout,
                 allow_agent=False,
-                look_for_keys=False
+                look_for_keys=False,
             )
 
             connection_time = time.time() - start_time
             self.is_connected = True
             self.connection_time = datetime.now(timezone.utc)
 
-            logger.info(f"✅ SSH 连接成功: {self.username}@{self.host} (耗时: {connection_time:.2f}s)")
+            logger.info(
+                f"✅ SSH 连接成功: {self.username}@{self.host} (耗时: {connection_time:.2f}s)"
+            )
 
             # 发送保持存活信号
             if self.keep_alive:
@@ -108,10 +110,15 @@ class SSHExecutor:
 
     def _start_keep_alive(self):
         """启动保持存活线程"""
+
         def keep_alive_thread():
             while self.is_connected:
                 try:
-                    if self.client and self.client.get_transport() and self.client.get_transport().is_active():
+                    if (
+                        self.client
+                        and self.client.get_transport()
+                        and self.client.get_transport().is_active()
+                    ):
                         self.client.exec_command('echo "keepalive"', timeout=5)
                         time.sleep(30)  # 每30秒发送一次
                     else:
@@ -127,7 +134,7 @@ class SSHExecutor:
         command: str,
         timeout: int = 300,
         environment: Optional[Dict[str, str]] = None,
-        work_dir: Optional[str] = None
+        work_dir: Optional[str] = None,
     ) -> Dict[str, Any]:
         """执行命令"""
         if not self.client or not self.is_connected:
@@ -149,9 +156,7 @@ class SSHExecutor:
         try:
             # 执行命令
             stdin, stdout, stderr = self.client.exec_command(
-                full_command,
-                timeout=timeout,
-                get_pty=False
+                full_command, timeout=timeout, get_pty=False
             )
 
             # 读取输出 (限制大小)
@@ -169,8 +174,12 @@ class SSHExecutor:
                         stdout_str += line
                         # 检查输出大小
                         if len(stdout_str) > self.max_output_size:
-                            logger.warning(f"⚠️  输出超过大小限制: {len(stdout_str)} > {self.max_output_size}")
-                            self.client.exec_command("pkill -f -f '{command[:20]}'")  # 终止命令
+                            logger.warning(
+                                f"⚠️  输出超过大小限制: {len(stdout_str)} > {self.max_output_size}"
+                            )
+                            self.client.exec_command(
+                                "pkill -f -f '{command[:20]}'"
+                            )  # 终止命令
                             break
                 except:
                     pass
@@ -214,7 +223,7 @@ class SSHExecutor:
                 "execution_time": round(execution_time, 2),
                 "command": command,
                 "host": self.host,
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
             # 更新统计
@@ -238,7 +247,7 @@ class SSHExecutor:
                 "success": False,
                 "error": "命令执行超时",
                 "exit_code": -1,
-                "error_code": ErrorCode.SSH_TIMEOUT.value
+                "error_code": ErrorCode.SSH_TIMEOUT.value,
             }
 
         except paramiko.SSHException as e:
@@ -247,7 +256,7 @@ class SSHExecutor:
                 "success": False,
                 "error": str(e),
                 "exit_code": -1,
-                "error_code": ErrorCode.SSH_COMMAND_FAILED.value
+                "error_code": ErrorCode.SSH_COMMAND_FAILED.value,
             }
 
         except Exception as e:
@@ -256,14 +265,11 @@ class SSHExecutor:
                 "success": False,
                 "error": str(e),
                 "exit_code": -1,
-                "error_code": ErrorCode.SSH_COMMAND_FAILED.value
+                "error_code": ErrorCode.SSH_COMMAND_FAILED.value,
             }
 
     async def execute_script(
-        self,
-        script: str,
-        timeout: int = 600,
-        work_dir: Optional[str] = None
+        self, script: str, timeout: int = 600, work_dir: Optional[str] = None
     ) -> Dict[str, Any]:
         """执行脚本"""
         logger.info(f"📜 执行脚本 @ {self.host}")
@@ -274,7 +280,7 @@ class SSHExecutor:
         try:
             # 上传脚本
             sftp = self.client.open_sftp()
-            with sftp.file(temp_script_path, 'w') as f:
+            with sftp.file(temp_script_path, "w") as f:
                 f.write(script)
             sftp.close()
 
@@ -294,11 +300,7 @@ class SSHExecutor:
 
         except Exception as e:
             logger.error(f"❌ 脚本执行失败: {e}")
-            return {
-                "success": False,
-                "error": str(e),
-                "exit_code": -1
-            }
+            return {"success": False, "error": str(e), "exit_code": -1}
 
     async def test_connection(self) -> Dict[str, Any]:
         """测试连接"""
@@ -308,14 +310,10 @@ class SSHExecutor:
                 "connected": result["success"],
                 "host": self.host,
                 "response_time": result.get("execution_time", 0),
-                "output": result.get("stdout", "")
+                "output": result.get("stdout", ""),
             }
         except Exception as e:
-            return {
-                "connected": False,
-                "host": self.host,
-                "error": str(e)
-            }
+            return {"connected": False, "host": self.host, "error": str(e)}
 
     def get_stats(self) -> Dict[str, Any]:
         """获取统计信息"""
@@ -324,8 +322,12 @@ class SSHExecutor:
             "host": self.host,
             "username": self.username,
             "is_connected": self.is_connected,
-            "connection_time": self.connection_time.isoformat() if self.connection_time else None,
-            "last_command_time": self.last_command_time.isoformat() if self.last_command_time else None
+            "connection_time": (
+                self.connection_time.isoformat() if self.connection_time else None
+            ),
+            "last_command_time": (
+                self.last_command_time.isoformat() if self.last_command_time else None
+            ),
         }
 
     async def close(self):
@@ -371,7 +373,7 @@ class SSHExecutorPool:
         port: int = 22,
         username: str = "root",
         password: Optional[str] = None,
-        key_filename: Optional[str] = None
+        key_filename: Optional[str] = None,
     ) -> Optional[SSHExecutor]:
         """获取SSH执行器"""
         cache_key = f"{username}@{host}:{port}"
@@ -391,7 +393,9 @@ class SSHExecutorPool:
         # 检查连接数限制
         current_connections = len(self.executors)
         if current_connections >= self.max_connections:
-            logger.warning(f"⚠️  连接池已满: {current_connections}/{self.max_connections}")
+            logger.warning(
+                f"⚠️  连接池已满: {current_connections}/{self.max_connections}"
+            )
             # 清理最老的连接
             oldest_key = min(self.connection_count.items(), key=lambda x: x[1])[0]
             if oldest_key in self.executors:
@@ -405,7 +409,7 @@ class SSHExecutorPool:
             port=port,
             username=username,
             password=password,
-            key_filename=key_filename
+            key_filename=key_filename,
         )
 
         if await executor.connect():
@@ -424,12 +428,14 @@ class SSHExecutorPool:
 
     def get_pool_stats(self) -> Dict[str, Any]:
         """获取连接池统计"""
-        active_count = sum(1 for executor in self.executors.values() if executor.is_connected)
+        active_count = sum(
+            1 for executor in self.executors.values() if executor.is_connected
+        )
         return {
             "total_connections": len(self.executors),
             "active_connections": active_count,
             "max_connections": self.max_connections,
-            "connections": {k: v.get_stats() for k, v in self.executors.items()}
+            "connections": {k: v.get_stats() for k, v in self.executors.items()},
         }
 
 
@@ -438,25 +444,18 @@ async def main():
     """测试函数"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
     # 测试本地连接 (如果可以)
     executor = SSHExecutor(
-        host="localhost",
-        username="current_user",  # 需要根据实际情况修改
-        timeout=10
+        host="localhost", username="current_user", timeout=10  # 需要根据实际情况修改
     )
 
     try:
         if await executor.connect():
             # 执行几个测试命令
-            test_commands = [
-                "echo 'Hello HermesNexus!'",
-                "uname -a",
-                "date",
-                "uptime"
-            ]
+            test_commands = ["echo 'Hello HermesNexus!'", "uname -a", "date", "uptime"]
 
             for cmd in test_commands:
                 result = await executor.execute_command(cmd)

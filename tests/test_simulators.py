@@ -13,8 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -28,26 +27,31 @@ async def test_simulator_modules():
         # 测试SSH模拟器
         logger.info("1️⃣ 测试SSH模拟器模块...")
         from tests.simulators.ssh_host_simulator import SSHHostSimulator
+
         logger.info("   ✅ SSH模拟器模块导入成功")
 
         # 测试简单SSH服务器
         logger.info("2️⃣ 测试简单SSH服务器模块...")
         from tests.simulators.simple_ssh_server import SSHTestServer
+
         logger.info("   ✅ 简单SSH服务器模块导入成功")
 
         # 测试集成脚本
         logger.info("3️⃣ 测试边缘节点集成脚本...")
         from tests.scripts.deploy_edge_node import EdgeNodeIntegrator
+
         logger.info("   ✅ 边缘节点集成脚本导入成功")
 
         # 测试任务分发器
         logger.info("4️⃣ 测试任务分发器...")
         from tests.scripts.task_dispatcher import TaskDispatcher
+
         logger.info("   ✅ 任务分发器导入成功")
 
         # 测试失败场景
         logger.info("5️⃣ 测试失败场景脚本...")
         from tests.scripts.failure_scenarios import FailureScenarios
+
         logger.info("   ✅ 失败场景脚本导入成功")
 
         logger.info("✅ 所有模拟器模块导入成功")
@@ -71,12 +75,12 @@ async def test_simulator_creation():
 
         # 测试SSH主机模拟器创建
         logger.info("1️⃣ 创建SSH主机模拟器...")
-        ssh_simulator = SSHHostSimulator(host='127.0.0.1', port=2223)
+        ssh_simulator = SSHHostSimulator(host="127.0.0.1", port=2223)
         logger.info(f"   ✅ SSH主机模拟器创建成功: {ssh_simulator.hostname}")
 
         # 测试简单SSH服务器创建
         logger.info("2️⃣ 创建简单SSH服务器...")
-        ssh_server = SSHTestServer(host='127.0.0.1', port=2224)
+        ssh_server = SSHTestServer(host="127.0.0.1", port=2224)
         logger.info(f"   ✅ 简单SSH服务器创建成功: {ssh_server.hostname}")
 
         logger.info("✅ 所有模拟器实例创建成功")
@@ -127,7 +131,7 @@ async def test_simulator_basic_functionality():
         from tests.simulators.ssh_host_simulator import SSHHostSimulator
 
         # 创建模拟器
-        simulator = SSHHostSimulator(host='127.0.0.1', port=2225)
+        simulator = SSHHostSimulator(host="127.0.0.1", port=2225)
 
         # 测试命令执行
         logger.info("1️⃣ 测试命令执行功能...")
@@ -170,14 +174,14 @@ async def test_file_structure():
         # 检查模拟器文件
         simulator_files = [
             "tests/simulators/ssh_host_simulator.py",
-            "tests/simulators/simple_ssh_server.py"
+            "tests/simulators/simple_ssh_server.py",
         ]
 
         # 检查脚本文件
         script_files = [
             "tests/scripts/deploy_edge_node.py",
             "tests/scripts/task_dispatcher.py",
-            "tests/scripts/failure_scenarios.py"
+            "tests/scripts/failure_scenarios.py",
         ]
 
         all_files_exist = True

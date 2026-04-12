@@ -30,9 +30,9 @@ class TestBatchOperationsPerformance(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """测试初始化"""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("⚡ 批量操作性能测试 - 验证优化效果")
-        print("="*70)
+        print("=" * 70)
 
     def setUp(self):
         """每个测试前的设置"""
@@ -53,7 +53,8 @@ class TestBatchOperationsPerformance(unittest.TestCase):
     def tearDown(self):
         """清理临时资源"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_asset_batch_insert_performance(self):
@@ -69,7 +70,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 name=f"单个插入资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
                 status=AssetStatus.ACTIVE,
-                description="单个插入测试"
+                description="单个插入测试",
             )
 
             start = time.time()
@@ -92,7 +93,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 name=f"批量插入资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
                 status=AssetStatus.ACTIVE,
-                description="批量插入测试"
+                description="批量插入测试",
             )
             batch_assets.append(asset)
 
@@ -105,8 +106,12 @@ class TestBatchOperationsPerformance(unittest.TestCase):
         print(f"     批量插入平均耗时: {batch_avg*1000:.3f}毫秒")
 
         # 计算性能提升
-        speedup = single_total / batch_total if batch_total > 0 else float('inf')
-        improvement = ((single_total - batch_total) / single_total) * 100 if single_total > 0 else 0
+        speedup = single_total / batch_total if batch_total > 0 else float("inf")
+        improvement = (
+            ((single_total - batch_total) / single_total) * 100
+            if single_total > 0
+            else 0
+        )
 
         print(f"  📈 性能提升: {speedup:.1f}x ({improvement:.1f}%)")
 
@@ -127,7 +132,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 name=f"查询测试资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
                 status=AssetStatus.ACTIVE,
-                description="查询测试"
+                description="查询测试",
             )
             assets.append(asset)
 
@@ -162,8 +167,12 @@ class TestBatchOperationsPerformance(unittest.TestCase):
         print(f"     查询结果数: {len(batch_results)}")
 
         # 计算性能提升
-        speedup = single_total / batch_total if batch_total > 0 else float('inf')
-        improvement = ((single_total - batch_total) / single_total) * 100 if single_total > 0 else 0
+        speedup = single_total / batch_total if batch_total > 0 else float("inf")
+        improvement = (
+            ((single_total - batch_total) / single_total) * 100
+            if single_total > 0
+            else 0
+        )
 
         print(f"  📈 性能提升: {speedup:.1f}x ({improvement:.1f}%)")
 
@@ -183,7 +192,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 asset_id=f"task-test-asset-{i}",
                 name=f"任务测试资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
-                status=AssetStatus.ACTIVE
+                status=AssetStatus.ACTIVE,
             )
             assets.append(asset)
         self.asset_dao.insert_batch(assets)
@@ -203,7 +212,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 timeout=30,
                 created_by="performance-test",
                 created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                updated_at=datetime.utcnow(),
             )
             tasks.append(task)
 
@@ -244,7 +253,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 actor="performance-test",
                 target_type="task",
                 target_id=f"batch-task-{i:04d}",
-                message=f"审计日志 {i}"
+                message=f"审计日志 {i}",
             )
             audit_logs.append(audit_log)
 
@@ -276,7 +285,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 asset_id=f"mixed-asset-{i}",
                 name=f"混合测试资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
-                status=AssetStatus.ACTIVE
+                status=AssetStatus.ACTIVE,
             )
             assets.append(asset)
         self.asset_dao.insert_batch(assets)
@@ -295,7 +304,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 timeout=30,
                 created_by="mixed-test",
                 created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                updated_at=datetime.utcnow(),
             )
             tasks.append(task)
         self.task_dao.insert_batch(tasks)
@@ -311,7 +320,7 @@ class TestBatchOperationsPerformance(unittest.TestCase):
                 actor="mixed-test",
                 target_type="task",
                 target_id=f"mixed-task-{i}",
-                message=f"混合测试审计日志 {i}"
+                message=f"混合测试审计日志 {i}",
             )
             audit_logs.append(audit_log)
         self.audit_dao.insert_batch(audit_logs)
@@ -319,7 +328,9 @@ class TestBatchOperationsPerformance(unittest.TestCase):
         total_time = time.time() - start
 
         print(f"     总耗时: {total_time:.3f}秒")
-        print(f"     创建了: {len(assets)}个资产, {len(tasks)}个任务, {len(audit_logs)}条审计日志")
+        print(
+            f"     创建了: {len(assets)}个资产, {len(tasks)}个任务, {len(audit_logs)}条审计日志"
+        )
 
         # 验证所有数据都创建成功
         queried_assets = self.asset_dao.select_by_ids([a.asset_id for a in assets])
@@ -333,11 +344,11 @@ class TestBatchOperationsPerformance(unittest.TestCase):
 
 def run_performance_tests():
     """运行性能测试的主函数"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🚀 HermesNexus 批量操作性能测试")
-    print("="*70)
+    print("=" * 70)
     print("测试目标: 验证批量操作相对单个操作的性能提升")
-    print("="*70)
+    print("=" * 70)
 
     # 创建测试套件
     loader = unittest.TestLoader()
@@ -348,19 +359,19 @@ def run_performance_tests():
     result = runner.run(suite)
 
     # 输出结果
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     if result.wasSuccessful():
         print("✅ 批量操作性能测试全部通过")
-        print("="*70)
+        print("=" * 70)
         print("📈 性能优化效果验证:")
         print("  - 批量插入性能显著提升")
         print("  - 批量查询避免N+1问题")
         print("  - 数据库往返次数大幅减少")
-        print("="*70)
+        print("=" * 70)
         return 0
     else:
         print("❌ 批量操作性能测试失败")
-        print("="*70)
+        print("=" * 70)
         return 1
 
 

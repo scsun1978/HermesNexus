@@ -12,63 +12,51 @@ import uuid
 
 class NodeStatus(str, Enum):
     """节点状态"""
-    UNREGISTERED = "unregistered"     # 未注册
-    REGISTERING = "registering"       # 注册中
-    REGISTERED = "registered"         # 已注册
-    ACTIVE = "active"                # 活跃
-    INACTIVE = "inactive"            # 非活跃
-    SUSPENDED = "suspended"          # 暂停
-    DEREGISTERED = "deregistered"   # 已注销
-    FAILED = "failed"                # 失败
 
-    def can_transition_to(self, new_status: 'NodeStatus') -> bool:
+    UNREGISTERED = "unregistered"  # 未注册
+    REGISTERING = "registering"  # 注册中
+    REGISTERED = "registered"  # 已注册
+    ACTIVE = "active"  # 活跃
+    INACTIVE = "inactive"  # 非活跃
+    SUSPENDED = "suspended"  # 暂停
+    DEREGISTERED = "deregistered"  # 已注销
+    FAILED = "failed"  # 失败
+
+    def can_transition_to(self, new_status: "NodeStatus") -> bool:
         """检查状态转换是否合法"""
         valid_transitions = {
-            NodeStatus.UNREGISTERED: [
-                NodeStatus.REGISTERING,
-                NodeStatus.REGISTERED
-            ],
-            NodeStatus.REGISTERING: [
-                NodeStatus.REGISTERED,
-                NodeStatus.FAILED
-            ],
+            NodeStatus.UNREGISTERED: [NodeStatus.REGISTERING, NodeStatus.REGISTERED],
+            NodeStatus.REGISTERING: [NodeStatus.REGISTERED, NodeStatus.FAILED],
             NodeStatus.REGISTERED: [
                 NodeStatus.ACTIVE,
                 NodeStatus.INACTIVE,
-                NodeStatus.DEREGISTERED
+                NodeStatus.DEREGISTERED,
             ],
             NodeStatus.ACTIVE: [
                 NodeStatus.INACTIVE,
                 NodeStatus.SUSPENDED,
-                NodeStatus.DEREGISTERED
+                NodeStatus.DEREGISTERED,
             ],
-            NodeStatus.INACTIVE: [
-                NodeStatus.ACTIVE,
-                NodeStatus.DEREGISTERED
-            ],
-            NodeStatus.SUSPENDED: [
-                NodeStatus.ACTIVE,
-                NodeStatus.DEREGISTERED
-            ],
-            NodeStatus.FAILED: [
-                NodeStatus.REGISTERING,
-                NodeStatus.DEREGISTERED
-            ],
-            NodeStatus.DEREGISTERED: []
+            NodeStatus.INACTIVE: [NodeStatus.ACTIVE, NodeStatus.DEREGISTERED],
+            NodeStatus.SUSPENDED: [NodeStatus.ACTIVE, NodeStatus.DEREGISTERED],
+            NodeStatus.FAILED: [NodeStatus.REGISTERING, NodeStatus.DEREGISTERED],
+            NodeStatus.DEREGISTERED: [],
         }
         return new_status in valid_transitions.get(self, [])
 
 
 class NodeType(str, Enum):
     """节点类型"""
-    PHYSICAL = "physical"      # 物理机
-    VIRTUAL_MACHINE = "vm"   # 虚拟机
-    CONTAINER = "container"   # 容器
-    EDGE_DEVICE = "edge"      # 边缘设备
+
+    PHYSICAL = "physical"  # 物理机
+    VIRTUAL_MACHINE = "vm"  # 虚拟机
+    CONTAINER = "container"  # 容器
+    EDGE_DEVICE = "edge"  # 边缘设备
 
 
 class NodeIdentity(BaseModel):
     """节点身份模型"""
+
     # 基本身份信息
     node_id: str = Field(..., description="节点唯一ID")
     node_name: str = Field(..., description="节点显示名称")
@@ -93,19 +81,29 @@ class NodeIdentity(BaseModel):
     last_heartbeat: Optional[datetime] = Field(None, description="最后心跳时间")
 
     # 关联关系
-    managed_devices: List[str] = Field(default_factory=list, description="管理的设备ID列表")
-    assigned_tasks: List[str] = Field(default_factory=list, description="分配的任务ID列表")
+    managed_devices: List[str] = Field(
+        default_factory=list, description="管理的设备ID列表"
+    )
+    assigned_tasks: List[str] = Field(
+        default_factory=list, description="分配的任务ID列表"
+    )
 
     # 元数据
     description: Optional[str] = Field(None, description="节点描述")
     location: Optional[str] = Field(None, description="物理位置")
     tags: List[str] = Field(default_factory=list, description="标签列表")
-    node_metadata: Dict[str, Any] = Field(default_factory=dict, description="自定义元数据")
+    node_metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="自定义元数据"
+    )
 
     # 审计信息
     created_by: Optional[str] = Field(None, description="创建者")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="更新时间")
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="创建时间"
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="更新时间"
+    )
 
     class Config:
         json_schema_extra = {
@@ -118,7 +116,7 @@ class NodeIdentity(BaseModel):
                 "capabilities": {
                     "protocols": ["ssh", "http"],
                     "max_tasks": 5,
-                    "resources": {"cpu": 16, "memory": "64GB"}
+                    "resources": {"cpu": 16, "memory": "64GB"},
                 },
                 "max_concurrent_tasks": 3,
                 "status": "active",
@@ -129,15 +127,15 @@ class NodeIdentity(BaseModel):
                 "description": "生产环境节点1",
                 "location": "Beijing Data Center 1",
                 "tags": ["production", "linux"],
-                "created_by": "admin"
+                "created_by": "admin",
             }
         }
 
-    @validator('node_id')
+    @validator("node_id")
     def validate_node_id(cls, v):
         """验证节点ID格式"""
         if not v or len(v.strip()) == 0:
-            raise ValueError('node_id cannot be empty')
+            raise ValueError("node_id cannot be empty")
         return v.strip()
 
     def is_token_valid(self) -> bool:
@@ -167,6 +165,7 @@ class NodeIdentity(BaseModel):
 
 class NodeRegistrationRequest(BaseModel):
     """节点注册请求"""
+
     node_id: str = Field(..., description="节点ID")
     node_name: str = Field(..., description="节点名称")
     node_type: NodeType = Field(..., description="节点类型")
@@ -179,7 +178,9 @@ class NodeRegistrationRequest(BaseModel):
     # 位置和元数据
     location: Optional[str] = Field(None, description="物理位置")
     tags: List[str] = Field(default_factory=list, description="标签列表")
-    node_metadata: Dict[str, Any] = Field(default_factory=dict, description="自定义元数据")
+    node_metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="自定义元数据"
+    )
 
     class Config:
         json_schema_extra = {
@@ -191,17 +192,18 @@ class NodeRegistrationRequest(BaseModel):
                 "capabilities": {
                     "protocols": ["ssh", "http"],
                     "max_tasks": 5,
-                    "resources": {"cpu": 16, "memory": "64GB"}
+                    "resources": {"cpu": 16, "memory": "64GB"},
                 },
                 "max_concurrent_tasks": 3,
                 "location": "Beijing Data Center 1",
-                "tags": ["production", "linux"]
+                "tags": ["production", "linux"],
             }
         }
 
 
 class NodeHeartbeatRequest(BaseModel):
     """节点心跳请求"""
+
     node_id: str = Field(..., description="节点ID")
     status: NodeStatus = Field(..., description="当前状态")
 
@@ -224,18 +226,21 @@ class NodeHeartbeatRequest(BaseModel):
                 "active_tasks": 2,
                 "cpu_usage": 45.5,
                 "memory_usage": 62.3,
-                "available_slots": 1
+                "available_slots": 1,
             }
         }
 
 
 class NodeTokenInfo(BaseModel):
     """节点Token信息"""
+
     token: str = Field(..., description="JWT Token")
     node_id: str = Field(..., description="节点ID")
     expires_at: datetime = Field(..., description="过期时间")
     permissions: List[str] = Field(default_factory=list, description="权限列表")
-    issued_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="颁发时间")
+    issued_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="颁发时间"
+    )
 
     class Config:
         json_schema_extra = {
@@ -244,7 +249,7 @@ class NodeTokenInfo(BaseModel):
                 "node_id": "node-001",
                 "expires_at": "2026-04-13T10:00:00Z",
                 "permissions": ["task.execute", "task.report", "heartbeat"],
-                "issued_at": "2026-04-12T10:00:00Z"
+                "issued_at": "2026-04-12T10:00:00Z",
             }
         }
 
@@ -252,21 +257,25 @@ class NodeTokenInfo(BaseModel):
 # 节点权限定义
 class NodePermission(str, Enum):
     """节点权限"""
-    TASK_EXECUTE = "task.execute"           # 执行任务
-    TASK_REPORT = "task.report"             # 上报结果
-    HEARTBEAT = "heartbeat"                 # 心跳上报
-    STATUS_REPORT = "status.report"         # 状态上报
-    ERROR_REPORT = "error.report"           # 错误上报
+
+    TASK_EXECUTE = "task.execute"  # 执行任务
+    TASK_REPORT = "task.report"  # 上报结果
+    HEARTBEAT = "heartbeat"  # 心跳上报
+    STATUS_REPORT = "status.report"  # 状态上报
+    ERROR_REPORT = "error.report"  # 错误上报
 
 
 class NodeCapabilities(BaseModel):
     """节点能力模型"""
+
     # 支持的协议
     protocols: List[str] = Field(default_factory=list, description="支持的协议")
 
     # 任务执行能力
     max_concurrent_tasks: int = Field(3, ge=1, le=100, description="最大并发任务数")
-    supported_task_types: List[str] = Field(default_factory=list, description="支持的任务类型")
+    supported_task_types: List[str] = Field(
+        default_factory=list, description="支持的任务类型"
+    )
 
     # 系统资源
     cpu_cores: Optional[int] = Field(None, description="CPU核心数")
@@ -282,11 +291,15 @@ class NodeCapabilities(BaseModel):
             "example": {
                 "protocols": ["ssh", "http", "https"],
                 "max_concurrent_tasks": 5,
-                "supported_task_types": ["basic_exec", "script_transfer", "file_transfer"],
+                "supported_task_types": [
+                    "basic_exec",
+                    "script_transfer",
+                    "file_transfer",
+                ],
                 "cpu_cores": 16,
                 "memory_gb": 64.0,
                 "disk_gb": 1000.0,
                 "network_bandwidth_mbps": 1000,
-                "network_latency_ms": 5
+                "network_latency_ms": 5,
             }
         }

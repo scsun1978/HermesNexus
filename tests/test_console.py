@@ -17,8 +17,7 @@ from cloud.database.db import db
 from cloud.api.main import app
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -39,81 +38,99 @@ async def test_console_integration():
         logger.info("2️⃣ 创建测试数据...")
 
         # 添加测试节点
-        db.add_node("test-node-1", {
-            "node_id": "test-node-1",
-            "name": "测试节点1",
-            "status": "online",
-            "cpu_usage": 25.5,
-            "memory_usage": 45.2,
-            "active_tasks": 2,
-            "last_heartbeat": "2024-01-01T00:00:00Z",
-            "tags": ["ssh", "linux", "test"]
-        })
+        db.add_node(
+            "test-node-1",
+            {
+                "node_id": "test-node-1",
+                "name": "测试节点1",
+                "status": "online",
+                "cpu_usage": 25.5,
+                "memory_usage": 45.2,
+                "active_tasks": 2,
+                "last_heartbeat": "2024-01-01T00:00:00Z",
+                "tags": ["ssh", "linux", "test"],
+            },
+        )
 
-        db.add_node("test-node-2", {
-            "node_id": "test-node-2",
-            "name": "测试节点2",
-            "status": "offline",
-            "cpu_usage": 0.0,
-            "memory_usage": 0.0,
-            "active_tasks": 0,
-            "last_heartbeat": "2024-01-01T01:00:00Z",
-            "tags": ["ssh", "linux", "test"]
-        })
+        db.add_node(
+            "test-node-2",
+            {
+                "node_id": "test-node-2",
+                "name": "测试节点2",
+                "status": "offline",
+                "cpu_usage": 0.0,
+                "memory_usage": 0.0,
+                "active_tasks": 0,
+                "last_heartbeat": "2024-01-01T01:00:00Z",
+                "tags": ["ssh", "linux", "test"],
+            },
+        )
 
         # 添加测试任务
-        db.add_job("test-job-1", {
-            "job_id": "test-job-1",
-            "name": "测试任务1",
-            "type": "basic_exec",
-            "status": "success",
-            "target_device_id": "device-1",
-            "command": "uptime",
-            "node_id": "test-node-1",
-            "created_at": "2024-01-01T00:00:00Z"
-        })
+        db.add_job(
+            "test-job-1",
+            {
+                "job_id": "test-job-1",
+                "name": "测试任务1",
+                "type": "basic_exec",
+                "status": "success",
+                "target_device_id": "device-1",
+                "command": "uptime",
+                "node_id": "test-node-1",
+                "created_at": "2024-01-01T00:00:00Z",
+            },
+        )
 
-        db.add_job("test-job-2", {
-            "job_id": "test-job-2",
-            "name": "测试任务2",
-            "type": "basic_exec",
-            "status": "running",
-            "target_device_id": "device-2",
-            "command": "ls -la",
-            "node_id": "test-node-1",
-            "created_at": "2024-01-01T00:05:00Z"
-        })
+        db.add_job(
+            "test-job-2",
+            {
+                "job_id": "test-job-2",
+                "name": "测试任务2",
+                "type": "basic_exec",
+                "status": "running",
+                "target_device_id": "device-2",
+                "command": "ls -la",
+                "node_id": "test-node-1",
+                "created_at": "2024-01-01T00:05:00Z",
+            },
+        )
 
         # 添加测试事件
-        db.add_event({
-            "event_id": "event-1",
-            "type": "node_registered",
-            "level": "info",
-            "source": "test-node-1",
-            "source_type": "node",
-            "message": "节点 test-node-1 注册成功",
-            "timestamp": "2024-01-01T00:00:00Z"
-        })
+        db.add_event(
+            {
+                "event_id": "event-1",
+                "type": "node_registered",
+                "level": "info",
+                "source": "test-node-1",
+                "source_type": "node",
+                "message": "节点 test-node-1 注册成功",
+                "timestamp": "2024-01-01T00:00:00Z",
+            }
+        )
 
-        db.add_event({
-            "event_id": "event-2",
-            "type": "job_completed",
-            "level": "info",
-            "source": "cloud",
-            "source_type": "cloud",
-            "message": "任务 test-job-1 完成",
-            "timestamp": "2024-01-01T00:10:00Z"
-        })
+        db.add_event(
+            {
+                "event_id": "event-2",
+                "type": "job_completed",
+                "level": "info",
+                "source": "cloud",
+                "source_type": "cloud",
+                "message": "任务 test-job-1 完成",
+                "timestamp": "2024-01-01T00:10:00Z",
+            }
+        )
 
-        db.add_event({
-            "event_id": "event-3",
-            "type": "error",
-            "level": "error",
-            "source": "test-node-2",
-            "source_type": "node",
-            "message": "节点 test-node-2 连接失败",
-            "timestamp": "2024-01-01T01:00:00Z"
-        })
+        db.add_event(
+            {
+                "event_id": "event-3",
+                "type": "error",
+                "level": "error",
+                "source": "test-node-2",
+                "source_type": "node",
+                "message": "节点 test-node-2 连接失败",
+                "timestamp": "2024-01-01T01:00:00Z",
+            }
+        )
 
         # 3. 验证数据创建
         logger.info("3️⃣ 验证数据创建...")
@@ -151,7 +168,7 @@ async def test_console_integration():
             "nodes": len(nodes),
             "jobs": len(jobs),
             "events": len(events),
-            "stats": stats
+            "stats": stats,
         }
 
     except Exception as e:
@@ -219,9 +236,9 @@ async def test_api_endpoints():
 
         return {
             "endpoints_tested": 7,
-            "nodes_count": nodes_data['total'],
-            "jobs_count": jobs_data['total'],
-            "events_count": events_data['total']
+            "nodes_count": nodes_data["total"],
+            "jobs_count": jobs_data["total"],
+            "events_count": events_data["total"],
         }
 
     except Exception as e:
@@ -240,7 +257,9 @@ async def main():
     api_result = await test_api_endpoints()
 
     logger.info("📊 测试结果总结:")
-    logger.info(f"   数据集成: {integration_result['nodes']} 节点, {integration_result['jobs']} 任务, {integration_result['events']} 事件")
+    logger.info(
+        f"   数据集成: {integration_result['nodes']} 节点, {integration_result['jobs']} 任务, {integration_result['events']} 事件"
+    )
     logger.info(f"   API测试: {api_result['endpoints_tested']} 个端点测试通过")
 
     logger.info("✅ 所有测试完成")

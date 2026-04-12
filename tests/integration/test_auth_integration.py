@@ -46,7 +46,8 @@ class TestAuthIntegration(unittest.TestCase):
     def tearDown(self):
         """测试后清理"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_token_authentication_flow(self):
@@ -62,9 +63,9 @@ class TestAuthIntegration(unittest.TestCase):
             permissions=[
                 Permission.ASSET_READ.value,
                 Permission.TASK_READ.value,
-                Permission.TASK_WRITE.value
+                Permission.TASK_WRITE.value,
             ],
-            expires_hours=1
+            expires_hours=1,
         )
         self.assertIsNotNone(token)
         print(f"生成的Token: {token[:20]}...")
@@ -83,22 +84,19 @@ class TestAuthIntegration(unittest.TestCase):
 
         # 应该有资产读取权限
         has_asset_read = PermissionChecker.check_permission(
-            user_permissions,
-            Permission.ASSET_READ
+            user_permissions, Permission.ASSET_READ
         )
         self.assertTrue(has_asset_read, "应该有资产读取权限")
 
         # 应该有任务写入权限
         has_task_write = PermissionChecker.check_permission(
-            user_permissions,
-            Permission.TASK_WRITE
+            user_permissions, Permission.TASK_WRITE
         )
         self.assertTrue(has_task_write, "应该有任务写入权限")
 
         # 不应该有用户管理权限
         has_user_write = PermissionChecker.check_permission(
-            user_permissions,
-            Permission.USER_WRITE
+            user_permissions, Permission.USER_WRITE
         )
         self.assertFalse(has_user_write, "不应该有用户管理权限")
 
@@ -111,8 +109,7 @@ class TestAuthIntegration(unittest.TestCase):
         # Step 1: 创建API Key
         print("Step 1: 创建API Key")
         api_key = self.auth_manager.create_api_key(
-            user_id="user-002",
-            name="test-api-key"
+            user_id="user-002", name="test-api-key"
         )
 
         self.assertIsNotNone(api_key)
@@ -132,7 +129,7 @@ class TestAuthIntegration(unittest.TestCase):
             "username": f"api_key_{validated_key['name']}",
             "role": "user",
             "permissions": ["*"],  # API Key有所有权限
-            "is_api_key": True
+            "is_api_key": True,
         }
 
         self.assertTrue(api_user_info["is_api_key"], "应该标记为API Key用户")
@@ -147,17 +144,22 @@ class TestAuthIntegration(unittest.TestCase):
         # 测试不同角色的权限
         test_roles = {
             "admin": [
-                Permission.ASSET_WRITE, Permission.TASK_WRITE,
-                Permission.USER_WRITE, Permission.SYSTEM_ADMIN
+                Permission.ASSET_WRITE,
+                Permission.TASK_WRITE,
+                Permission.USER_WRITE,
+                Permission.SYSTEM_ADMIN,
             ],
             "operator": [
-                Permission.ASSET_WRITE, Permission.TASK_WRITE,
-                Permission.ASSET_READ, Permission.TASK_READ
+                Permission.ASSET_WRITE,
+                Permission.TASK_WRITE,
+                Permission.ASSET_READ,
+                Permission.TASK_READ,
             ],
             "viewer": [
-                Permission.ASSET_READ, Permission.TASK_READ,
-                Permission.AUDIT_READ
-            ]
+                Permission.ASSET_READ,
+                Permission.TASK_READ,
+                Permission.AUDIT_READ,
+            ],
         }
 
         for role, expected_permissions in test_roles.items():
@@ -169,20 +171,15 @@ class TestAuthIntegration(unittest.TestCase):
             # 验证预期权限
             for perm in expected_permissions:
                 has_permission = PermissionChecker.check_permission(
-                    user_permissions,
-                    perm
+                    user_permissions, perm
                 )
-                self.assertTrue(
-                    has_permission,
-                    f"{role} 角色应该有 {perm.value} 权限"
-                )
+                self.assertTrue(has_permission, f"{role} 角色应该有 {perm.value} 权限")
 
             # 验证不应该有的权限
             if role == "viewer":
                 # viewer不应该有写入权限
                 has_write = PermissionChecker.check_permission(
-                    user_permissions,
-                    Permission.ASSET_WRITE
+                    user_permissions, Permission.ASSET_WRITE
                 )
                 self.assertFalse(has_write, f"{role} 角色不应该有资产写入权限")
 
@@ -197,7 +194,7 @@ class TestAuthIntegration(unittest.TestCase):
             user_id="user-revoke-001",
             username="revokeuser",
             role="operator",
-            permissions=[Permission.ASSET_READ.value]
+            permissions=[Permission.ASSET_READ.value],
         )
 
         # 验证Token有效
@@ -227,24 +224,15 @@ class TestAuthIntegration(unittest.TestCase):
             Permission.ASSET_WRITE,
             Permission.TASK_EXECUTE,
             Permission.USER_WRITE,
-            Permission.SYSTEM_ADMIN
+            Permission.SYSTEM_ADMIN,
         ]
 
         for perm in test_permissions:
-            has_permission = PermissionChecker.check_permission(
-                admin_permissions,
-                perm
-            )
-            self.assertTrue(
-                has_permission,
-                f"管理员通配符应该包含 {perm.value} 权限"
-            )
+            has_permission = PermissionChecker.check_permission(admin_permissions, perm)
+            self.assertTrue(has_permission, f"管理员通配符应该包含 {perm.value} 权限")
 
         # 测试普通用户的具体权限
-        user_permissions = [
-            Permission.ASSET_READ.value,
-            Permission.TASK_READ.value
-        ]
+        user_permissions = [Permission.ASSET_READ.value, Permission.TASK_READ.value]
 
         # 应该有读取权限
         self.assertTrue(
@@ -276,8 +264,8 @@ class TestAuthIntegration(unittest.TestCase):
             metadata={
                 "auth_method": "token",
                 "user_role": "operator",
-                "ip_address": "192.168.1.100"
-            }
+                "ip_address": "192.168.1.100",
+            },
         )
 
         self.audit_service.log_action(audit_request)
@@ -294,8 +282,8 @@ class TestAuthIntegration(unittest.TestCase):
             metadata={
                 "auth_method": "api_key",
                 "required_permission": Permission.ASSET_WRITE.value,
-                "user_permissions": [Permission.ASSET_READ.value]
-            }
+                "user_permissions": [Permission.ASSET_READ.value],
+            },
         )
 
         self.audit_service.log_action(denial_request)
@@ -308,8 +296,12 @@ class TestAuthIntegration(unittest.TestCase):
         self.assertGreater(len(auth_logs), 0, "应该有认证相关的审计日志")
 
         # 验证日志内容
-        success_log = [log for log in auth_logs if log.action == AuditAction.AUTH_SUCCESS]
-        denial_log_result = [log for log in auth_logs if log.action == AuditAction.AUTH_DENIED]
+        success_log = [
+            log for log in auth_logs if log.action == AuditAction.AUTH_SUCCESS
+        ]
+        denial_log_result = [
+            log for log in auth_logs if log.action == AuditAction.AUTH_DENIED
+        ]
 
         self.assertGreater(len(success_log), 0, "应该有认证成功日志")
         self.assertGreater(len(denial_log_result), 0, "应该有权限拒绝日志")
@@ -326,10 +318,7 @@ class TestAuthIntegration(unittest.TestCase):
 
         # 在开发模式下，创建Token应该返回开发Token
         dev_token = self.auth_manager.create_token(
-            user_id="dev-user",
-            username="dev-user",
-            role="admin",
-            permissions=["*"]
+            user_id="dev-user", username="dev-user", role="admin", permissions=["*"]
         )
         self.assertIsNotNone(dev_token)
 

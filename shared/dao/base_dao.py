@@ -85,8 +85,13 @@ class BaseDAO(ABC):
         pass
 
     @abstractmethod
-    def list(self, filters: Dict[str, Any] = None, limit: int = None,
-             offset: int = None, order_by: str = None) -> List[Any]:
+    def list(
+        self,
+        filters: Dict[str, Any] = None,
+        limit: int = None,
+        offset: int = None,
+        order_by: str = None,
+    ) -> List[Any]:
         """
         查询实体列表
 

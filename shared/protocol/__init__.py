@@ -12,14 +12,10 @@ from .messages import (
     ResultMessage,
     ErrorMessage,
     RegisterMessage,
-    DeviceStatusMessage
+    DeviceStatusMessage,
 )
 
-from .error_codes import (
-    ErrorCode,
-    ErrorDetail,
-    COMMON_ERRORS
-)
+from .error_codes import ErrorCode, ErrorDetail, COMMON_ERRORS
 
 __all__ = [
     "MessageType",
@@ -32,5 +28,5 @@ __all__ = [
     "DeviceStatusMessage",
     "ErrorCode",
     "ErrorDetail",
-    "COMMON_ERRORS"
+    "COMMON_ERRORS",
 ]

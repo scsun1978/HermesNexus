@@ -9,18 +9,21 @@ from pydantic import BaseModel, Field
 from shared.security.auth_manager import auth_manager
 from shared.security.middleware import get_current_user, require_admin
 
-
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
 
 class TokenCreateRequest(BaseModel):
     """Token创建请求"""
+
     username: str = Field(..., description="用户名")
-    password: str = Field(..., description="密码")  # 开发环境简化，生产环境应该使用真实密码验证
+    password: str = Field(
+        ..., description="密码"
+    )  # 开发环境简化，生产环境应该使用真实密码验证
 
 
 class TokenCreateResponse(BaseModel):
     """Token创建响应"""
+
     token: str = Field(..., description="认证Token")
     user_id: str = Field(..., description="用户ID")
     username: str = Field(..., description="用户名")
@@ -31,11 +34,13 @@ class TokenCreateResponse(BaseModel):
 
 class ApiKeyCreateRequest(BaseModel):
     """API Key创建请求"""
+
     name: str = Field(None, description="API Key名称")
 
 
 class ApiKeyCreateResponse(BaseModel):
     """API Key创建响应"""
+
     api_key: str = Field(..., description="API Key")
     name: str = Field(..., description="API Key名称")
     created_at: str = Field(..., description="创建时间")
@@ -66,7 +71,7 @@ async def create_token(request: TokenCreateRequest):
         username=request.username,
         role=role,
         permissions=permissions,
-        expires_hours=24
+        expires_hours=24,
     )
 
     token_info = auth_manager.validate_token(token)
@@ -77,14 +82,15 @@ async def create_token(request: TokenCreateRequest):
         username=token_info["username"],
         role=token_info["role"],
         permissions=token_info["permissions"],
-        expires_at=token_info["expires_at"].isoformat() if token_info["expires_at"] else None
+        expires_at=(
+            token_info["expires_at"].isoformat() if token_info["expires_at"] else None
+        ),
     )
 
 
 @router.post("/api-keys", response_model=ApiKeyCreateResponse)
 async def create_api_key(
-    request: ApiKeyCreateRequest,
-    current_user: dict = Depends(require_admin)
+    request: ApiKeyCreateRequest, current_user: dict = Depends(require_admin)
 ):
     """
     创建API Key（需要管理员权限）
@@ -97,8 +103,7 @@ async def create_api_key(
         API Key信息
     """
     api_key = auth_manager.create_api_key(
-        user_id=current_user["user_id"],
-        name=request.name or "API Key"
+        user_id=current_user["user_id"], name=request.name or "API Key"
     )
 
     api_key_info = auth_manager.validate_api_key(api_key)
@@ -106,15 +111,12 @@ async def create_api_key(
     return ApiKeyCreateResponse(
         api_key=api_key,
         name=api_key_info["name"],
-        created_at=api_key_info["created_at"].isoformat()
+        created_at=api_key_info["created_at"].isoformat(),
     )
 
 
 @router.delete("/token/{token}")
-async def revoke_token(
-    token: str,
-    current_user: dict = Depends(require_admin)
-):
+async def revoke_token(token: str, current_user: dict = Depends(require_admin)):
     """
     撤销Token（需要管理员权限）
 
@@ -134,10 +136,7 @@ async def revoke_token(
 
 
 @router.delete("/api-keys/{api_key}")
-async def revoke_api_key(
-    api_key: str,
-    current_user: dict = Depends(require_admin)
-):
+async def revoke_api_key(api_key: str, current_user: dict = Depends(require_admin)):
     """
     撤销API Key（需要管理员权限）
 
@@ -175,7 +174,7 @@ async def get_current_user_info(current_user: dict = Depends(get_current_user)):
         "username": current_user.get("username"),
         "role": current_user.get("role"),
         "permissions": current_user.get("permissions", []),
-        "is_authenticated": True
+        "is_authenticated": True,
     }
 
 
@@ -191,5 +190,7 @@ async def get_auth_config():
         "auth_enabled": auth_manager.is_enabled(),
         "auth_methods": ["bearer_token", "api_key"],
         "default_token_expiry": "24 hours",
-        "dev_mode_tokens": list(auth_manager._dev_tokens.keys()) if auth_manager.is_enabled() else []
+        "dev_mode_tokens": (
+            list(auth_manager._dev_tokens.keys()) if auth_manager.is_enabled() else []
+        ),
     }

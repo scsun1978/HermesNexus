@@ -16,7 +16,7 @@ from shared.protocol.messages import (
     HeartbeatMessage,
     TaskMessage,
     ResultMessage,
-    ErrorMessage
+    ErrorMessage,
 )
 from shared.protocol.error_codes import ErrorCode, ErrorDetail
 from shared.schemas.models import NodeStatus, JobStatus
@@ -28,13 +28,9 @@ class CloudClient:
     """云端API客户端"""
 
     def __init__(
-        self,
-        cloud_server_url: str,
-        api_key: str,
-        node_id: str,
-        timeout: int = 30
+        self, cloud_server_url: str, api_key: str, node_id: str, timeout: int = 30
     ):
-        self.cloud_server_url = cloud_server_url.rstrip('/')
+        self.cloud_server_url = cloud_server_url.rstrip("/")
         self.api_key = api_key
         self.node_id = node_id
         self.timeout = timeout
@@ -42,14 +38,11 @@ class CloudClient:
 
     async def start(self):
         """启动客户端"""
-        headers = {
-            "X-API-Key": self.api_key,
-            "Content-Type": "application/json"
-        }
+        headers = {"X-API-Key": self.api_key, "Content-Type": "application/json"}
         self.session = aiohttp.ClientSession(
             base_url=self.cloud_server_url,
             headers=headers,
-            timeout=aiohttp.ClientTimeout(total=self.timeout)
+            timeout=aiohttp.ClientTimeout(total=self.timeout),
         )
         logger.info(f"✅ 云端客户端已启动: {self.cloud_server_url}")
 
@@ -63,15 +56,12 @@ class CloudClient:
         """注册节点到云端"""
         try:
             register_msg = RegisterMessage(
-                node_id=self.node_id,
-                node_name=node_name,
-                capabilities=capabilities
+                node_id=self.node_id, node_name=node_name, capabilities=capabilities
             )
 
             # 发送注册请求
             response = await self.session.post(
-                f"/api/v1/nodes/{self.node_id}/register",
-                json=register_msg.to_dict()
+                f"/api/v1/nodes/{self.node_id}/register", json=register_msg.to_dict()
             )
 
             if response.status == 200:
@@ -92,12 +82,11 @@ class CloudClient:
             heartbeat = HeartbeatMessage(
                 node_id=self.node_id,
                 message_id=f"heartbeat-{datetime.now(timezone.utc).timestamp()}",
-                **heartbeat_data
+                **heartbeat_data,
             )
 
             response = await self.session.post(
-                f"/api/v1/nodes/{self.node_id}/heartbeat",
-                json=heartbeat.to_dict()
+                f"/api/v1/nodes/{self.node_id}/heartbeat", json=heartbeat.to_dict()
             )
 
             if response.status == 200:
@@ -114,9 +103,7 @@ class CloudClient:
     async def fetch_tasks(self) -> List[TaskMessage]:
         """从云端获取待处理任务"""
         try:
-            response = await self.session.get(
-                f"/api/v1/nodes/{self.node_id}/tasks"
-            )
+            response = await self.session.get(f"/api/v1/nodes/{self.node_id}/tasks")
 
             if response.status == 200:
                 data = await response.json()
@@ -136,7 +123,7 @@ class CloudClient:
                         parameters=task_data.get("parameters", {}),
                         timeout=task_data.get("timeout", 300),
                         priority=task_data.get("priority", "normal"),
-                        created_by=task_data.get("created_by", "system")
+                        created_by=task_data.get("created_by", "system"),
                     )
                     tasks.append(task)
 
@@ -157,7 +144,7 @@ class CloudClient:
         try:
             response = await self.session.post(
                 f"/api/v1/nodes/{self.node_id}/tasks/{result.task_id}/result",
-                json=result.to_dict()
+                json=result.to_dict(),
             )
 
             if response.status == 200:
@@ -176,8 +163,7 @@ class CloudClient:
         """向云端报告错误"""
         try:
             response = await self.session.post(
-                f"/api/v1/nodes/{self.node_id}/errors",
-                json=error.to_dict()
+                f"/api/v1/nodes/{self.node_id}/errors", json=error.to_dict()
             )
 
             if response.status == 200:

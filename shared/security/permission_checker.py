@@ -9,9 +9,14 @@ import fnmatch
 import re
 
 from shared.models.permission import (
-    Permission, PermissionContext, PermissionCheckResult,
-    PermissionMatrix, ActionType, ResourceType, RiskLevel,
-    BuiltInRoles
+    Permission,
+    PermissionContext,
+    PermissionCheckResult,
+    PermissionMatrix,
+    ActionType,
+    ResourceType,
+    RiskLevel,
+    BuiltInRoles,
 )
 from shared.security.risk_assessor import RiskAssessor, get_risk_assessor
 
@@ -22,7 +27,7 @@ class PermissionChecker:
     def __init__(
         self,
         permission_matrix: Optional[PermissionMatrix] = None,
-        risk_assessor: Optional[RiskAssessor] = None
+        risk_assessor: Optional[RiskAssessor] = None,
     ):
         """
         初始化权限检查器
@@ -43,7 +48,7 @@ class PermissionChecker:
         resource: ResourceType,
         context: PermissionContext,
         resource_id: Optional[str] = None,
-        additional_context: Optional[Dict[str, Any]] = None
+        additional_context: Optional[Dict[str, Any]] = None,
     ) -> PermissionCheckResult:
         """
         检查权限
@@ -64,7 +69,7 @@ class PermissionChecker:
                 allowed=False,
                 reason="操作在黑名单中，禁止执行",
                 risk_level=RiskLevel.HIGH,
-                requires_approval=False
+                requires_approval=False,
             )
 
         # 2. 检查白名单
@@ -73,7 +78,7 @@ class PermissionChecker:
                 allowed=True,
                 reason="操作在白名单中，允许执行",
                 risk_level=RiskLevel.LOW,
-                requires_approval=False
+                requires_approval=False,
             )
 
         # 3. 评估操作风险
@@ -86,16 +91,18 @@ class PermissionChecker:
                 allowed=False,
                 reason="权限不在有效期内",
                 risk_level=risk_level,
-                requires_approval=False
+                requires_approval=False,
             )
 
         # 5. 检查租户和区域权限
-        if not self._check_tenant_region_permission(context, resource_id, additional_context):
+        if not self._check_tenant_region_permission(
+            context, resource_id, additional_context
+        ):
             return PermissionCheckResult(
                 allowed=False,
                 reason="用户无权访问该租户或区域的资源",
                 risk_level=risk_level,
-                requires_approval=False
+                requires_approval=False,
             )
 
         # 6. 检查角色权限
@@ -106,7 +113,7 @@ class PermissionChecker:
                 reason=f"权限不足: {', '.join(permission_result['missing_permissions'])}",
                 risk_level=risk_level,
                 requires_approval=self.risk_assessor.requires_approval(risk_level),
-                missing_permissions=permission_result["missing_permissions"]
+                missing_permissions=permission_result["missing_permissions"],
             )
 
         # 7. 检查资源类型限制
@@ -117,7 +124,7 @@ class PermissionChecker:
                     allowed=False,
                     reason=f"用户无权操作 {asset_type} 类型的设备",
                     risk_level=risk_level,
-                    requires_approval=False
+                    requires_approval=False,
                 )
 
         # 8. 权限检查通过
@@ -125,13 +132,11 @@ class PermissionChecker:
             allowed=True,
             reason="",
             risk_level=risk_level,
-            requires_approval=self.risk_assessor.requires_approval(risk_level)
+            requires_approval=self.risk_assessor.requires_approval(risk_level),
         )
 
     def batch_check_permissions(
-        self,
-        operations: List[Dict[str, Any]],
-        context: PermissionContext
+        self, operations: List[Dict[str, Any]], context: PermissionContext
     ) -> List[PermissionCheckResult]:
         """
         批量检查权限
@@ -157,10 +162,7 @@ class PermissionChecker:
 
         return results
 
-    def get_user_permissions(
-        self,
-        context: PermissionContext
-    ) -> List[Permission]:
+    def get_user_permissions(self, context: PermissionContext) -> List[Permission]:
         """
         获取用户的所有权限
 
@@ -217,10 +219,7 @@ class PermissionChecker:
         return False
 
     def _check_role_permission(
-        self,
-        action: ActionType,
-        resource: ResourceType,
-        context: PermissionContext
+        self, action: ActionType, resource: ResourceType, context: PermissionContext
     ) -> Dict[str, Any]:
         """
         检查角色权限
@@ -255,7 +254,7 @@ class PermissionChecker:
 
         return {
             "has_permission": has_permission,
-            "missing_permissions": missing_permissions
+            "missing_permissions": missing_permissions,
         }
 
     def _permission_matches(
@@ -263,7 +262,7 @@ class PermissionChecker:
         permission: Permission,
         action: ActionType,
         resource: ResourceType,
-        context: PermissionContext
+        context: PermissionContext,
     ) -> bool:
         """检查权限是否匹配"""
         # 检查动作匹配（支持通配符）
@@ -301,7 +300,7 @@ class PermissionChecker:
         self,
         context: PermissionContext,
         resource_id: Optional[str],
-        additional_context: Optional[Dict[str, Any]]
+        additional_context: Optional[Dict[str, Any]],
     ) -> bool:
         """检查租户和区域权限"""
         # 如果没有租户限制，则通过
@@ -321,7 +320,9 @@ class PermissionChecker:
 
         return True
 
-    def _is_asset_type_allowed(self, context: PermissionContext, asset_type: str) -> bool:
+    def _is_asset_type_allowed(
+        self, context: PermissionContext, asset_type: str
+    ) -> bool:
         """检查是否允许操作特定类型的设备"""
         if not context.allowed_asset_types:
             return True  # 没有限制，允许所有类型
@@ -347,15 +348,43 @@ class PermissionChecker:
             description="系统默认的权限控制矩阵",
             role_permissions={
                 BuiltInRoles.SUPER_ADMIN: [
-                    Permission(action=ActionType.ALL, resource=ResourceType.ALL, risk_level=RiskLevel.LOW)
+                    Permission(
+                        action=ActionType.ALL,
+                        resource=ResourceType.ALL,
+                        risk_level=RiskLevel.LOW,
+                    )
                 ],
                 BuiltInRoles.TENANT_ADMIN: [
-                    Permission(action=ActionType.READ, resource=ResourceType.ASSET, risk_level=RiskLevel.LOW),
-                    Permission(action=ActionType.CREATE, resource=ResourceType.ASSET, risk_level=RiskLevel.MEDIUM),
-                    Permission(action=ActionType.UPDATE, resource=ResourceType.ASSET, risk_level=RiskLevel.MEDIUM),
-                    Permission(action=ActionType.DELETE, resource=ResourceType.ASSET, risk_level=RiskLevel.HIGH),
-                    Permission(action=ActionType.EXECUTE, resource=ResourceType.TASK, risk_level=RiskLevel.MEDIUM),
-                    Permission(action=ActionType.READ, resource=ResourceType.NODE, risk_level=RiskLevel.LOW),
+                    Permission(
+                        action=ActionType.READ,
+                        resource=ResourceType.ASSET,
+                        risk_level=RiskLevel.LOW,
+                    ),
+                    Permission(
+                        action=ActionType.CREATE,
+                        resource=ResourceType.ASSET,
+                        risk_level=RiskLevel.MEDIUM,
+                    ),
+                    Permission(
+                        action=ActionType.UPDATE,
+                        resource=ResourceType.ASSET,
+                        risk_level=RiskLevel.MEDIUM,
+                    ),
+                    Permission(
+                        action=ActionType.DELETE,
+                        resource=ResourceType.ASSET,
+                        risk_level=RiskLevel.HIGH,
+                    ),
+                    Permission(
+                        action=ActionType.EXECUTE,
+                        resource=ResourceType.TASK,
+                        risk_level=RiskLevel.MEDIUM,
+                    ),
+                    Permission(
+                        action=ActionType.READ,
+                        resource=ResourceType.NODE,
+                        risk_level=RiskLevel.LOW,
+                    ),
                 ],
                 BuiltInRoles.OPERATOR: CommonPermissions.OPERATOR,
                 BuiltInRoles.VIEWER: CommonPermissions.READ_ONLY,
@@ -364,11 +393,16 @@ class PermissionChecker:
             whitelist=["health.check", "system.ping"],
             blacklist=["system.shutdown", "data.delete_all", "*.drop.*"],
             high_risk_actions=[
-                "delete", "deregister", "restart", "rollback",
-                "grant", "revoke", "admin"
+                "delete",
+                "deregister",
+                "restart",
+                "rollback",
+                "grant",
+                "revoke",
+                "admin",
             ],
             created_at=int(datetime.now().timestamp()),
-            updated_at=int(datetime.now().timestamp())
+            updated_at=int(datetime.now().timestamp()),
         )
 
 
@@ -385,8 +419,7 @@ def get_permission_checker() -> PermissionChecker:
 
 
 def create_permission_checker(
-    permission_matrix: PermissionMatrix,
-    risk_assessor: Optional[RiskAssessor] = None
+    permission_matrix: PermissionMatrix, risk_assessor: Optional[RiskAssessor] = None
 ) -> PermissionChecker:
     """
     创建自定义权限检查器
@@ -399,16 +432,13 @@ def create_permission_checker(
         权限检查器实例
     """
     return PermissionChecker(
-        permission_matrix=permission_matrix,
-        risk_assessor=risk_assessor
+        permission_matrix=permission_matrix, risk_assessor=risk_assessor
     )
 
 
 # 权限检查装饰器
 def require_permission(
-    action: ActionType,
-    resource: ResourceType,
-    check_tenant_region: bool = True
+    action: ActionType, resource: ResourceType, check_tenant_region: bool = True
 ):
     """
     权限检查装饰器
@@ -423,6 +453,7 @@ def require_permission(
         def get_asset(asset_id: str):
             ...
     """
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             # 这里需要从请求上下文中获取权限信息
@@ -450,4 +481,5 @@ def require_permission(
             return func(*args, **kwargs)
 
         return wrapper
+
     return decorator

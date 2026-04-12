@@ -63,10 +63,7 @@ class ErrorDetail:
     """错误详情类"""
 
     def __init__(
-        self,
-        code: ErrorCode,
-        message: str,
-        details: Optional[Dict[str, Any]] = None
+        self, code: ErrorCode, message: str, details: Optional[Dict[str, Any]] = None
     ):
         self.code = code
         self.message = message
@@ -77,7 +74,7 @@ class ErrorDetail:
         return {
             "error_code": self.code.value,
             "error_message": self.message,
-            "details": self.details
+            "details": self.details,
         }
 
 
@@ -86,26 +83,26 @@ COMMON_ERRORS = {
     ErrorCode.NODE_NOT_FOUND: ErrorDetail(
         ErrorCode.NODE_NOT_FOUND,
         "指定的节点不存在",
-        {"suggestion": "请检查节点ID是否正确"}
+        {"suggestion": "请检查节点ID是否正确"},
     ),
     ErrorCode.TASK_NOT_FOUND: ErrorDetail(
         ErrorCode.TASK_NOT_FOUND,
         "指定的任务不存在",
-        {"suggestion": "请检查任务ID是否正确"}
+        {"suggestion": "请检查任务ID是否正确"},
     ),
     ErrorCode.DEVICE_NOT_FOUND: ErrorDetail(
         ErrorCode.DEVICE_NOT_FOUND,
         "指定的设备不存在",
-        {"suggestion": "请检查设备ID是否正确"}
+        {"suggestion": "请检查设备ID是否正确"},
     ),
     ErrorCode.SSH_CONNECTION_FAILED: ErrorDetail(
         ErrorCode.SSH_CONNECTION_FAILED,
         "SSH连接失败",
-        {"suggestion": "请检查主机地址、端口和网络连接"}
+        {"suggestion": "请检查主机地址、端口和网络连接"},
     ),
     ErrorCode.TASK_TIMEOUT: ErrorDetail(
         ErrorCode.TASK_TIMEOUT,
         "任务执行超时",
-        {"suggestion": "请增加超时时间或检查设备状态"}
+        {"suggestion": "请增加超时时间或检查设备状态"},
     ),
 }

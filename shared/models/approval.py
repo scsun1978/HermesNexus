@@ -23,6 +23,7 @@ class ApprovalStatus(str, Enum):
 
 class ApprovalPriority(str, Enum):
     """审批优先级"""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -58,17 +59,25 @@ class ApprovalRequest(BaseModel):
     risk_reason: str = Field(default="", description="风险评估理由")
 
     # 优先级和状态
-    priority: ApprovalPriority = Field(default=ApprovalPriority.MEDIUM, description="优先级")
+    priority: ApprovalPriority = Field(
+        default=ApprovalPriority.MEDIUM, description="优先级"
+    )
     status: ApprovalStatus = Field(default=ApprovalStatus.DRAFT, description="审批状态")
 
     # 时间信息
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="更新时间")
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="创建时间"
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="更新时间"
+    )
     submitted_at: Optional[datetime] = Field(None, description="提交时间")
     decided_at: Optional[datetime] = Field(None, description="决策时间")
 
     # 超时设置
-    timeout_seconds: int = Field(default=86400, description="超时时间（秒），默认24小时")
+    timeout_seconds: int = Field(
+        default=86400, description="超时时间（秒），默认24小时"
+    )
     expires_at: Optional[datetime] = Field(None, description="过期时间")
 
     # 决策信息
@@ -99,13 +108,13 @@ class ApprovalRequest(BaseModel):
                 "resource_id": "server-prod-001",
                 "target_operation": {
                     "action": "delete",
-                    "confirmation": "确认删除生产服务器server-prod-001"
+                    "confirmation": "确认删除生产服务器server-prod-001",
                 },
                 "risk_level": "high",
                 "risk_reason": "删除生产环境设备属于高风险操作",
                 "priority": "high",
                 "status": "pending",
-                "timeout_seconds": 86400
+                "timeout_seconds": 86400,
             }
         }
 
@@ -124,7 +133,9 @@ class ApprovalDecision(BaseModel):
     approver_name: str = Field(..., description="审批人姓名")
 
     # 决策时间
-    decided_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="决策时间")
+    decided_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="决策时间"
+    )
 
     # 附加信息
     metadata: Dict[str, Any] = Field(default_factory=dict, description="附加元数据")
@@ -137,7 +148,7 @@ class ApprovalDecision(BaseModel):
                 "decision": "approve",
                 "reason": "已确认删除操作的安全性，批准执行",
                 "approver_id": "admin-001",
-                "approver_name": "李四"
+                "approver_name": "李四",
             }
         }
 
@@ -156,7 +167,9 @@ class ApprovalComment(BaseModel):
     author_type: str = Field(default="human", description="评论人类型")
 
     # 评论时间
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="评论时间")
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="评论时间"
+    )
 
     # 附加信息
     is_internal: bool = Field(default=False, description="是否为内部评论")
@@ -171,7 +184,7 @@ class ApprovalComment(BaseModel):
                 "author_id": "user-002",
                 "author_name": "王五",
                 "author_type": "human",
-                "is_internal": False
+                "is_internal": False,
             }
         }
 
@@ -192,9 +205,15 @@ class ApprovalStatistics(BaseModel):
     min_approval_time_seconds: float = Field(..., description="最短审批时间（秒）")
 
     # 分类统计
-    by_priority: Dict[str, int] = Field(default_factory=dict, description="按优先级分类统计")
-    by_risk_level: Dict[str, int] = Field(default_factory=dict, description="按风险等级分类统计")
-    by_operation_type: Dict[str, int] = Field(default_factory=dict, description="按操作类型分类统计")
+    by_priority: Dict[str, int] = Field(
+        default_factory=dict, description="按优先级分类统计"
+    )
+    by_risk_level: Dict[str, int] = Field(
+        default_factory=dict, description="按风险等级分类统计"
+    )
+    by_operation_type: Dict[str, int] = Field(
+        default_factory=dict, description="按操作类型分类统计"
+    )
 
     class Config:
         json_schema_extra = {
@@ -207,23 +226,14 @@ class ApprovalStatistics(BaseModel):
                 "avg_approval_time_seconds": 3600,
                 "max_approval_time_seconds": 86400,
                 "min_approval_time_seconds": 300,
-                "by_priority": {
-                    "low": 20,
-                    "medium": 50,
-                    "high": 25,
-                    "urgent": 5
-                },
-                "by_risk_level": {
-                    "low": 30,
-                    "medium": 40,
-                    "high": 30
-                },
+                "by_priority": {"low": 20, "medium": 50, "high": 25, "urgent": 5},
+                "by_risk_level": {"low": 30, "medium": 40, "high": 30},
                 "by_operation_type": {
                     "delete": 15,
                     "restart": 10,
                     "update": 50,
-                    "create": 25
-                }
+                    "create": 25,
+                },
             }
         }
 
@@ -232,8 +242,12 @@ class ApprovalConfig(BaseModel):
     """审批配置模型"""
 
     # 默认配置
-    default_timeout_seconds: int = Field(default=86400, description="默认超时时间（秒）")
-    default_approver_role: str = Field(default="tenant_admin", description="默认审批人角色")
+    default_timeout_seconds: int = Field(
+        default=86400, description="默认超时时间（秒）"
+    )
+    default_approver_role: str = Field(
+        default="tenant_admin", description="默认审批人角色"
+    )
 
     # 自动处理规则
     auto_expire_enabled: bool = Field(default=True, description="是否启用自动过期")
@@ -241,16 +255,22 @@ class ApprovalConfig(BaseModel):
 
     # 通知配置
     notification_enabled: bool = Field(default=True, description="是否启用通知")
-    notification_channels: List[str] = Field(default_factory=lambda: ["email", "web"], description="通知渠道")
+    notification_channels: List[str] = Field(
+        default_factory=lambda: ["email", "web"], description="通知渠道"
+    )
 
     # 审批规则
-    approval_rules: Dict[str, Any] = Field(default_factory=dict, description="审批规则配置")
+    approval_rules: Dict[str, Any] = Field(
+        default_factory=dict, description="审批规则配置"
+    )
 
     # 工作时间配置
     work_hours_only: bool = Field(default=False, description="仅在工作时间处理审批")
     work_hours_start: str = Field(default="09:00", description="工作开始时间")
     work_hours_end: str = Field(default="18:00", description="工作结束时间")
-    work_days: List[int] = Field(default_factory=lambda: [1, 2, 3, 4, 5], description="工作日（1-7，1=周一）")
+    work_days: List[int] = Field(
+        default_factory=lambda: [1, 2, 3, 4, 5], description="工作日（1-7，1=周一）"
+    )
 
     class Config:
         json_schema_extra = {
@@ -263,12 +283,12 @@ class ApprovalConfig(BaseModel):
                 "notification_channels": ["email", "web"],
                 "approval_rules": {
                     "high_risk_requires_approval": True,
-                    "multi_level_approval": False
+                    "multi_level_approval": False,
                 },
                 "work_hours_only": False,
                 "work_hours_start": "09:00",
                 "work_hours_end": "18:00",
-                "work_days": [1, 2, 3, 4, 5]
+                "work_days": [1, 2, 3, 4, 5],
             }
         }
 
@@ -280,8 +300,12 @@ class ApprovalStateTransition:
     # 允许的状态转换
     ALLOWED_TRANSITIONS = {
         ApprovalStatus.DRAFT: [ApprovalStatus.PENDING, ApprovalStatus.CANCELLED],
-        ApprovalStatus.PENDING: [ApprovalStatus.APPROVED, ApprovalStatus.REJECTED,
-                                ApprovalStatus.WITHDRAWN, ApprovalStatus.EXPIRED],
+        ApprovalStatus.PENDING: [
+            ApprovalStatus.APPROVED,
+            ApprovalStatus.REJECTED,
+            ApprovalStatus.WITHDRAWN,
+            ApprovalStatus.EXPIRED,
+        ],
         ApprovalStatus.APPROVED: [],  # 终态
         ApprovalStatus.REJECTED: [],  # 终态
         ApprovalStatus.WITHDRAWN: [],  # 终态
@@ -290,7 +314,9 @@ class ApprovalStateTransition:
     }
 
     @classmethod
-    def can_transition(cls, from_status: ApprovalStatus, to_status: ApprovalStatus) -> bool:
+    def can_transition(
+        cls, from_status: ApprovalStatus, to_status: ApprovalStatus
+    ) -> bool:
         """
         检查是否可以进行状态转换
 

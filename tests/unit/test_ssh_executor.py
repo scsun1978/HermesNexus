@@ -27,6 +27,7 @@ class TestSSHExecutor(unittest.TestCase):
         """测试模块导入"""
         try:
             from edge.executors.ssh_executor import SSHExecutor, SSHExecutorPool
+
             self.assertTrue(True, "SSH执行器模块导入成功")
         except ImportError as e:
             self.fail(f"SSH执行器模块导入失败: {e}")
@@ -36,11 +37,7 @@ class TestSSHExecutor(unittest.TestCase):
         from edge.executors.ssh_executor import SSHExecutor
 
         # 创建执行器实例（不连接）
-        executor = SSHExecutor(
-            host="localhost",
-            username="testuser",
-            port=22
-        )
+        executor = SSHExecutor(host="localhost", username="testuser", port=22)
 
         self.assertEqual(executor.host, "localhost")
         self.assertEqual(executor.username, "testuser")
@@ -76,11 +73,7 @@ class TestSSHExecutorMock(unittest.TestCase):
         """测试模拟SSH连接"""
         from edge.executors.ssh_executor import SSHExecutor
 
-        executor = SSHExecutor(
-            host="localhost",
-            username="testuser",
-            timeout=10
-        )
+        executor = SSHExecutor(host="localhost", username="testuser", timeout=10)
 
         # 模拟连接成功
         executor.is_connected = True
@@ -101,7 +94,7 @@ class TestSSHExecutorMock(unittest.TestCase):
             "stdout": "Hello World",
             "stderr": "",
             "exit_code": 0,
-            "execution_time": 1.5
+            "execution_time": 1.5,
         }
 
         self.assertTrue(mock_result["success"])
@@ -119,7 +112,7 @@ class TestSSHExecutorMock(unittest.TestCase):
             "success": False,
             "error": "Connection failed",
             "error_code": "ERR_5000",
-            "exit_code": -1
+            "exit_code": -1,
         }
 
         self.assertFalse(mock_error_result["success"])
@@ -134,6 +127,7 @@ class TestAuditLogger(unittest.TestCase):
         """测试审计日志模块导入"""
         try:
             from edge.audit.audit import AuditLogger
+
             self.assertTrue(True, "审计日志模块导入成功")
         except ImportError as e:
             self.fail(f"审计日志模块导入失败: {e}")
@@ -155,9 +149,7 @@ class TestAuditLogger(unittest.TestCase):
 
         # 记录SSH连接
         audit_logger.log_ssh_connection(
-            host="test-host",
-            username="testuser",
-            success=True
+            host="test-host", username="testuser", success=True
         )
 
         # 验证日志被记录
@@ -174,9 +166,7 @@ class TestAuditLogger(unittest.TestCase):
 
         # 记录SSH命令
         audit_logger.log_ssh_command(
-            host="test-host",
-            command="uptime",
-            result={"success": True, "exit_code": 0}
+            host="test-host", command="uptime", result={"success": True, "exit_code": 0}
         )
 
         # 验证日志被记录
@@ -213,12 +203,7 @@ class TestSSHExecutorValidation(unittest.TestCase):
         from edge.executors.ssh_executor import SSHExecutor
 
         # 有效主机地址
-        valid_hosts = [
-            "localhost",
-            "192.168.1.1",
-            "example.com",
-            "ssh.example.com"
-        ]
+        valid_hosts = ["localhost", "192.168.1.1", "example.com", "ssh.example.com"]
 
         for host in valid_hosts:
             executor = SSHExecutor(host=host, username="testuser")
@@ -244,9 +229,7 @@ class TestSSHExecutorValidation(unittest.TestCase):
 
         for timeout in valid_timeouts:
             executor = SSHExecutor(
-                host="localhost",
-                username="testuser",
-                timeout=timeout
+                host="localhost", username="testuser", timeout=timeout
             )
             self.assertEqual(executor.timeout, timeout)
 
@@ -256,9 +239,7 @@ class TestSSHExecutorValidation(unittest.TestCase):
 
         # 测试用户名
         executor = SSHExecutor(
-            host="localhost",
-            username="testuser",
-            password="testpass"
+            host="localhost", username="testuser", password="testpass"
         )
 
         self.assertEqual(executor.username, "testuser")
@@ -289,7 +270,7 @@ class TestSSHExecutorConfig(unittest.TestCase):
             port=2222,
             timeout=60,
             keep_alive=True,
-            max_output_size=5 * 1024 * 1024  # 5MB
+            max_output_size=5 * 1024 * 1024,  # 5MB
         )
 
         self.assertEqual(executor.port, 2222)
@@ -301,10 +282,7 @@ class TestSSHExecutorConfig(unittest.TestCase):
         """测试连接池配置"""
         from edge.executors.ssh_executor import SSHExecutorPool
 
-        pool = SSHExecutorPool(
-            max_connections=10,
-            connection_timeout=30
-        )
+        pool = SSHExecutorPool(max_connections=10, connection_timeout=30)
 
         self.assertEqual(pool.max_connections, 10)
         self.assertEqual(pool.connection_timeout, 30)

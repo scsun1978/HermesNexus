@@ -15,8 +15,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -118,7 +117,7 @@ class BlockingFixesE2ETest:
                 task_type=TaskType.BASIC_EXEC,
                 priority=TaskPriority.NORMAL,
                 target_asset_id="test-asset-001",
-                command="echo 'Hello World'"
+                command="echo 'Hello World'",
             )
 
             # 测试带有 created_by 参数的任务创建
@@ -131,7 +130,9 @@ class BlockingFixesE2ETest:
                 self.created_tasks.append(task.task_id)
                 return True
             else:
-                logger.error(f"❌ created_by 参数未正确设置: {task.created_by if task else 'No task'}")
+                logger.error(
+                    f"❌ created_by 参数未正确设置: {task.created_by if task else 'No task'}"
+                )
                 return False
 
         except Exception as e:
@@ -152,13 +153,13 @@ class BlockingFixesE2ETest:
             request = AssetCreateRequest(
                 name="E2E测试资产",
                 asset_type=AssetType.LINUX_HOST,
-                description="用于E2E测试的资产"
+                description="用于E2E测试的资产",
             )
 
             # 测试带有 created_by 参数的资产创建
             asset = asset_service.create_asset(request, created_by="e2e-test-user")
 
-            if asset and hasattr(asset, 'created_by'):
+            if asset and hasattr(asset, "created_by"):
                 logger.info("✅ Asset 模型有 created_by 字段")
                 logger.info(f"   - 资产ID: {asset.asset_id}")
                 logger.info(f"   - 创建者: {asset.created_by}")
@@ -182,7 +183,9 @@ class BlockingFixesE2ETest:
             task_service = get_task_service()
 
             # 测试 get_pending_tasks_for_node 方法
-            pending_tasks = task_service.get_pending_tasks_for_node("test-node-001", limit=10)
+            pending_tasks = task_service.get_pending_tasks_for_node(
+                "test-node-001", limit=10
+            )
 
             if pending_tasks is not None:
                 logger.info("✅ TaskService.get_pending_tasks_for_node 方法存在")
@@ -204,7 +207,9 @@ class BlockingFixesE2ETest:
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 # 测试获取节点待处理任务端点
-                response = await client.get(f"{self.cloud_url}/api/v1/tasks/nodes/test-node-001/pending?limit=10")
+                response = await client.get(
+                    f"{self.cloud_url}/api/v1/tasks/nodes/test-node-001/pending?limit=10"
+                )
 
                 if response.status_code == 200:
                     data = response.json()
@@ -229,7 +234,11 @@ class BlockingFixesE2ETest:
             asset_service = get_asset_service()
 
             # 测试 update_asset_heartbeat 方法
-            methods_to_test = ['update_asset_heartbeat', 'associate_node', 'disassociate_node']
+            methods_to_test = [
+                "update_asset_heartbeat",
+                "associate_node",
+                "disassociate_node",
+            ]
             missing_methods = []
 
             for method_name in methods_to_test:
@@ -262,12 +271,11 @@ class BlockingFixesE2ETest:
                     "task_type": "basic_exec",
                     "priority": "normal",
                     "target_asset_id": "test-asset-api-001",
-                    "command": "hostname"
+                    "command": "hostname",
                 }
 
                 response = await client.post(
-                    f"{self.cloud_url}/api/v1/tasks",
-                    json=task_data
+                    f"{self.cloud_url}/api/v1/tasks", json=task_data
                 )
 
                 if response.status_code in [200, 201]:
@@ -289,7 +297,7 @@ class BlockingFixesE2ETest:
     async def run_all_tests(self):
         """运行所有测试"""
         logger.info("🚀 开始阻塞问题修复验证测试")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         tests = [
             ("服务访问器函数修复", self.test_1_service_accessor_functions),
@@ -297,7 +305,10 @@ class BlockingFixesE2ETest:
             ("Asset API 导入修复", self.test_3_asset_api_imports),
             ("TaskService.created_by 参数", self.test_4_task_service_created_by_param),
             ("Asset.created_by 字段", self.test_5_asset_service_created_by_field),
-            ("TaskService.get_pending_tasks_for_node", self.test_6_task_service_get_pending_tasks),
+            (
+                "TaskService.get_pending_tasks_for_node",
+                self.test_6_task_service_get_pending_tasks,
+            ),
             ("Task API 节点待处理任务端点", self.test_7_task_api_pending_endpoint),
             ("AssetService 缺失方法", self.test_8_asset_service_methods),
             ("API 创建任务集成测试", self.test_9_create_task_via_api),
@@ -321,14 +332,14 @@ class BlockingFixesE2ETest:
                 self.test_results.append(("❌", test_name))
 
         # 生成测试报告
-        logger.info("\n" + "="*60)
+        logger.info("\n" + "=" * 60)
         logger.info("📊 阻塞问题修复验证报告")
-        logger.info("="*60)
+        logger.info("=" * 60)
 
         for status, test_name in self.test_results:
             logger.info(f"{status} {test_name}")
 
-        logger.info("="*60)
+        logger.info("=" * 60)
         logger.info(f"总计: {len(self.test_results)} 个测试")
         logger.info(f"通过: {passed} | 失败: {failed}")
 

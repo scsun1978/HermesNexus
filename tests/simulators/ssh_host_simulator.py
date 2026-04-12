@@ -14,8 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -24,7 +23,7 @@ logger = logging.getLogger(__name__)
 class SSHHostSimulator:
     """SSH主机模拟器"""
 
-    def __init__(self, host='0.0.0.0', port=2222):
+    def __init__(self, host="0.0.0.0", port=2222):
         self.host = host
         self.port = port
         self.running = False
@@ -67,7 +66,7 @@ class SSHHostSimulator:
                     client_thread = threading.Thread(
                         target=self._handle_client,
                         args=(client_socket, address),
-                        daemon=True
+                        daemon=True,
                     )
                     client_thread.start()
 
@@ -105,13 +104,15 @@ class SSHHostSimulator:
         while self.running:
             # 随机波动CPU和内存使用率
             self.cpu_usage = max(5.0, min(95.0, self.cpu_usage + random.uniform(-5, 5)))
-            self.memory_usage = max(10.0, min(90.0, self.memory_usage + random.uniform(-2, 2)))
+            self.memory_usage = max(
+                10.0, min(90.0, self.memory_usage + random.uniform(-2, 2))
+            )
 
             # 更新负载平均值
             self.load_average = [
                 max(0.1, self.load_average[0] + random.uniform(-0.2, 0.2)),
                 max(0.1, self.load_average[1] + random.uniform(-0.3, 0.3)),
-                max(0.1, self.load_average[2] + random.uniform(-0.4, 0.4))
+                max(0.1, self.load_average[2] + random.uniform(-0.4, 0.4)),
             ]
 
             time.sleep(5)  # 每5秒更新一次
@@ -234,11 +235,7 @@ class SSHHostSimulator:
                 # 尝试执行实际命令（小心使用）
                 try:
                     result = subprocess.run(
-                        command,
-                        shell=True,
-                        capture_output=True,
-                        text=True,
-                        timeout=5
+                        command, shell=True, capture_output=True, text=True, timeout=5
                     )
                     if result.returncode == 0:
                         return result.stdout.strip()
@@ -279,18 +276,20 @@ class SSHHostSimulator:
             ".bashrc",
             ".ssh",
             "test_file.txt",
-            "README.md"
+            "README.md",
         ]
 
         if "-la" in args or "-l" in args:
-            return "\\n".join([
-                "drwxr-xr-x  2 test-user test-user 4096 Jan  1 12:00 documents",
-                "drwxr-xr-x  2 test-user test-user 4096 Jan  1 12:00 downloads",
-                "-rw-r--r--  1 test-user test-user  220 Jan  1 12:00 .bashrc",
-                "drwx------  2 test-user test-user 4096 Jan  1 12:00 .ssh",
-                "-rw-r--r--  1 test-user test-user 1024 Jan  1 12:00 test_file.txt",
-                "-rw-r--r--  1 test-user test-user 2048 Jan  1 12:00 README.md"
-            ])
+            return "\\n".join(
+                [
+                    "drwxr-xr-x  2 test-user test-user 4096 Jan  1 12:00 documents",
+                    "drwxr-xr-x  2 test-user test-user 4096 Jan  1 12:00 downloads",
+                    "-rw-r--r--  1 test-user test-user  220 Jan  1 12:00 .bashrc",
+                    "drwx------  2 test-user test-user 4096 Jan  1 12:00 .ssh",
+                    "-rw-r--r--  1 test-user test-user 1024 Jan  1 12:00 test_file.txt",
+                    "-rw-r--r--  1 test-user test-user 2048 Jan  1 12:00 README.md",
+                ]
+            )
         else:
             return "  ".join(files)
 
@@ -358,10 +357,10 @@ def main():
     """主函数"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='SSH主机模拟器')
-    parser.add_argument('--host', default='0.0.0.0', help='监听地址')
-    parser.add_argument('--port', type=int, default=2222, help='监听端口')
-    parser.add_argument('--timeout', type=int, default=300, help='运行超时（秒）')
+    parser = argparse.ArgumentParser(description="SSH主机模拟器")
+    parser.add_argument("--host", default="0.0.0.0", help="监听地址")
+    parser.add_argument("--port", type=int, default=2222, help="监听端口")
+    parser.add_argument("--timeout", type=int, default=300, help="运行超时（秒）")
 
     args = parser.parse_args()
 

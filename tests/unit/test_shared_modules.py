@@ -31,8 +31,7 @@ class TestProtocolMessages(unittest.TestCase):
     def test_message_type_uniqueness(self):
         """测试消息类型唯一性"""
         values = [msg_type.value for msg_type in MessageType]
-        self.assertEqual(len(values), len(set(values)),
-                        "消息类型值应该是唯一的")
+        self.assertEqual(len(values), len(set(values)), "消息类型值应该是唯一的")
 
 
 class TestErrorCodes(unittest.TestCase):
@@ -47,10 +46,14 @@ class TestErrorCodes(unittest.TestCase):
     def test_error_code_format(self):
         """测试错误代码格式"""
         for error_code in ErrorCode:
-            self.assertTrue(error_code.value.startswith("ERR_"),
-                           f"错误代码应以ERR_开头: {error_code.value}")
-            self.assertTrue(error_code.value.split("_")[1].isdigit(),
-                           f"错误代码应包含数字: {error_code.value}")
+            self.assertTrue(
+                error_code.value.startswith("ERR_"),
+                f"错误代码应以ERR_开头: {error_code.value}",
+            )
+            self.assertTrue(
+                error_code.value.split("_")[1].isdigit(),
+                f"错误代码应包含数字: {error_code.value}",
+            )
 
 
 class TestDataModels(unittest.TestCase):
@@ -63,7 +66,7 @@ class TestDataModels(unittest.TestCase):
             "name": "测试节点",
             "status": NodeStatus.ONLINE.value,
             "capabilities": {"ssh": True, "max_tasks": 5},
-            "last_heartbeat": "2024-01-01T00:00:00Z"
+            "last_heartbeat": "2024-01-01T00:00:00Z",
         }
 
         # 测试数据可以正常创建
@@ -80,7 +83,7 @@ class TestDataModels(unittest.TestCase):
             "status": JobStatus.PENDING.value,
             "target_device_id": "device-1",
             "command": "uptime",
-            "timeout": 30
+            "timeout": 30,
         }
 
         # 测试任务数据结构
@@ -96,7 +99,7 @@ class TestDataModels(unittest.TestCase):
             "type": "linux",
             "host": "192.168.1.100",
             "port": 22,
-            "enabled": True
+            "enabled": True,
         }
 
         # 测试设备数据结构
@@ -111,7 +114,7 @@ class TestDataModels(unittest.TestCase):
             "type": "node_registered",
             "level": "info",
             "source": "node-1",
-            "message": "节点注册成功"
+            "message": "节点注册成功",
         }
 
         # 测试事件数据结构
@@ -155,7 +158,7 @@ class TestDataValidation(unittest.TestCase):
             "type": "basic_exec",
             "status": "pending",
             "target_device_id": "device-1",
-            "command": "uptime"
+            "command": "uptime",
         }
 
         # 验证必填字段
@@ -171,7 +174,7 @@ class TestDataValidation(unittest.TestCase):
             "node_id": "node-1",
             "name": "测试节点",
             "status": "online",
-            "capabilities": {}
+            "capabilities": {},
         }
 
         # 验证必填字段
@@ -187,7 +190,7 @@ class TestDataValidation(unittest.TestCase):
             "name": "测试设备",
             "type": "linux",
             "host": "192.168.1.100",
-            "port": 22
+            "port": 22,
         }
 
         # 验证必填字段

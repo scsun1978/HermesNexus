@@ -18,8 +18,12 @@ sys.path.insert(0, str(project_root))
 
 from shared.database.sqlite_backend import SQLiteBackend
 from shared.models.node import (
-    NodeIdentity, NodeRegistrationRequest, NodeStatus,
-    NodeType, NodeTokenInfo, NodePermission
+    NodeIdentity,
+    NodeRegistrationRequest,
+    NodeStatus,
+    NodeType,
+    NodeTokenInfo,
+    NodePermission,
 )
 from shared.security.node_token_service import NodeTokenService
 from shared.dao.node_dao import NodeDAO
@@ -45,7 +49,8 @@ class TestNodeIdentity(unittest.TestCase):
     def tearDown(self):
         """清理临时资源"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_01_node_identity_creation(self):
@@ -62,19 +67,21 @@ class TestNodeIdentity(unittest.TestCase):
             capabilities={
                 "protocols": ["ssh", "http"],
                 "max_tasks": 5,
-                "resources": {"cpu": 16, "memory": "64GB"}
+                "resources": {"cpu": 16, "memory": "64GB"},
             },
             max_concurrent_tasks=3,
             description="测试节点",
             location="测试机房",
             tags=["test", "linux"],
-            created_by="admin"
+            created_by="admin",
         )
 
         self.assertEqual(node_identity.node_id, "test-node-001")
         self.assertEqual(node_identity.node_type, NodeType.PHYSICAL)
         self.assertEqual(node_identity.status, NodeStatus.REGISTERED)
-        self.assertFalse(node_identity.is_token_valid())  # 初始状态无Token，应该返回False
+        self.assertFalse(
+            node_identity.is_token_valid()
+        )  # 初始状态无Token，应该返回False
 
         print("  ✅ 节点身份对象创建成功")
 
@@ -91,7 +98,7 @@ class TestNodeIdentity(unittest.TestCase):
             region_id="region-001",
             status=NodeStatus.REGISTERED,
             max_concurrent_tasks=5,
-            registered_at=datetime.now(timezone.utc)
+            registered_at=datetime.now(timezone.utc),
         )
 
         # 插入
@@ -125,7 +132,7 @@ class TestNodeIdentity(unittest.TestCase):
             tenant_id="tenant-001",
             region_id="region-001",
             status=NodeStatus.ACTIVE,
-            max_concurrent_tasks=3
+            max_concurrent_tasks=3,
         )
 
         # 生成Token
@@ -161,7 +168,7 @@ class TestNodeIdentity(unittest.TestCase):
             node_type=NodeType.PHYSICAL,
             tenant_id="tenant-001",
             region_id="region-001",
-            status=NodeStatus.UNREGISTERED
+            status=NodeStatus.UNREGISTERED,
         )
 
         # 测试有效状态转换
@@ -169,7 +176,9 @@ class TestNodeIdentity(unittest.TestCase):
         self.assertTrue(node_identity.status.can_transition_to(NodeStatus.REGISTERED))
 
         # 测试无效状态转换
-        self.assertFalse(node_identity.status.can_transition_to(NodeStatus.DEREGISTERED))
+        self.assertFalse(
+            node_identity.status.can_transition_to(NodeStatus.DEREGISTERED)
+        )
 
         # 测试状态转换
         node_identity.status = NodeStatus.REGISTERED
@@ -188,7 +197,7 @@ class TestNodeIdentity(unittest.TestCase):
             tenant_id="tenant-001",
             region_id="region-001",
             status=NodeStatus.ACTIVE,
-            last_heartbeat=datetime.now(timezone.utc)
+            last_heartbeat=datetime.now(timezone.utc),
         )
 
         # 测试活跃性检查
@@ -215,7 +224,7 @@ class TestNodeIdentity(unittest.TestCase):
             node_type=NodeType.PHYSICAL,
             tenant_id="tenant-001",
             region_id="region-001",
-            status=NodeStatus.ACTIVE
+            status=NodeStatus.ACTIVE,
         )
 
         # 生成Token
@@ -262,7 +271,8 @@ class TestNodeAuthIntegration(unittest.TestCase):
     def tearDown(self):
         """清理临时资源"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_01_complete_registration_flow(self):
@@ -275,13 +285,10 @@ class TestNodeAuthIntegration(unittest.TestCase):
             node_name="集成测试节点",
             node_type=NodeType.PHYSICAL,
             description="用于集成测试的节点",
-            capabilities={
-                "protocols": ["ssh", "http", "https"],
-                "max_tasks": 5
-            },
+            capabilities={"protocols": ["ssh", "http", "https"], "max_tasks": 5},
             max_concurrent_tasks=3,
             location="测试机房A",
-            tags=["test", "integration"]
+            tags=["test", "integration"],
         )
 
         # 创建节点身份
@@ -297,7 +304,7 @@ class TestNodeAuthIntegration(unittest.TestCase):
             description=registration_request.description,
             location=registration_request.location,
             tags=registration_request.tags,
-            registered_at=datetime.now(timezone.utc)
+            registered_at=datetime.now(timezone.utc),
         )
 
         # 保存到数据库
@@ -340,7 +347,7 @@ class TestNodeAuthIntegration(unittest.TestCase):
             node_type=NodeType.PHYSICAL,
             tenant_id="tenant-001",
             region_id="region-001",
-            status=NodeStatus.ACTIVE
+            status=NodeStatus.ACTIVE,
         )
 
         token_info = self.token_service.generate_token(node_identity)
@@ -374,7 +381,7 @@ class TestNodeAuthIntegration(unittest.TestCase):
             region_id="region-001",
             status=NodeStatus.ACTIVE,
             max_concurrent_tasks=3,
-            last_heartbeat=datetime.now(timezone.utc)  # 最近的心跳
+            last_heartbeat=datetime.now(timezone.utc),  # 最近的心跳
         )
 
         inactive_node = NodeIdentity(
@@ -384,7 +391,8 @@ class TestNodeAuthIntegration(unittest.TestCase):
             tenant_id="tenant-001",
             region_id="region-001",
             status=NodeStatus.INACTIVE,
-            last_heartbeat=datetime.now(timezone.utc) - timedelta(minutes=10)  # 10分钟前的心跳
+            last_heartbeat=datetime.now(timezone.utc)
+            - timedelta(minutes=10),  # 10分钟前的心跳
         )
 
         # 为活跃节点生成Token
@@ -404,7 +412,7 @@ class TestNodeAuthIntegration(unittest.TestCase):
         self.assertFalse(inactive_node.can_accept_tasks())
 
         # 测试权限检查
-        if hasattr(self.token_service, 'check_permission'):
+        if hasattr(self.token_service, "check_permission"):
             # 如果有权限检查方法，可以在这里测试
             pass
 
@@ -416,9 +424,9 @@ class TestNodeAuthIntegration(unittest.TestCase):
 
 def run_tests():
     """运行所有测试"""
-    print("="*60)
+    print("=" * 60)
     print("🚀 HermesNexus Phase 3 节点身份认证测试")
-    print("="*60)
+    print("=" * 60)
 
     # 创建测试套件
     loader = unittest.TestLoader()
@@ -433,10 +441,10 @@ def run_tests():
     result = runner.run(suite)
 
     # 输出结果
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     if result.wasSuccessful():
         print("✅ 节点身份认证测试全部通过")
-        print("="*60)
+        print("=" * 60)
         print("🎯 Phase 3 Day 1 核心功能验证完成:")
         print("  - 节点身份模型 ✅")
         print("  - Token生成和验证 ✅")
@@ -444,11 +452,11 @@ def run_tests():
         print("  - 认证边界检查 ✅")
         print("  - 完整注册流程 ✅")
         print("  - 未授权访问防护 ✅")
-        print("="*60)
+        print("=" * 60)
         return 0
     else:
         print("❌ 部分测试失败")
-        print("="*60)
+        print("=" * 60)
         return 1
 
 

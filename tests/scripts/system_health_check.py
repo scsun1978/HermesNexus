@@ -25,8 +25,8 @@ def check_python_environment():
         print(f"   Python版本: {version.major}.{version.minor}.{version.micro}")
 
         # 检查虚拟环境
-        in_venv = hasattr(sys, 'real_prefix') or (
-            hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix
+        in_venv = hasattr(sys, "real_prefix") or (
+            hasattr(sys, "base_prefix") and sys.base_prefix != sys.prefix
         )
         print(f"   虚拟环境: {'✅' if in_venv else '❌'}")
 
@@ -48,7 +48,7 @@ def check_dependencies():
         ("pydantic", "Pydantic"),
         ("aiohttp", "aiohttp"),
         ("paramiko", "paramiko"),
-        ("psutil", "psutil")
+        ("psutil", "psutil"),
     ]
 
     missing_packages = []
@@ -73,14 +73,7 @@ def check_project_structure():
     """检查项目结构"""
     print("📁 检查项目结构...")
 
-    required_dirs = [
-        "cloud",
-        "edge",
-        "shared",
-        "console",
-        "tests",
-        "docs"
-    ]
+    required_dirs = ["cloud", "edge", "shared", "console", "tests", "docs"]
 
     missing_dirs = []
 
@@ -138,10 +131,7 @@ def check_database():
         db = Database()
 
         # 测试基本操作
-        db.add_node("health-check", {
-            "node_id": "health-check",
-            "status": "online"
-        })
+        db.add_node("health-check", {"node_id": "health-check", "status": "online"})
 
         node = db.get_node("health-check")
 
@@ -211,9 +201,9 @@ def check_console():
 
 def generate_mvp_summary():
     """生成MVP总结报告"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📊 HermesNexus MVP 系统状态")
-    print("="*60)
+    print("=" * 60)
 
     checks = [
         ("Python环境", check_python_environment),
@@ -221,7 +211,7 @@ def generate_mvp_summary():
         ("项目结构", check_project_structure),
         ("共享模块", check_shared_modules),
         ("数据库模块", check_database),
-        ("控制台", check_console)
+        ("控制台", check_console),
     ]
 
     results = []
@@ -246,9 +236,9 @@ def generate_mvp_summary():
         results.append(("云端API", False))
 
     # 输出结果
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📋 检查结果汇总")
-    print("="*60)
+    print("=" * 60)
 
     passed = 0
     failed = 0
@@ -261,7 +251,7 @@ def generate_mvp_summary():
         else:
             failed += 1
 
-    print("="*60)
+    print("=" * 60)
     print(f"通过: {passed}/{len(results)}")
 
     if failed == 0:
@@ -275,7 +265,7 @@ def generate_mvp_summary():
 def main():
     """主函数"""
     print("🚀 HermesNexus MVP 系统健康检查")
-    print("="*60)
+    print("=" * 60)
 
     try:
         exit_code = generate_mvp_summary()

@@ -8,13 +8,24 @@ from datetime import datetime
 import uuid
 import math
 from shared.models.task import (
-    Task, TaskCreateRequest, TaskUpdateRequest,
-    TaskQueryParams, TaskListResponse, TaskStats,
-    TaskType, TaskStatus, TaskPriority
+    Task,
+    TaskCreateRequest,
+    TaskUpdateRequest,
+    TaskQueryParams,
+    TaskListResponse,
+    TaskStats,
+    TaskType,
+    TaskStatus,
+    TaskPriority,
 )
 from shared.models.enums import validate_state_transition
 from shared.dao.task_dao import TaskDAO
-from shared.models.audit import AuditAction, AuditCategory, EventLevel, AuditLogCreateRequest
+from shared.models.audit import (
+    AuditAction,
+    AuditCategory,
+    EventLevel,
+    AuditLogCreateRequest,
+)
 
 
 class TaskScheduler:
@@ -115,7 +126,7 @@ class TaskService:
                 metadata=getattr(request, "metadata", {}),
                 created_by=created_by or "admin",
                 created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                updated_at=datetime.utcnow(),
             )
 
         if self.task_dao:
@@ -163,7 +174,9 @@ class TaskService:
                 task.name = request.name
             if request.status is not None:
                 if not validate_state_transition("task", task.status, request.status):
-                    raise ValueError(f"Invalid state transition: {task.status} -> {request.status}")
+                    raise ValueError(
+                        f"Invalid state transition: {task.status} -> {request.status}"
+                    )
                 task.status = request.status
             if request.priority is not None:
                 task.priority = request.priority
@@ -239,7 +252,11 @@ class TaskService:
                 filters=filters,
                 limit=params.page_size,
                 offset=(params.page - 1) * params.page_size,
-                order_by=(f"-{params.sort_by}" if params.sort_order == "desc" else params.sort_by)
+                order_by=(
+                    f"-{params.sort_by}"
+                    if params.sort_order == "desc"
+                    else params.sort_by
+                ),
             )
             total = self.task_dao.count(filters)
         else:
@@ -252,7 +269,7 @@ class TaskService:
             total=total,
             page=params.page,
             page_size=params.page_size,
-            total_pages=total_pages
+            total_pages=total_pages,
         )
 
     def get_task_stats(self) -> TaskStats:
@@ -264,13 +281,18 @@ class TaskService:
         """
         if self.task_dao:
             total = self.task_dao.count({})
-            status_stats = {status.value: self.task_dao.count({"status": status}) for status in TaskStatus}
+            status_stats = {
+                status.value: self.task_dao.count({"status": status})
+                for status in TaskStatus
+            }
         else:
             tasks = list(self._tasks.values())
             total = len(tasks)
             status_stats = {}
             for task in tasks:
-                status_stats[task.status.value] = status_stats.get(task.status.value, 0) + 1
+                status_stats[task.status.value] = (
+                    status_stats.get(task.status.value, 0) + 1
+                )
 
         return TaskStats(
             total_tasks=total,
@@ -279,9 +301,16 @@ class TaskService:
             by_priority={},
             running_tasks=status_stats.get(TaskStatus.RUNNING.value, 0),
             pending_tasks=status_stats.get(TaskStatus.PENDING.value, 0),
-            completed_tasks=(status_stats.get(TaskStatus.SUCCEEDED.value, 0) + status_stats.get(TaskStatus.CANCELLED.value, 0)),
+            completed_tasks=(
+                status_stats.get(TaskStatus.SUCCEEDED.value, 0)
+                + status_stats.get(TaskStatus.CANCELLED.value, 0)
+            ),
             failed_tasks=status_stats.get(TaskStatus.FAILED.value, 0),
-            success_rate=(100.0 * status_stats.get(TaskStatus.SUCCEEDED.value, 0) / total) if total else 0.0,
+            success_rate=(
+                (100.0 * status_stats.get(TaskStatus.SUCCEEDED.value, 0) / total)
+                if total
+                else 0.0
+            ),
         )
 
     def dispatch_tasks(self, request):
@@ -368,7 +397,9 @@ class TaskService:
             return None
 
         task.result = result
-        task.status = TaskStatus.SUCCEEDED if result.exit_code == 0 else TaskStatus.FAILED
+        task.status = (
+            TaskStatus.SUCCEEDED if result.exit_code == 0 else TaskStatus.FAILED
+        )
         task.completed_at = datetime.utcnow()
         task.updated_at = datetime.utcnow()
 
@@ -376,7 +407,15 @@ class TaskService:
             updated = self.task_dao.update(task)
         else:
             updated = task
-        self._audit_task_event(updated, AuditAction.TASK_SUCCEEDED if result.exit_code == 0 else AuditAction.TASK_FAILED, "Task completed")
+        self._audit_task_event(
+            updated,
+            (
+                AuditAction.TASK_SUCCEEDED
+                if result.exit_code == 0
+                else AuditAction.TASK_FAILED
+            ),
+            "Task completed",
+        )
         return updated
 
     def complete_task(self, task_id: str, result) -> Optional[Task]:
@@ -398,15 +437,19 @@ class TaskService:
             # 查询分配给该节点且状态为PENDING或ASSIGNED的任务
             filters = {
                 "target_node_id": node_id,
-                "status": [TaskStatus.PENDING, TaskStatus.ASSIGNED]
+                "status": [TaskStatus.PENDING, TaskStatus.ASSIGNED],
             }
-            tasks = self.task_dao.list(filters=filters, limit=limit, order_by="-created_at")
+            tasks = self.task_dao.list(
+                filters=filters, limit=limit, order_by="-created_at"
+            )
             return tasks
         else:
             # 内存实现
             pending_tasks = [
-                task for task in self._tasks.values()
-                if task.target_node_id == node_id and task.status in [TaskStatus.PENDING, TaskStatus.ASSIGNED]
+                task
+                for task in self._tasks.values()
+                if task.target_node_id == node_id
+                and task.status in [TaskStatus.PENDING, TaskStatus.ASSIGNED]
             ]
             # 按创建时间排序
             pending_tasks.sort(key=lambda t: t.created_at, reverse=True)
@@ -416,12 +459,17 @@ class TaskService:
         if not self.database:
             return
         from shared.services.audit_service import AuditService
+
         audit_service = AuditService(database=self.database)
         audit_service.log_action(
             AuditLogCreateRequest(
                 action=action,
                 category=AuditCategory.TASK,
-                level=EventLevel.ERROR if action == AuditAction.TASK_FAILED else EventLevel.INFO,
+                level=(
+                    EventLevel.ERROR
+                    if action == AuditAction.TASK_FAILED
+                    else EventLevel.INFO
+                ),
                 actor="system",
                 target_type="task",
                 target_id=task.task_id,

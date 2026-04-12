@@ -10,8 +10,12 @@ from pathlib import Path
 from datetime import datetime
 
 from shared.models.permission import (
-    PermissionMatrix, Permission, ActionType,
-    ResourceType, RiskLevel, BuiltInRoles
+    PermissionMatrix,
+    Permission,
+    ActionType,
+    ResourceType,
+    RiskLevel,
+    BuiltInRoles,
 )
 
 
@@ -31,7 +35,9 @@ class PermissionMatrixManager:
         # 权限矩阵缓存
         self._matrix_cache: Dict[str, PermissionMatrix] = {}
 
-    def load_matrix(self, matrix_id: str, force_reload: bool = False) -> Optional[PermissionMatrix]:
+    def load_matrix(
+        self, matrix_id: str, force_reload: bool = False
+    ) -> Optional[PermissionMatrix]:
         """
         加载权限矩阵
 
@@ -54,7 +60,7 @@ class PermissionMatrixManager:
 
         try:
             # 读取JSON文件
-            with open(matrix_file, 'r', encoding='utf-8') as f:
+            with open(matrix_file, "r", encoding="utf-8") as f:
                 matrix_data = json.load(f)
 
             # 转换为PermissionMatrix对象
@@ -90,7 +96,7 @@ class PermissionMatrixManager:
             matrix_file = self.config_dir / f"{matrix.matrix_id}.json"
 
             # 保存JSON文件
-            with open(matrix_file, 'w', encoding='utf-8') as f:
+            with open(matrix_file, "w", encoding="utf-8") as f:
                 json.dump(matrix_data, f, indent=2, ensure_ascii=False)
 
             # 更新缓存
@@ -143,7 +149,7 @@ class PermissionMatrixManager:
         matrix_id: str,
         name: str,
         description: Optional[str] = None,
-        base_matrix: Optional[str] = None
+        base_matrix: Optional[str] = None,
     ) -> Optional[PermissionMatrix]:
         """
         创建新的权限矩阵
@@ -174,7 +180,7 @@ class PermissionMatrixManager:
                     blacklist=base.blacklist.copy(),
                     high_risk_actions=base.high_risk_actions.copy(),
                     created_at=int(datetime.now().timestamp()),
-                    updated_at=int(datetime.now().timestamp())
+                    updated_at=int(datetime.now().timestamp()),
                 )
             else:
                 # 创建空矩阵
@@ -183,7 +189,7 @@ class PermissionMatrixManager:
                     name=name,
                     description=description,
                     created_at=int(datetime.now().timestamp()),
-                    updated_at=int(datetime.now().timestamp())
+                    updated_at=int(datetime.now().timestamp()),
                 )
 
             # 保存矩阵
@@ -197,10 +203,7 @@ class PermissionMatrixManager:
             return None
 
     def add_role_permission(
-        self,
-        matrix_id: str,
-        role: str,
-        permission: Permission
+        self, matrix_id: str, role: str, permission: Permission
     ) -> bool:
         """
         为角色添加权限
@@ -232,11 +235,7 @@ class PermissionMatrixManager:
             return False
 
     def remove_role_permission(
-        self,
-        matrix_id: str,
-        role: str,
-        action: ActionType,
-        resource: ResourceType
+        self, matrix_id: str, role: str, action: ActionType, resource: ResourceType
     ) -> bool:
         """
         移除角色权限
@@ -258,7 +257,8 @@ class PermissionMatrixManager:
             # 移除权限
             if role in matrix.role_permissions:
                 matrix.role_permissions[role] = [
-                    perm for perm in matrix.role_permissions[role]
+                    perm
+                    for perm in matrix.role_permissions[role]
                     if not (perm.action == action and perm.resource == resource)
                 ]
 
@@ -269,11 +269,7 @@ class PermissionMatrixManager:
             print(f"移除角色权限失败: {e}")
             return False
 
-    def get_role_permissions(
-        self,
-        matrix_id: str,
-        role: str
-    ) -> List[Permission]:
+    def get_role_permissions(self, matrix_id: str, role: str) -> List[Permission]:
         """
         获取角色的所有权限
 
@@ -301,7 +297,7 @@ class PermissionMatrixManager:
                     resource=ResourceType(perm["resource"]),
                     conditions=perm.get("conditions", {}),
                     risk_level=RiskLevel(perm.get("risk_level", "low")),
-                    description=perm.get("description")
+                    description=perm.get("description"),
                 )
                 for perm in perms
             ]
@@ -317,7 +313,7 @@ class PermissionMatrixManager:
             high_risk_actions=data.get("high_risk_actions", []),
             version=data.get("version", "1.0.0"),
             created_at=data.get("created_at", int(datetime.now().timestamp())),
-            updated_at=data.get("updated_at", int(datetime.now().timestamp()))
+            updated_at=data.get("updated_at", int(datetime.now().timestamp())),
         )
 
     def _matrix_to_dict(self, matrix: PermissionMatrix) -> Dict[str, Any]:
@@ -327,11 +323,23 @@ class PermissionMatrixManager:
         for role, perms in matrix.role_permissions.items():
             role_permissions[role] = [
                 {
-                    "action": perm.action.value if hasattr(perm.action, 'value') else str(perm.action),
-                    "resource": perm.resource.value if hasattr(perm.resource, 'value') else str(perm.resource),
+                    "action": (
+                        perm.action.value
+                        if hasattr(perm.action, "value")
+                        else str(perm.action)
+                    ),
+                    "resource": (
+                        perm.resource.value
+                        if hasattr(perm.resource, "value")
+                        else str(perm.resource)
+                    ),
                     "conditions": perm.conditions,
-                    "risk_level": perm.risk_level.value if hasattr(perm.risk_level, 'value') else str(perm.risk_level),
-                    "description": perm.description
+                    "risk_level": (
+                        perm.risk_level.value
+                        if hasattr(perm.risk_level, "value")
+                        else str(perm.risk_level)
+                    ),
+                    "description": perm.description,
                 }
                 for perm in perms
             ]
@@ -347,7 +355,7 @@ class PermissionMatrixManager:
             "high_risk_actions": matrix.high_risk_actions,
             "version": matrix.version,
             "created_at": matrix.created_at,
-            "updated_at": matrix.updated_at
+            "updated_at": matrix.updated_at,
         }
 
 
@@ -365,7 +373,7 @@ def create_default_permissions_config() -> Dict[str, Any]:
                     "resource": "*",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "超级管理员拥有所有权限"
+                    "description": "超级管理员拥有所有权限",
                 }
             ],
             "tenant_admin": [
@@ -374,43 +382,43 @@ def create_default_permissions_config() -> Dict[str, Any]:
                     "resource": "asset",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "查看资产信息"
+                    "description": "查看资产信息",
                 },
                 {
                     "action": "create",
                     "resource": "asset",
                     "conditions": {},
                     "risk_level": "medium",
-                    "description": "创建资产"
+                    "description": "创建资产",
                 },
                 {
                     "action": "update",
                     "resource": "asset",
                     "conditions": {},
                     "risk_level": "medium",
-                    "description": "更新资产信息"
+                    "description": "更新资产信息",
                 },
                 {
                     "action": "delete",
                     "resource": "asset",
                     "conditions": {},
                     "risk_level": "high",
-                    "description": "删除资产"
+                    "description": "删除资产",
                 },
                 {
                     "action": "execute",
                     "resource": "task",
                     "conditions": {},
                     "risk_level": "medium",
-                    "description": "执行任务"
+                    "description": "执行任务",
                 },
                 {
                     "action": "read",
                     "resource": "node",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "查看节点信息"
-                }
+                    "description": "查看节点信息",
+                },
             ],
             "operator": [
                 {
@@ -418,36 +426,36 @@ def create_default_permissions_config() -> Dict[str, Any]:
                     "resource": "asset",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "查看资产信息"
+                    "description": "查看资产信息",
                 },
                 {
                     "action": "list",
                     "resource": "asset",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "列出资产"
+                    "description": "列出资产",
                 },
                 {
                     "action": "update",
                     "resource": "task",
                     "conditions": {},
                     "risk_level": "medium",
-                    "description": "更新任务状态"
+                    "description": "更新任务状态",
                 },
                 {
                     "action": "execute",
                     "resource": "task",
                     "conditions": {},
                     "risk_level": "medium",
-                    "description": "执行任务"
+                    "description": "执行任务",
                 },
                 {
                     "action": "read",
                     "resource": "log",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "查看日志"
-                }
+                    "description": "查看日志",
+                },
             ],
             "viewer": [
                 {
@@ -455,29 +463,29 @@ def create_default_permissions_config() -> Dict[str, Any]:
                     "resource": "asset",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "查看资产信息"
+                    "description": "查看资产信息",
                 },
                 {
                     "action": "list",
                     "resource": "asset",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "列出资产"
+                    "description": "列出资产",
                 },
                 {
                     "action": "read",
                     "resource": "task",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "查看任务信息"
+                    "description": "查看任务信息",
                 },
                 {
                     "action": "list",
                     "resource": "task",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "列出任务"
-                }
+                    "description": "列出任务",
+                },
             ],
             "node": [
                 {
@@ -485,43 +493,39 @@ def create_default_permissions_config() -> Dict[str, Any]:
                     "resource": "node",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "节点心跳"
+                    "description": "节点心跳",
                 },
                 {
                     "action": "status",
                     "resource": "task",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "任务状态报告"
+                    "description": "任务状态报告",
                 },
                 {
                     "action": "execute",
                     "resource": "task",
                     "conditions": {},
                     "risk_level": "medium",
-                    "description": "执行分配的任务"
+                    "description": "执行分配的任务",
                 },
                 {
                     "action": "report",
                     "resource": "task",
                     "conditions": {},
                     "risk_level": "low",
-                    "description": "报告任务执行结果"
-                }
-            ]
+                    "description": "报告任务执行结果",
+                },
+            ],
         },
         "default_policy": "deny",
-        "whitelist": [
-            "health.check",
-            "system.ping",
-            "node.heartbeat"
-        ],
+        "whitelist": ["health.check", "system.ping", "node.heartbeat"],
         "blacklist": [
             "system.shutdown",
             "data.delete_all",
             "*.drop.*",
             "security.bypass",
-            "auth.disable"
+            "auth.disable",
         ],
         "high_risk_actions": [
             "delete",
@@ -531,9 +535,9 @@ def create_default_permissions_config() -> Dict[str, Any]:
             "grant",
             "revoke",
             "admin",
-            "shutdown"
+            "shutdown",
         ],
-        "version": "1.0.0"
+        "version": "1.0.0",
     }
 
 
@@ -563,7 +567,7 @@ def initialize_default_permissions(config_dir: str = "config") -> bool:
         config_file = Path(config_dir) / "default-matrix.json"
         config_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(config_file, 'w', encoding='utf-8') as f:
+        with open(config_file, "w", encoding="utf-8") as f:
             json.dump(default_config, f, indent=2, ensure_ascii=False)
 
         print("默认权限配置初始化完成")

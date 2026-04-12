@@ -31,17 +31,23 @@ class PerformanceAnalyzer:
 
     def run_baseline_tests(self):
         """运行性能基线测试"""
-        print("="*70)
+        print("=" * 70)
         print("🔍 运行性能基线测试...")
-        print("="*70)
+        print("=" * 70)
 
         try:
             # 运行性能测试
             result = subprocess.run(
-                ["python3", "-m", "pytest", "tests/performance/test_performance_baseline.py", "-v"],
+                [
+                    "python3",
+                    "-m",
+                    "pytest",
+                    "tests/performance/test_performance_baseline.py",
+                    "-v",
+                ],
                 capture_output=True,
                 text=True,
-                timeout=600  # 10分钟超时
+                timeout=600,  # 10分钟超时
             )
 
             # 解析测试输出
@@ -64,9 +70,9 @@ class PerformanceAnalyzer:
 
     def analyze_bottlenecks(self):
         """分析性能瓶颈"""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("🔍 分析性能瓶颈...")
-        print("="*70)
+        print("=" * 70)
 
         # 常见的性能瓶颈检查
         bottlenecks = []
@@ -75,6 +81,7 @@ class PerformanceAnalyzer:
         print("\n1️⃣  检查数据库连接...")
         try:
             from shared.database.sqlite_backend import SQLiteBackend
+
             db = SQLiteBackend(db_path="/tmp/perf_check.db")
 
             start = datetime.now()
@@ -86,12 +93,14 @@ class PerformanceAnalyzer:
             print(f"   数据库连接时间: {connection_time*1000:.2f}ms")
 
             if connection_time > 0.1:  # 100ms
-                bottlenecks.append({
-                    "type": "database_connection",
-                    "severity": "high",
-                    "issue": f"数据库连接过慢 ({connection_time*1000:.2f}ms)",
-                    "recommendation": "使用连接池减少连接开销"
-                })
+                bottlenecks.append(
+                    {
+                        "type": "database_connection",
+                        "severity": "high",
+                        "issue": f"数据库连接过慢 ({connection_time*1000:.2f}ms)",
+                        "recommendation": "使用连接池减少连接开销",
+                    }
+                )
 
             session.close()
         except Exception as e:
@@ -120,13 +129,14 @@ class PerformanceAnalyzer:
         """检查索引使用情况"""
         try:
             from shared.database.sqlite_backend import SQLiteBackend
+
             db = SQLiteBackend(db_path="/tmp/index_check.db")
             db.initialize()
 
             session = db._get_session()
 
             # 检查表索引
-            tables = ['assets', 'tasks', 'audit_logs']
+            tables = ["assets", "tasks", "audit_logs"]
 
             for table in tables:
                 result = session.execute(f"PRAGMA index_list({table})")
@@ -166,63 +176,67 @@ class PerformanceAnalyzer:
 
     def generate_optimization_plan(self):
         """生成优化计划"""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("📋 生成优化计划...")
-        print("="*70)
+        print("=" * 70)
 
         optimizations = []
 
         # 基于发现的瓶颈生成优化建议
         for bottleneck in self.bottlenecks:
             if bottleneck["type"] == "database_connection":
-                optimizations.append({
-                    "priority": "high",
-                    "action": "实现数据库连接池",
-                    "expected_improvement": "减少50-70%的连接开销",
-                    "implementation_effort": "中等",
-                    "steps": [
-                        "使用SQLAlchemy的QueuePool实现连接池",
-                        "配置合适的pool_size和max_overflow",
-                        "添加连接健康检查"
-                    ]
-                })
+                optimizations.append(
+                    {
+                        "priority": "high",
+                        "action": "实现数据库连接池",
+                        "expected_improvement": "减少50-70%的连接开销",
+                        "implementation_effort": "中等",
+                        "steps": [
+                            "使用SQLAlchemy的QueuePool实现连接池",
+                            "配置合适的pool_size和max_overflow",
+                            "添加连接健康检查",
+                        ],
+                    }
+                )
 
         # 通用的优化建议
-        optimizations.extend([
-            {
-                "priority": "medium",
-                "action": "添加查询结果缓存",
-                "expected_improvement": "减少70-90%的重复查询",
-                "implementation_effort": "低",
-                "steps": [
-                    "实现简单的内存缓存",
-                    "为频繁查询的数据添加缓存层",
-                    "设置合理的缓存过期时间"
-                ]
-            },
-            {
-                "priority": "medium",
-                "action": "优化批量操作",
-                "expected_improvement": "提升3-5倍批量操作性能",
-                "implementation_effort": "低",
-                "steps": [
-                    "使用executemany进行批量插入",
-                    "实现批量查询接口",
-                    "减少数据库往返次数"
-                ]
-            },
-            {
-                "priority": "low",
-                "action": "数据库索引优化",
-                "expected_improvement": "提升20-50%查询性能",
-                "implementation_effort": "低",
-                "steps": [
-                    "分析查询模式",
-                    "为常用查询条件添加索引",
-                    "定期分析和重建索引"
-                ]
-            }
-        ])
+        optimizations.extend(
+            [
+                {
+                    "priority": "medium",
+                    "action": "添加查询结果缓存",
+                    "expected_improvement": "减少70-90%的重复查询",
+                    "implementation_effort": "低",
+                    "steps": [
+                        "实现简单的内存缓存",
+                        "为频繁查询的数据添加缓存层",
+                        "设置合理的缓存过期时间",
+                    ],
+                },
+                {
+                    "priority": "medium",
+                    "action": "优化批量操作",
+                    "expected_improvement": "提升3-5倍批量操作性能",
+                    "implementation_effort": "低",
+                    "steps": [
+                        "使用executemany进行批量插入",
+                        "实现批量查询接口",
+                        "减少数据库往返次数",
+                    ],
+                },
+                {
+                    "priority": "low",
+                    "action": "数据库索引优化",
+                    "expected_improvement": "提升20-50%查询性能",
+                    "implementation_effort": "低",
+                    "steps": [
+                        "分析查询模式",
+                        "为常用查询条件添加索引",
+                        "定期分析和重建索引",
+                    ],
+                },
+            ]
+        )
 
         # 按优先级排序
         priority_order = {"high": 0, "medium": 1, "low": 2}
@@ -232,37 +246,35 @@ class PerformanceAnalyzer:
 
         # 输出优化计划
         for i, opt in enumerate(optimizations, 1):
-            priority_symbol = {
-                "high": "🔴",
-                "medium": "🟡",
-                "low": "🟢"
-            }.get(opt["priority"], "⚪")
+            priority_symbol = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(
+                opt["priority"], "⚪"
+            )
 
             print(f"\n{priority_symbol} 优化 {i}: {opt['action']}")
             print(f"   优先级: {opt['priority']}")
             print(f"   预期改进: {opt['expected_improvement']}")
             print(f"   实现难度: {opt['implementation_effort']}")
             print(f"   实施步骤:")
-            for step in opt['steps']:
+            for step in opt["steps"]:
                 print(f"     • {step}")
 
     def generate_report(self):
         """生成性能分析报告"""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("📊 性能分析报告")
-        print("="*70)
+        print("=" * 70)
 
         report = {
             "timestamp": datetime.now().isoformat(),
             "bottlenecks": self.bottlenecks,
             "optimizations": self.optimizations,
-            "summary": self._generate_summary()
+            "summary": self._generate_summary(),
         }
 
         # 保存报告
         report_file = "performance_analysis_report.json"
         try:
-            with open(report_file, 'w', encoding='utf-8') as f:
+            with open(report_file, "w", encoding="utf-8") as f:
                 json.dump(report, f, indent=2, ensure_ascii=False)
             print(f"\n📄 性能报告已保存: {report_file}")
         except Exception as e:
@@ -272,16 +284,24 @@ class PerformanceAnalyzer:
         print("\n📋 性能分析摘要:")
         print(f"   发现瓶颈: {len(self.bottlenecks)} 个")
         print(f"   优化建议: {len(self.optimizations)} 个")
-        print(f"   高优先级优化: {len([o for o in self.optimizations if o['priority'] == 'high'])} 个")
+        print(
+            f"   高优先级优化: {len([o for o in self.optimizations if o['priority'] == 'high'])} 个"
+        )
 
     def _generate_summary(self):
         """生成摘要"""
         return {
             "total_bottlenecks": len(self.bottlenecks),
             "total_optimizations": len(self.optimizations),
-            "high_priority_optimizations": len([o for o in self.optimizations if o['priority'] == 'high']),
-            "medium_priority_optimizations": len([o for o in self.optimizations if o['priority'] == 'medium']),
-            "low_priority_optimizations": len([o for o in self.optimizations if o['priority'] == 'low'])
+            "high_priority_optimizations": len(
+                [o for o in self.optimizations if o["priority"] == "high"]
+            ),
+            "medium_priority_optimizations": len(
+                [o for o in self.optimizations if o["priority"] == "medium"]
+            ),
+            "low_priority_optimizations": len(
+                [o for o in self.optimizations if o["priority"] == "low"]
+            ),
         }
 
 
@@ -305,9 +325,9 @@ def main():
     # 4. 生成报告
     analyzer.generate_report()
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("✅ 性能分析完成")
-    print("="*70)
+    print("=" * 70)
 
     return 0
 

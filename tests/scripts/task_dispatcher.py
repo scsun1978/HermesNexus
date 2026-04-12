@@ -20,8 +20,7 @@ sys.path.insert(0, str(project_root))
 import httpx
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -95,18 +94,18 @@ class TaskDispatcher:
         """创建测试设备"""
         try:
             device_data = {
-                "device_id": device_id or f"test-device-{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                "device_id": device_id
+                or f"test-device-{datetime.now().strftime('%Y%m%d%H%M%S')}",
                 "name": f"测试设备 {device_id or ''}",
                 "type": "linux",
                 "host": "localhost",
                 "port": 2222,
                 "username": "testuser",
-                "enabled": True
+                "enabled": True,
             }
 
             response = await self.client.post(
-                f"{self.cloud_url}/api/v1/devices",
-                json=device_data
+                f"{self.cloud_url}/api/v1/devices", json=device_data
             )
 
             if response.status_code in [200, 201]:
@@ -124,8 +123,7 @@ class TaskDispatcher:
         """创建任务"""
         try:
             response = await self.client.post(
-                f"{self.cloud_url}/api/v1/jobs",
-                json=task_config
+                f"{self.cloud_url}/api/v1/jobs", json=task_config
             )
 
             if response.status_code in [200, 201]:
@@ -136,7 +134,9 @@ class TaskDispatcher:
                 return job_data
             else:
                 error_detail = response.text
-                logger.error(f"❌ 创建任务失败: {response.status_code} - {error_detail}")
+                logger.error(
+                    f"❌ 创建任务失败: {response.status_code} - {error_detail}"
+                )
                 return None
 
         except Exception as e:
@@ -160,8 +160,7 @@ class TaskDispatcher:
         """取消任务"""
         try:
             response = await self.client.patch(
-                f"{self.cloud_url}/api/v1/jobs/{job_id}/cancel",
-                json={"reason": reason}
+                f"{self.cloud_url}/api/v1/jobs/{job_id}/cancel", json={"reason": reason}
             )
 
             if response.status_code == 200:
@@ -233,12 +232,10 @@ class TaskDispatcher:
             results = []
             for i, config in enumerate(task_configs):
                 logger.info(f"分发任务 {i+1}/{len(task_configs)}")
-                success, result = await self.dispatch_single_task(config, wait_for_completion=False)
-                results.append({
-                    "config": config,
-                    "success": success,
-                    "result": result
-                })
+                success, result = await self.dispatch_single_task(
+                    config, wait_for_completion=False
+                )
+                results.append({"config": config, "success": success, "result": result})
 
                 # 延迟以避免过载
                 if i < len(task_configs) - 1:
@@ -267,7 +264,9 @@ class TaskDispatcher:
             target_device = None
 
             if device_id:
-                target_device = next((d for d in devices if d.get("device_id") == device_id), None)
+                target_device = next(
+                    (d for d in devices if d.get("device_id") == device_id), None
+                )
             elif devices:
                 target_device = devices[0]
 
@@ -290,7 +289,7 @@ class TaskDispatcher:
                     "command": "uname -a",
                     "priority": "normal",
                     "timeout": 10,
-                    "created_by": "test_scenario"
+                    "created_by": "test_scenario",
                 },
                 {
                     "name": "运行时间查询",
@@ -300,7 +299,7 @@ class TaskDispatcher:
                     "command": "uptime",
                     "priority": "normal",
                     "timeout": 10,
-                    "created_by": "test_scenario"
+                    "created_by": "test_scenario",
                 },
                 {
                     "name": "磁盘空间查询",
@@ -310,7 +309,7 @@ class TaskDispatcher:
                     "command": "df -h",
                     "priority": "normal",
                     "timeout": 15,
-                    "created_by": "test_scenario"
+                    "created_by": "test_scenario",
                 },
                 {
                     "name": "内存使用查询",
@@ -320,7 +319,7 @@ class TaskDispatcher:
                     "command": "free -h",
                     "priority": "normal",
                     "timeout": 10,
-                    "created_by": "test_scenario"
+                    "created_by": "test_scenario",
                 },
                 {
                     "name": "进程列表",
@@ -330,8 +329,8 @@ class TaskDispatcher:
                     "command": "ps aux",
                     "priority": "low",
                     "timeout": 15,
-                    "created_by": "test_scenario"
-                }
+                    "created_by": "test_scenario",
+                },
             ]
 
             # 4. 执行测试任务
@@ -372,13 +371,15 @@ class TaskDispatcher:
 
 async def main():
     """主函数"""
-    parser = argparse.ArgumentParser(description='任务分发模拟脚本')
-    parser.add_argument('--cloud-url', default='http://localhost:8080', help='云端API URL')
-    parser.add_argument('--device-id', help='目标设备ID')
-    parser.add_argument('--command', help='要执行的命令')
-    parser.add_argument('--batch', type=int, help='批量任务数量')
-    parser.add_argument('--scenario', action='store_true', help='运行测试场景')
-    parser.add_argument('--no-cleanup', action='store_true', help='不清理创建的任务')
+    parser = argparse.ArgumentParser(description="任务分发模拟脚本")
+    parser.add_argument(
+        "--cloud-url", default="http://localhost:8080", help="云端API URL"
+    )
+    parser.add_argument("--device-id", help="目标设备ID")
+    parser.add_argument("--command", help="要执行的命令")
+    parser.add_argument("--batch", type=int, help="批量任务数量")
+    parser.add_argument("--scenario", action="store_true", help="运行测试场景")
+    parser.add_argument("--no-cleanup", action="store_true", help="不清理创建的任务")
 
     args = parser.parse_args()
 
@@ -405,7 +406,7 @@ async def main():
                         "command": f"echo 'Batch task {i+1}'",
                         "priority": "normal",
                         "timeout": 10,
-                        "created_by": "batch_test"
+                        "created_by": "batch_test",
                     }
                     batch_tasks.append(task_config)
 
@@ -429,7 +430,7 @@ async def main():
                     "command": args.command,
                     "priority": "normal",
                     "timeout": 30,
-                    "created_by": "command_line"
+                    "created_by": "command_line",
                 }
 
                 success, result = await dispatcher.dispatch_single_task(task_config)

@@ -48,7 +48,7 @@ class AuditDAO(BaseDAO):
                 target_id=audit_log.target_id,
                 message=audit_log.message,
                 meta_data=meta_data,
-                created_at=audit_log.created_at
+                created_at=audit_log.created_at,
             )
 
             # 插入数据库
@@ -79,9 +79,11 @@ class AuditDAO(BaseDAO):
 
         try:
             # 查询数据库
-            audit_model = session.query(AuditLogModel).filter(
-                AuditLogModel.audit_id == audit_id
-            ).first()
+            audit_model = (
+                session.query(AuditLogModel)
+                .filter(AuditLogModel.audit_id == audit_id)
+                .first()
+            )
 
             if not audit_model:
                 return None
@@ -118,8 +120,13 @@ class AuditDAO(BaseDAO):
         # 审计日志通常不允许删除
         raise NotImplementedError("Audit logs cannot be deleted")
 
-    def list(self, filters: Dict[str, Any] = None, limit: int = None,
-             offset: int = None, order_by: str = None) -> List[AuditLog]:
+    def list(
+        self,
+        filters: Dict[str, Any] = None,
+        limit: int = None,
+        offset: int = None,
+        order_by: str = None,
+    ) -> List[AuditLog]:
         """
         查询审计日志列表
 
@@ -149,19 +156,27 @@ class AuditDAO(BaseDAO):
                 if "actor" in filters:
                     query = query.filter(AuditLogModel.actor == filters["actor"])
                 if "target_type" in filters:
-                    query = query.filter(AuditLogModel.target_type == filters["target_type"])
+                    query = query.filter(
+                        AuditLogModel.target_type == filters["target_type"]
+                    )
                 if "target_id" in filters:
-                    query = query.filter(AuditLogModel.target_id == filters["target_id"])
+                    query = query.filter(
+                        AuditLogModel.target_id == filters["target_id"]
+                    )
                 if "start_time" in filters:
-                    query = query.filter(AuditLogModel.created_at >= filters["start_time"])
+                    query = query.filter(
+                        AuditLogModel.created_at >= filters["start_time"]
+                    )
                 if "end_time" in filters:
-                    query = query.filter(AuditLogModel.created_at <= filters["end_time"])
+                    query = query.filter(
+                        AuditLogModel.created_at <= filters["end_time"]
+                    )
                 if "search" in filters:
                     search_term = f"%{filters['search']}%"
                     query = query.filter(
                         or_(
                             AuditLogModel.message.like(search_term),
-                            AuditLogModel.actor.like(search_term)
+                            AuditLogModel.actor.like(search_term),
                         )
                     )
 
@@ -218,7 +233,9 @@ class AuditDAO(BaseDAO):
                 if "actor" in filters:
                     query = query.filter(AuditLogModel.actor == filters["actor"])
                 if "target_type" in filters:
-                    query = query.filter(AuditLogModel.target_type == filters["target_type"])
+                    query = query.filter(
+                        AuditLogModel.target_type == filters["target_type"]
+                    )
 
             # 统计数量
             return query.count()
@@ -324,7 +341,7 @@ class AuditDAO(BaseDAO):
             related_asset_id=meta_data.get("related_asset_id"),
             message=model.message,
             details=meta_data,
-            created_at=model.created_at
+            created_at=model.created_at,
         )
 
     def select_by_ids(self, audit_ids: List[str]) -> List[AuditLog]:
@@ -344,9 +361,11 @@ class AuditDAO(BaseDAO):
 
         try:
             # 批量查询 - 一次查询获取所有数据
-            audit_models = session.query(AuditLogModel).filter(
-                AuditLogModel.audit_id.in_(audit_ids)
-            ).all()
+            audit_models = (
+                session.query(AuditLogModel)
+                .filter(AuditLogModel.audit_id.in_(audit_ids))
+                .all()
+            )
 
             # 转换为审计日志对象列表
             return [self._model_to_audit_log(model) for model in audit_models]
@@ -386,7 +405,7 @@ class AuditDAO(BaseDAO):
                     target_id=audit_log.target_id,
                     message=audit_log.message,
                     meta_data=meta_data,
-                    created_at=audit_log.created_at
+                    created_at=audit_log.created_at,
                 )
                 audit_models.append(audit_model)
 

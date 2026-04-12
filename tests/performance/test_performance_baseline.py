@@ -68,7 +68,7 @@ class PerformanceMetric:
                 "max": 0,
                 "median": 0,
                 "p95": 0,
-                "p99": 0
+                "p99": 0,
             }
 
         sorted_times = sorted(self.times)
@@ -80,8 +80,16 @@ class PerformanceMetric:
             "min": min(self.times),
             "max": max(self.times),
             "median": statistics.median(self.times),
-            "p95": sorted_times[int(len(sorted_times) * 0.95)] if len(sorted_times) >= 20 else sorted_times[-1],
-            "p99": sorted_times[int(len(sorted_times) * 0.99)] if len(sorted_times) >= 100 else sorted_times[-1]
+            "p95": (
+                sorted_times[int(len(sorted_times) * 0.95)]
+                if len(sorted_times) >= 20
+                else sorted_times[-1]
+            ),
+            "p99": (
+                sorted_times[int(len(sorted_times) * 0.99)]
+                if len(sorted_times) >= 100
+                else sorted_times[-1]
+            ),
         }
 
 
@@ -91,9 +99,9 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """性能测试初始化"""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("⚡ HermesNexus 性能基线测试")
-        print("="*70)
+        print("=" * 70)
         cls.start_time = time.time()
         cls.metrics = {}
 
@@ -101,9 +109,9 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
     def tearDownClass(cls):
         """生成性能报告"""
         elapsed_time = time.time() - cls.start_time
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print(f"⚡ 性能测试完成 - 总耗时: {elapsed_time:.2f}秒")
-        print("="*70)
+        print("=" * 70)
 
         # 输出性能基线报告
         cls._generate_performance_report()
@@ -127,7 +135,8 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
     def tearDown(self):
         """清理临时资源"""
         import shutil
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+
+        if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
 
     def test_01_asset_crud_performance(self):
@@ -146,7 +155,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                     name=f"性能测试资产-{i}",
                     asset_type=AssetType.LINUX_HOST,
                     status=AssetStatus.ACTIVE,
-                    description="性能测试"
+                    description="性能测试",
                 )
                 self.asset_dao.insert(asset)
                 metric.end(start, True)
@@ -207,11 +216,11 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 self.fail(f"资产删除失败: {e}")
 
         # 记录性能指标
-        self.metrics['asset_insert'] = statistics.mean(insert_times)
-        self.metrics['asset_query'] = statistics.mean(query_times)
-        self.metrics['asset_list'] = statistics.mean(list_times)
-        self.metrics['asset_update'] = statistics.mean(update_times)
-        self.metrics['asset_delete'] = statistics.mean(delete_times)
+        self.metrics["asset_insert"] = statistics.mean(insert_times)
+        self.metrics["asset_query"] = statistics.mean(query_times)
+        self.metrics["asset_list"] = statistics.mean(list_times)
+        self.metrics["asset_update"] = statistics.mean(update_times)
+        self.metrics["asset_delete"] = statistics.mean(delete_times)
 
         # 输出结果
         print(f"   插入性能: {statistics.mean(insert_times)*1000:.2f}ms (平均)")
@@ -220,7 +229,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         print(f"   更新性能: {statistics.mean(update_times)*1000:.2f}ms (平均)")
         print(f"   删除性能: {statistics.mean(delete_times)*1000:.2f}ms (平均)")
 
-        self.__class__.metrics['asset_crud'] = metric.get_stats()
+        self.__class__.metrics["asset_crud"] = metric.get_stats()
 
     def test_02_task_crud_performance(self):
         """测试2: 任务CRUD性能"""
@@ -234,7 +243,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 asset_id=f"perf-task-asset-{i}",
                 name=f"任务测试资产-{i}",
                 asset_type=AssetType.LINUX_HOST,
-                status=AssetStatus.ACTIVE
+                status=AssetStatus.ACTIVE,
             )
             self.asset_dao.insert(asset)
 
@@ -254,7 +263,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                     timeout=30,
                     created_by="perf-test",
                     created_at=datetime.utcnow(),
-                    updated_at=datetime.utcnow()
+                    updated_at=datetime.utcnow(),
                 )
                 self.task_dao.insert(task)
                 metric.end(start, True)
@@ -304,17 +313,17 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 self.fail(f"任务更新失败: {e}")
 
         # 记录性能指标
-        self.metrics['task_insert'] = statistics.mean(insert_times)
-        self.metrics['task_query'] = statistics.mean(query_times)
-        self.metrics['task_list'] = statistics.mean(list_times)
-        self.metrics['task_update'] = statistics.mean(update_times)
+        self.metrics["task_insert"] = statistics.mean(insert_times)
+        self.metrics["task_query"] = statistics.mean(query_times)
+        self.metrics["task_list"] = statistics.mean(list_times)
+        self.metrics["task_update"] = statistics.mean(update_times)
 
         print(f"   插入性能: {statistics.mean(insert_times)*1000:.2f}ms (平均)")
         print(f"   查询性能: {statistics.mean(query_times)*1000:.2f}ms (平均)")
         print(f"   列表性能: {statistics.mean(list_times)*1000:.2f}ms (平均)")
         print(f"   更新性能: {statistics.mean(update_times)*1000:.2f}ms (平均)")
 
-        self.__class__.metrics['task_crud'] = metric.get_stats()
+        self.__class__.metrics["task_crud"] = metric.get_stats()
 
     def test_03_audit_log_performance(self):
         """测试3: 审计日志性能"""
@@ -335,7 +344,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                     actor="perf-test-user",
                     target_type="asset",
                     target_id=f"perf-audit-asset-{i}",
-                    message=f"性能测试审计日志 {i}"
+                    message=f"性能测试审计日志 {i}",
                 )
                 self.audit_dao.insert(audit_log)
                 metric.end(start, True)
@@ -374,7 +383,9 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for i in range(20):
             start = metric.start()
             try:
-                audits = self.audit_dao.query_by_asset(f"perf-audit-asset-{i}", limit=10)
+                audits = self.audit_dao.query_by_asset(
+                    f"perf-audit-asset-{i}", limit=10
+                )
                 metric.end(start, True)
                 target_query_times.append(time.time() - start)
             except Exception as e:
@@ -382,17 +393,17 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 self.fail(f"按目标查询失败: {e}")
 
         # 记录性能指标
-        self.metrics['audit_insert'] = statistics.mean(insert_times)
-        self.metrics['audit_query'] = statistics.mean(query_times)
-        self.metrics['audit_list'] = statistics.mean(list_times)
-        self.metrics['audit_target_query'] = statistics.mean(target_query_times)
+        self.metrics["audit_insert"] = statistics.mean(insert_times)
+        self.metrics["audit_query"] = statistics.mean(query_times)
+        self.metrics["audit_list"] = statistics.mean(list_times)
+        self.metrics["audit_target_query"] = statistics.mean(target_query_times)
 
         print(f"   插入性能: {statistics.mean(insert_times)*1000:.2f}ms (平均)")
         print(f"   查询性能: {statistics.mean(query_times)*1000:.2f}ms (平均)")
         print(f"   列表性能: {statistics.mean(list_times)*1000:.2f}ms (平均)")
         print(f"   按目标查询: {statistics.mean(target_query_times)*1000:.2f}ms (平均)")
 
-        self.__class__.metrics['audit_log'] = metric.get_stats()
+        self.__class__.metrics["audit_log"] = metric.get_stats()
 
     def test_04_complex_query_performance(self):
         """测试4: 复杂查询性能"""
@@ -405,9 +416,17 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
             asset = Asset(
                 asset_id=f"complex-asset-{i}",
                 name=f"复杂查询资产-{i}",
-                asset_type=[AssetType.LINUX_HOST, AssetType.NETWORK_DEVICE, AssetType.IOT_DEVICE][i % 3],
-                status=[AssetStatus.ACTIVE, AssetStatus.INACTIVE, AssetStatus.DECOMMISSIONED][i % 3],
-                description="复杂查询测试"
+                asset_type=[
+                    AssetType.LINUX_HOST,
+                    AssetType.NETWORK_DEVICE,
+                    AssetType.IOT_DEVICE,
+                ][i % 3],
+                status=[
+                    AssetStatus.ACTIVE,
+                    AssetStatus.INACTIVE,
+                    AssetStatus.DECOMMISSIONED,
+                ][i % 3],
+                description="复杂查询测试",
             )
             self.asset_dao.insert(asset)
 
@@ -416,7 +435,9 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         for _ in range(30):
             start = metric.start()
             try:
-                assets = self.asset_dao.list(filters={"asset_type": AssetType.LINUX_HOST}, limit=50)
+                assets = self.asset_dao.list(
+                    filters={"asset_type": AssetType.LINUX_HOST}, limit=50
+                )
                 metric.end(start, True)
                 filter_times.append(time.time() - start)
             except Exception as e:
@@ -464,7 +485,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         print(f"   分页查询: {statistics.mean(pagination_times)*1000:.2f}ms (平均)")
         print(f"   统计查询: {statistics.mean(count_times)*1000:.2f}ms (平均)")
 
-        self.__class__.metrics['complex_query'] = metric.get_stats()
+        self.__class__.metrics["complex_query"] = metric.get_stats()
 
     def test_05_bulk_operations_performance(self):
         """测试5: 批量操作性能"""
@@ -482,7 +503,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                         asset_id=f"bulk-asset-{batch}-{i}",
                         name=f"批量插入资产-{batch}-{i}",
                         asset_type=AssetType.LINUX_HOST,
-                        status=AssetStatus.ACTIVE
+                        status=AssetStatus.ACTIVE,
                     )
                     self.asset_dao.insert(asset)
                 metric.end(start, True)
@@ -504,10 +525,14 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 metric.end(start, False)
                 self.fail(f"批量查询失败: {e}")
 
-        print(f"   批量插入 (20个): {statistics.mean(bulk_insert_times)*1000:.2f}ms (平均)")
-        print(f"   批量查询 (100个): {statistics.mean(bulk_query_times)*1000:.2f}ms (平均)")
+        print(
+            f"   批量插入 (20个): {statistics.mean(bulk_insert_times)*1000:.2f}ms (平均)"
+        )
+        print(
+            f"   批量查询 (100个): {statistics.mean(bulk_query_times)*1000:.2f}ms (平均)"
+        )
 
-        self.__class__.metrics['bulk_operations'] = metric.get_stats()
+        self.__class__.metrics["bulk_operations"] = metric.get_stats()
 
     def test_06_concurrent_operations_performance(self):
         """测试6: 并发操作性能"""
@@ -528,7 +553,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                     asset_id=f"concurrent-asset-{i}",
                     name=f"并发测试资产-{i}",
                     asset_type=AssetType.LINUX_HOST,
-                    status=AssetStatus.ACTIVE
+                    status=AssetStatus.ACTIVE,
                 )
                 self.asset_dao.insert(asset)
                 metric.end(start, True)
@@ -549,22 +574,22 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         print(f"   写入性能: {statistics.mean(write_times)*1000:.2f}ms (平均)")
         print(f"   读取性能: {statistics.mean(read_times)*1000:.2f}ms (平均)")
 
-        self.__class__.metrics['concurrent'] = metric.get_stats()
+        self.__class__.metrics["concurrent"] = metric.get_stats()
 
     @classmethod
     def _generate_performance_report(cls):
         """生成性能基线报告"""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("📊 性能基线报告")
-        print("="*70)
+        print("=" * 70)
 
-        if not hasattr(cls, 'metrics') or not cls.metrics:
+        if not hasattr(cls, "metrics") or not cls.metrics:
             print("没有性能数据")
             return
 
         # 输出各模块性能基线
         for metric_name, metric_data in cls.metrics.items():
-            if isinstance(metric_data, dict) and 'avg' in metric_data:
+            if isinstance(metric_data, dict) and "avg" in metric_data:
                 print(f"\n{metric_data['name']}:")
                 print(f"  调用次数: {metric_data['count']}")
                 print(f"  平均耗时: {metric_data['avg']*1000:.2f}ms")
@@ -575,9 +600,9 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
                 print(f"  P99: {metric_data['p99']*1000:.2f}ms")
 
         # 性能基线总结
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("🎯 性能基线总结")
-        print("="*70)
+        print("=" * 70)
 
         # 识别最慢的操作
         slow_operations = []
@@ -598,7 +623,7 @@ class TestDatabasePerformanceBaseline(unittest.TestCase):
         print("  - P99 响应时间应 < 500ms")
         print("  - 批量操作应优化为 < 50ms/条")
 
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
 
 
 if __name__ == "__main__":

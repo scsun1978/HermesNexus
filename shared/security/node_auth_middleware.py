@@ -12,7 +12,6 @@ from shared.security.node_token_service import get_node_token_service
 from shared.models.node import NodeIdentity
 from shared.models.enums import ErrorCode, create_error_response
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -77,7 +76,9 @@ class NodeAuthMiddleware:
 
         return None
 
-    def check_permission(self, payload: Dict[str, Any], required_permission: str) -> bool:
+    def check_permission(
+        self, payload: Dict[str, Any], required_permission: str
+    ) -> bool:
         """
         检查节点是否具有所需权限
 
@@ -111,9 +112,13 @@ class NodeAuthMiddleware:
         method = request.method
 
         if success:
-            logger.info(f"Node access granted: node={node_id} method={method} url={url}")
+            logger.info(
+                f"Node access granted: node={node_id} method={method} url={url}"
+            )
         else:
-            logger.warning(f"Node access denied: node={node_id} method={method} url={url}")
+            logger.warning(
+                f"Node access denied: node={node_id} method={method} url={url}"
+            )
 
 
 # 全局中间件实例
@@ -141,6 +146,7 @@ def require_node_auth(required_permission: str = None):
         async def execute_task(request: Request):
             ...
     """
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -153,12 +159,12 @@ def require_node_auth(required_permission: str = None):
 
             if not request:
                 # 尝试从kwargs中获取
-                request = kwargs.get('request')
+                request = kwargs.get("request")
 
             if not request:
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="无法获取请求对象"
+                    detail="无法获取请求对象",
                 )
 
             # 获取认证中间件
@@ -170,9 +176,8 @@ def require_node_auth(required_permission: str = None):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail=create_error_response(
-                        ErrorCode.INT_UNAUTHORIZED,
-                        details={"message": "节点认证失败"}
-                    )
+                        ErrorCode.INT_UNAUTHORIZED, details={"message": "节点认证失败"}
+                    ),
                 )
 
             # 检查权限
@@ -185,9 +190,9 @@ def require_node_auth(required_permission: str = None):
                             ErrorCode.INT_PERMISSION_DENIED,
                             details={
                                 "message": "权限不足",
-                                "required_permission": required_permission
-                            }
-                        )
+                                "required_permission": required_permission,
+                            },
+                        ),
                     )
 
             # 记录成功访问
@@ -228,13 +233,15 @@ class NodeAuthValidator:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=create_error_response(
                     ErrorCode.INT_UNAUTHORIZED,
-                    details={"message": "节点认证失败或Token无效"}
-                )
+                    details={"message": "节点认证失败或Token无效"},
+                ),
             )
 
         return payload
 
-    def check_node_permission(self, payload: Dict[str, Any], required_permission: str) -> bool:
+    def check_node_permission(
+        self, payload: Dict[str, Any], required_permission: str
+    ) -> bool:
         """
         检查节点权限
 

@@ -26,7 +26,7 @@ class AuthManager:
                 "role": "admin",
                 "permissions": ["*"],  # 所有权限
                 "created_at": datetime.utcnow(),
-                "expires_at": None  # 永不过期
+                "expires_at": None,  # 永不过期
             }
         }
 
@@ -51,8 +51,15 @@ class AuthManager:
         """禁用认证（测试/运行时切换）"""
         self._auth_enabled = False
 
-    def create_token(self, user_info=None, user_id: str = None, username: str = None, role: str = "user",
-                     permissions: List[str] = None, expires_hours: int = 24) -> str:
+    def create_token(
+        self,
+        user_info=None,
+        user_id: str = None,
+        username: str = None,
+        role: str = "user",
+        permissions: List[str] = None,
+        expires_hours: int = 24,
+    ) -> str:
         """
         创建认证Token
 
@@ -96,7 +103,7 @@ class AuthManager:
             "role": role,
             "permissions": permissions or [],
             "created_at": datetime.utcnow(),
-            "expires_at": expires_at
+            "expires_at": expires_at,
         }
 
         return token
@@ -123,7 +130,10 @@ class AuthManager:
             token_info = self._tokens[token]
 
             # 检查是否过期
-            if token_info["expires_at"] and datetime.utcnow() > token_info["expires_at"]:
+            if (
+                token_info["expires_at"]
+                and datetime.utcnow() > token_info["expires_at"]
+            ):
                 del self._tokens[token]
                 return None
 
@@ -148,7 +158,7 @@ class AuthManager:
             "user_id": user_id,
             "name": name or "API Key",
             "created_at": datetime.utcnow(),
-            "last_used": None
+            "last_used": None,
         }
 
         return api_key

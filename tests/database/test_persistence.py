@@ -10,7 +10,9 @@ import unittest
 from datetime import datetime, timedelta
 
 # 添加项目路径
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_ROOT = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, PROJECT_ROOT)
 
 from shared.database import SQLiteBackend
@@ -57,12 +59,11 @@ class TestDatabasePersistence(unittest.TestCase):
             asset_type=AssetType.LINUX_HOST,
             status=AssetStatus.REGISTERED,
             metadata=AssetMetadata(
-                ip_address="192.168.1.100",
-                hostname="persist.local"
+                ip_address="192.168.1.100", hostname="persist.local"
             ),
             description="Testing data persistence",
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         # 插入数据
@@ -99,7 +100,7 @@ class TestDatabasePersistence(unittest.TestCase):
             created_by="test-user",
             description="Testing task persistence",
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
 
         # 插入数据
@@ -133,7 +134,7 @@ class TestDatabasePersistence(unittest.TestCase):
             target_id="test-task-persist",
             message="Task created for persistence test",
             metadata={"test": "persistence"},
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
 
         # 插入数据
@@ -164,12 +165,11 @@ class TestDatabasePersistence(unittest.TestCase):
                 asset_type=AssetType.LINUX_HOST,
                 status=AssetStatus.REGISTERED,
                 metadata=AssetMetadata(
-                    ip_address=f"192.168.1.{100+i}",
-                    hostname=f"asset{i}.local"
+                    ip_address=f"192.168.1.{100+i}", hostname=f"asset{i}.local"
                 ),
                 description=f"Test asset {i}",
                 created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                updated_at=datetime.utcnow(),
             )
             self.asset_dao.insert(asset)
 
@@ -204,7 +204,7 @@ class TestDatabasePersistence(unittest.TestCase):
             metadata=AssetMetadata(ip_address="192.168.1.1"),
             description="Original description",
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
         self.asset_dao.insert(asset)
 
@@ -234,7 +234,7 @@ class TestDatabasePersistence(unittest.TestCase):
             asset_type=AssetType.LINUX_HOST,
             status=AssetStatus.REGISTERED,
             created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.utcnow(),
         )
         self.asset_dao.insert(asset)
 

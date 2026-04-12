@@ -44,14 +44,18 @@ class NodeDAO(BaseDAO):
                 max_concurrent_tasks=node.max_concurrent_tasks,
                 registered_at=node.registered_at,
                 last_heartbeat=node.last_heartbeat,
-                managed_devices=",".join(node.managed_devices) if node.managed_devices else None,
-                assigned_tasks=",".join(node.assigned_tasks) if node.assigned_tasks else None,
+                managed_devices=(
+                    ",".join(node.managed_devices) if node.managed_devices else None
+                ),
+                assigned_tasks=(
+                    ",".join(node.assigned_tasks) if node.assigned_tasks else None
+                ),
                 description=node.description,
                 location=node.location,
                 tags=",".join(node.tags) if node.tags else None,
                 node_metadata=node.node_metadata,
                 created_by=node.created_by,
-                updated_at=node.updated_at
+                updated_at=node.updated_at,
             )
 
             # 插入数据库
@@ -81,9 +85,9 @@ class NodeDAO(BaseDAO):
 
         try:
             # 查询数据库
-            node_model = session.query(NodeModel).filter(
-                NodeModel.node_id == node_id
-            ).first()
+            node_model = (
+                session.query(NodeModel).filter(NodeModel.node_id == node_id).first()
+            )
 
             if not node_model:
                 return None
@@ -108,9 +112,11 @@ class NodeDAO(BaseDAO):
 
         try:
             # 查询现有节点
-            node_model = session.query(NodeModel).filter(
-                NodeModel.node_id == node.node_id
-            ).first()
+            node_model = (
+                session.query(NodeModel)
+                .filter(NodeModel.node_id == node.node_id)
+                .first()
+            )
 
             if not node_model:
                 raise ValueError(f"Node not found: {node.node_id}")
@@ -121,7 +127,9 @@ class NodeDAO(BaseDAO):
             node_model.auth_token = node.auth_token
             node_model.token_expires_at = node.token_expires_at
             node_model.last_heartbeat = node.last_heartbeat
-            node_model.assigned_tasks = ",".join(node.assigned_tasks) if node.assigned_tasks else None
+            node_model.assigned_tasks = (
+                ",".join(node.assigned_tasks) if node.assigned_tasks else None
+            )
             node_model.updated_at = datetime.now(timezone.utc)
 
             # 提交更改
@@ -136,8 +144,13 @@ class NodeDAO(BaseDAO):
         finally:
             session.close()
 
-    def list(self, filters: Dict[str, Any] = None, limit: int = None,
-            offset: int = None, order_by: str = None) -> List[NodeIdentity]:
+    def list(
+        self,
+        filters: Dict[str, Any] = None,
+        limit: int = None,
+        offset: int = None,
+        order_by: str = None,
+    ) -> List[NodeIdentity]:
         """
         查询节点列表
 
@@ -231,9 +244,9 @@ class NodeDAO(BaseDAO):
 
         try:
             # 查询节点
-            node_model = session.query(NodeModel).filter(
-                NodeModel.node_id == node_id
-            ).first()
+            node_model = (
+                session.query(NodeModel).filter(NodeModel.node_id == node_id).first()
+            )
 
             if not node_model:
                 return False
@@ -289,17 +302,27 @@ class NodeDAO(BaseDAO):
             auth_token=model.auth_token,
             token_expires_at=self._ensure_aware_datetime(model.token_expires_at),
             public_key=model.public_key,
-            capabilities=model.capabilities if isinstance(model.capabilities, dict) else {},
+            capabilities=(
+                model.capabilities if isinstance(model.capabilities, dict) else {}
+            ),
             max_concurrent_tasks=model.max_concurrent_tasks or 3,
             registered_at=self._ensure_aware_datetime(model.registered_at),
             last_heartbeat=self._ensure_aware_datetime(model.last_heartbeat),
-            managed_devices=model.managed_devices.split(",") if model.managed_devices else [],
-            assigned_tasks=model.assigned_tasks.split(",") if model.assigned_tasks else [],
+            managed_devices=(
+                model.managed_devices.split(",") if model.managed_devices else []
+            ),
+            assigned_tasks=(
+                model.assigned_tasks.split(",") if model.assigned_tasks else []
+            ),
             description=model.description,
             location=model.location,
             tags=model.tags.split(",") if model.tags else [],
-            node_metadata=model.node_metadata if isinstance(model.node_metadata, dict) else {},
+            node_metadata=(
+                model.node_metadata if isinstance(model.node_metadata, dict) else {}
+            ),
             created_by=model.created_by,
-            created_at=self._ensure_aware_datetime(model.registered_at),  # Use registered_at as created_at
-            updated_at=self._ensure_aware_datetime(model.updated_at)
+            created_at=self._ensure_aware_datetime(
+                model.registered_at
+            ),  # Use registered_at as created_at
+            updated_at=self._ensure_aware_datetime(model.updated_at),
         )

@@ -49,7 +49,7 @@ class SQLiteBackend(DatabaseBackend):
             self.connection_string,
             connect_args={"check_same_thread": False},
             echo=self.echo,
-            future=True  # 使用SQLAlchemy 2.0风格
+            future=True,  # 使用SQLAlchemy 2.0风格
         )
 
         # 创建会话工厂
@@ -57,7 +57,7 @@ class SQLiteBackend(DatabaseBackend):
             bind=self.engine,
             autocommit=False,
             autoflush=False,
-            expire_on_commit=False  # 避免对象在commit后过期
+            expire_on_commit=False,  # 避免对象在commit后过期
         )
 
     def create_tables(self):
@@ -67,7 +67,13 @@ class SQLiteBackend(DatabaseBackend):
         根据ORM模型定义创建表结构
         """
         # 延迟导入避免循环依赖
-        from shared.database.models import Base, AssetModel, TaskModel, AuditLogModel, NodeModel
+        from shared.database.models import (
+            Base,
+            AssetModel,
+            TaskModel,
+            AuditLogModel,
+            NodeModel,
+        )
 
         # 创建所有表
         Base.metadata.create_all(self.engine)
@@ -146,5 +152,7 @@ class SQLiteBackend(DatabaseBackend):
             "path": self.db_path,
             "connection_string": self.connection_string,
             "file_exists": os.path.exists(self.db_path),
-            "file_size": os.path.getsize(self.db_path) if os.path.exists(self.db_path) else 0
+            "file_size": (
+                os.path.getsize(self.db_path) if os.path.exists(self.db_path) else 0
+            ),
         }

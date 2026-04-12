@@ -7,9 +7,14 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 import uuid
 from shared.models.audit import (
-    AuditLog, AuditLogCreateRequest,
-    AuditLogQueryParams, AuditLogListResponse, AuditStats,
-    AuditAction, AuditCategory, EventLevel
+    AuditLog,
+    AuditLogCreateRequest,
+    AuditLogQueryParams,
+    AuditLogListResponse,
+    AuditStats,
+    AuditAction,
+    AuditCategory,
+    EventLevel,
 )
 
 
@@ -61,7 +66,7 @@ class AuditService:
             user_agent=request.user_agent,
             request_id=request.request_id,
             timestamp=datetime.utcnow(),
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
         )
 
         # 保存审计日志
@@ -118,20 +123,27 @@ class AuditService:
             logs = [log for log in logs if log.target_id == params.target_id]
 
         if params.related_task_id:
-            logs = [log for log in logs if log.related_task_id == params.related_task_id]
+            logs = [
+                log for log in logs if log.related_task_id == params.related_task_id
+            ]
 
         if params.related_node_id:
-            logs = [log for log in logs if log.related_node_id == params.related_node_id]
+            logs = [
+                log for log in logs if log.related_node_id == params.related_node_id
+            ]
 
         if params.related_asset_id:
-            logs = [log for log in logs if log.related_asset_id == params.related_asset_id]
+            logs = [
+                log for log in logs if log.related_asset_id == params.related_asset_id
+            ]
 
         if params.search:
             search_lower = params.search.lower()
             logs = [
-                log for log in logs
-                if search_lower in log.message.lower() or
-                any(search_lower in str(v).lower() for v in log.details.values())
+                log
+                for log in logs
+                if search_lower in log.message.lower()
+                or any(search_lower in str(v).lower() for v in log.details.values())
             ]
 
         if params.start_time:
@@ -158,7 +170,7 @@ class AuditService:
             audit_logs=paged_logs,
             page=params.page,
             page_size=params.page_size,
-            total_pages=total_pages
+            total_pages=total_pages,
         )
 
     def get_logs_by_task(self, task_id: str, limit: int = 100) -> List[AuditLog]:
@@ -248,12 +260,20 @@ class AuditService:
             by_level[level.value] = count
 
         # 时间范围统计
-        events_last_hour = sum(1 for log in logs if log.timestamp >= now - timedelta(hours=1))
-        events_last_day = sum(1 for log in logs if log.timestamp >= now - timedelta(days=1))
-        events_last_week = sum(1 for log in logs if log.timestamp >= now - timedelta(weeks=1))
+        events_last_hour = sum(
+            1 for log in logs if log.timestamp >= now - timedelta(hours=1)
+        )
+        events_last_day = sum(
+            1 for log in logs if log.timestamp >= now - timedelta(days=1)
+        )
+        events_last_week = sum(
+            1 for log in logs if log.timestamp >= now - timedelta(weeks=1)
+        )
 
         # 错误统计
-        error_events = sum(1 for log in logs if log.level in [EventLevel.ERROR, EventLevel.CRITICAL])
+        error_events = sum(
+            1 for log in logs if log.level in [EventLevel.ERROR, EventLevel.CRITICAL]
+        )
         critical_events = sum(1 for log in logs if log.level == EventLevel.CRITICAL)
 
         return AuditStats(
@@ -265,7 +285,7 @@ class AuditService:
             events_last_day=events_last_day,
             events_last_week=events_last_week,
             error_events=error_events,
-            critical_events=critical_events
+            critical_events=critical_events,
         )
 
     def export_logs(self, params: AuditLogExportRequest) -> str:
@@ -287,7 +307,7 @@ class AuditService:
             page=1,
             page_size=params.limit,
             sort_by="timestamp",
-            sort_order="desc"
+            sort_order="desc",
         )
 
         # 查询日志
@@ -297,6 +317,7 @@ class AuditService:
         # 根据格式导出
         if params.format == "json":
             import json
+
             return json.dumps([log.dict() for log in logs], indent=2, default=str)
         elif params.format == "csv":
             import csv
@@ -306,27 +327,41 @@ class AuditService:
             writer = csv.writer(output)
 
             # 写入标题行
-            writer.writerow([
-                "审计ID", "动作", "分类", "级别", "操作者", "目标类型", "目标ID",
-                "关联任务", "关联节点", "关联资产", "消息", "时间戳"
-            ])
+            writer.writerow(
+                [
+                    "审计ID",
+                    "动作",
+                    "分类",
+                    "级别",
+                    "操作者",
+                    "目标类型",
+                    "目标ID",
+                    "关联任务",
+                    "关联节点",
+                    "关联资产",
+                    "消息",
+                    "时间戳",
+                ]
+            )
 
             # 写入数据行
             for log in logs:
-                writer.writerow([
-                    log.audit_id,
-                    log.action.value,
-                    log.category.value,
-                    log.level.value,
-                    log.actor,
-                    log.target_type,
-                    log.target_id or "",
-                    log.related_task_id or "",
-                    log.related_node_id or "",
-                    log.related_asset_id or "",
-                    log.message,
-                    log.timestamp.isoformat()
-                ])
+                writer.writerow(
+                    [
+                        log.audit_id,
+                        log.action.value,
+                        log.category.value,
+                        log.level.value,
+                        log.actor,
+                        log.target_type,
+                        log.target_id or "",
+                        log.related_task_id or "",
+                        log.related_node_id or "",
+                        log.related_asset_id or "",
+                        log.message,
+                        log.timestamp.isoformat(),
+                    ]
+                )
 
             return output.getvalue()
         else:
@@ -346,7 +381,9 @@ def get_audit_service() -> AuditService:
 
 
 # 便捷函数：记录常用事件
-def log_task_created(task_id: str, task_name: str, actor: str, details: Dict[str, Any] = None):
+def log_task_created(
+    task_id: str, task_name: str, actor: str, details: Dict[str, Any] = None
+):
     """记录任务创建事件"""
     service = get_audit_service()
     return service.log_action(
@@ -359,12 +396,18 @@ def log_task_created(task_id: str, task_name: str, actor: str, details: Dict[str
             target_id=task_id,
             related_task_id=task_id,
             message=f"创建任务: {task_name}",
-            details=details or {}
+            details=details or {},
         )
     )
 
 
-def log_task_succeeded(task_id: str, task_name: str, node_id: str, actor: str, details: Dict[str, Any] = None):
+def log_task_succeeded(
+    task_id: str,
+    task_name: str,
+    node_id: str,
+    actor: str,
+    details: Dict[str, Any] = None,
+):
     """记录任务成功事件"""
     service = get_audit_service()
     return service.log_action(
@@ -379,12 +422,19 @@ def log_task_succeeded(task_id: str, task_name: str, node_id: str, actor: str, d
             related_task_id=task_id,
             related_node_id=node_id,
             message=f"任务执行成功: {task_name}",
-            details=details or {}
+            details=details or {},
         )
     )
 
 
-def log_task_failed(task_id: str, task_name: str, node_id: str, error_message: str, actor: str, details: Dict[str, Any] = None):
+def log_task_failed(
+    task_id: str,
+    task_name: str,
+    node_id: str,
+    error_message: str,
+    actor: str,
+    details: Dict[str, Any] = None,
+):
     """记录任务失败事件"""
     service = get_audit_service()
     return service.log_action(
@@ -399,15 +449,14 @@ def log_task_failed(task_id: str, task_name: str, node_id: str, error_message: s
             related_task_id=task_id,
             related_node_id=node_id,
             message=f"任务执行失败: {task_name}",
-            details={
-                "error_message": error_message,
-                **(details or {})
-            }
+            details={"error_message": error_message, **(details or {})},
         )
     )
 
 
-def log_node_online(node_id: str, node_name: str, actor: str, details: Dict[str, Any] = None):
+def log_node_online(
+    node_id: str, node_name: str, actor: str, details: Dict[str, Any] = None
+):
     """记录节点上线事件"""
     service = get_audit_service()
     return service.log_action(
@@ -421,12 +470,14 @@ def log_node_online(node_id: str, node_name: str, actor: str, details: Dict[str,
             target_id=node_id,
             related_node_id=node_id,
             message=f"节点上线: {node_name}",
-            details=details or {}
+            details=details or {},
         )
     )
 
 
-def log_node_offline(node_id: str, node_name: str, actor: str, details: Dict[str, Any] = None):
+def log_node_offline(
+    node_id: str, node_name: str, actor: str, details: Dict[str, Any] = None
+):
     """记录节点离线事件"""
     service = get_audit_service()
     return service.log_action(
@@ -440,6 +491,6 @@ def log_node_offline(node_id: str, node_name: str, actor: str, details: Dict[str
             target_id=node_id,
             related_node_id=node_id,
             message=f"节点离线: {node_name}",
-            details=details or {}
+            details=details or {},
         )
     )

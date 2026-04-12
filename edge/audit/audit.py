@@ -39,7 +39,7 @@ class AuditLogger:
         details: Optional[Dict[str, Any]] = None,
         ip_address: Optional[str] = None,
         success: bool = True,
-        error_message: Optional[str] = None
+        error_message: Optional[str] = None,
     ):
         """记录审计日志"""
         try:
@@ -53,14 +53,14 @@ class AuditLogger:
                     "details": details or {},
                     "ip_address": ip_address,
                     "success": success,
-                    "error_message": error_message
+                    "error_message": error_message,
                 }
 
                 # 追加到内存缓存
                 self.logs.append(audit_entry)
 
                 # 追加到审计日志文件
-                with open(self.audit_file, 'a') as f:
+                with open(self.audit_file, "a") as f:
                     f.write(json.dumps(audit_entry) + "\n")
 
                 logger.debug(f"📝 审计日志记录: {action} by {actor}")
@@ -69,11 +69,7 @@ class AuditLogger:
             logger.error(f"❌ 记录审计日志失败: {e}")
 
     def log_ssh_command(
-        self,
-        host: str,
-        command: str,
-        result: Dict[str, Any],
-        actor: str = "edge_node"
+        self, host: str, command: str, result: Dict[str, Any], actor: str = "edge_node"
     ):
         """记录SSH命令执行"""
         self.log(
@@ -86,10 +82,10 @@ class AuditLogger:
                 "command": command,
                 "exit_code": result.get("exit_code"),
                 "execution_time": result.get("execution_time"),
-                "success": result.get("success", False)
+                "success": result.get("success", False),
             },
             success=result.get("success", False),
-            error_message=result.get("error")
+            error_message=result.get("error"),
         )
 
     def log_ssh_connection(
@@ -97,7 +93,7 @@ class AuditLogger:
         host: str,
         username: str,
         success: bool,
-        error_message: Optional[str] = None
+        error_message: Optional[str] = None,
     ):
         """记录SSH连接"""
         self.log(
@@ -105,13 +101,9 @@ class AuditLogger:
             actor=username,
             resource_type="ssh_connection",
             resource_id=host,
-            details={
-                "host": host,
-                "username": username,
-                "port": 22
-            },
+            details={"host": host, "username": username, "port": 22},
             success=success,
-            error_message=error_message
+            error_message=error_message,
         )
 
     def get_recent_logs(self, limit: int = 100) -> list:
@@ -120,7 +112,7 @@ class AuditLogger:
             if not self.audit_file.exists():
                 return []
 
-            with open(self.audit_file, 'r') as f:
+            with open(self.audit_file, "r") as f:
                 lines = f.readlines()
 
             # 获取最近的日志
@@ -145,7 +137,7 @@ class AuditLogger:
         action: Optional[str] = None,
         actor: Optional[str] = None,
         resource_type: Optional[str] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> list:
         """搜索审计日志"""
         try:

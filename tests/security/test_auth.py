@@ -9,11 +9,17 @@ import os
 import unittest
 
 # 添加项目路径
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_ROOT = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, PROJECT_ROOT)
 
 from shared.security.auth_manager import AuthManager
-from shared.security.permissions import Permission, PermissionChecker, get_required_permissions
+from shared.security.permissions import (
+    Permission,
+    PermissionChecker,
+    get_required_permissions,
+)
 
 
 class TestAuthentication(unittest.TestCase):
@@ -30,7 +36,7 @@ class TestAuthentication(unittest.TestCase):
             user_id="user-001",
             username="testuser",
             role="user",
-            permissions=["asset:read", "task:read"]
+            permissions=["asset:read", "task:read"],
         )
 
         self.assertIsNotNone(token)
@@ -58,8 +64,7 @@ class TestAuthentication(unittest.TestCase):
         """测试API Key创建和验证"""
         # 创建API Key
         api_key = self.auth_manager.create_api_key(
-            user_id="user-001",
-            name="Test API Key"
+            user_id="user-001", name="Test API Key"
         )
 
         self.assertIsNotNone(api_key)
@@ -77,10 +82,7 @@ class TestAuthentication(unittest.TestCase):
         """测试Token过期"""
         # 创建1小时过期的Token
         token = self.auth_manager.create_token(
-            user_id="user-001",
-            username="testuser",
-            role="user",
-            expires_hours=1
+            user_id="user-001", username="testuser", role="user", expires_hours=1
         )
 
         # Token应该有效
@@ -96,9 +98,7 @@ class TestAuthentication(unittest.TestCase):
         """测试Token撤销"""
         # 创建Token
         token = self.auth_manager.create_token(
-            user_id="user-001",
-            username="testuser",
-            role="user"
+            user_id="user-001", username="testuser", role="user"
         )
 
         # 验证Token有效
@@ -119,8 +119,7 @@ class TestAuthentication(unittest.TestCase):
         """测试API Key撤销"""
         # 创建API Key
         api_key = self.auth_manager.create_api_key(
-            user_id="user-001",
-            name="Test API Key"
+            user_id="user-001", name="Test API Key"
         )
 
         # 验证API Key有效
@@ -227,7 +226,7 @@ class TestAuthManagerIntegration(unittest.TestCase):
             user_id="user-001",
             username="testuser",
             role="user",
-            permissions=["asset:read", "task:read"]
+            permissions=["asset:read", "task:read"],
         )
 
         # 检查权限

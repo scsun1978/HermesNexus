@@ -11,23 +11,25 @@ from pydantic import BaseModel, Field, validator
 
 class TaskType(str, Enum):
     """任务类型"""
-    BASIC_EXEC = "basic_exec"      # 基础命令执行
+
+    BASIC_EXEC = "basic_exec"  # 基础命令执行
     SCRIPT_TRANSFER = "script_transfer"  # 脚本传输执行
-    FILE_TRANSFER = "file_transfer"      # 文件传输
-    SYSTEM_INFO = "system_info"    # 系统信息查询
-    CUSTOM = "custom"              # 自定义任务
+    FILE_TRANSFER = "file_transfer"  # 文件传输
+    SYSTEM_INFO = "system_info"  # 系统信息查询
+    CUSTOM = "custom"  # 自定义任务
 
 
 class TaskStatus(str, Enum):
     """任务状态"""
-    PENDING = "pending"            # 待调度
-    ASSIGNED = "assigned"          # 已分配给节点
-    RUNNING = "running"            # 执行中
-    SUCCEEDED = "succeeded"        # 成功完成
-    COMPLETED = "succeeded"        # 兼容旧测试/旧API
-    FAILED = "failed"              # 执行失败
-    TIMEOUT = "timeout"            # 执行超时
-    CANCELLED = "cancelled"        # 已取消
+
+    PENDING = "pending"  # 待调度
+    ASSIGNED = "assigned"  # 已分配给节点
+    RUNNING = "running"  # 执行中
+    SUCCEEDED = "succeeded"  # 成功完成
+    COMPLETED = "succeeded"  # 兼容旧测试/旧API
+    FAILED = "failed"  # 执行失败
+    TIMEOUT = "timeout"  # 执行超时
+    CANCELLED = "cancelled"  # 已取消
 
     @classmethod
     def _missing_(cls, value):
@@ -35,11 +37,16 @@ class TaskStatus(str, Enum):
             return cls.SUCCEEDED
         return super()._missing_(value)
 
-    def can_transition_to(self, new_status: 'TaskStatus') -> bool:
+    def can_transition_to(self, new_status: "TaskStatus") -> bool:
         valid_transitions = {
             TaskStatus.PENDING: [TaskStatus.ASSIGNED, TaskStatus.CANCELLED],
             TaskStatus.ASSIGNED: [TaskStatus.RUNNING, TaskStatus.CANCELLED],
-            TaskStatus.RUNNING: [TaskStatus.SUCCEEDED, TaskStatus.FAILED, TaskStatus.TIMEOUT, TaskStatus.CANCELLED],
+            TaskStatus.RUNNING: [
+                TaskStatus.SUCCEEDED,
+                TaskStatus.FAILED,
+                TaskStatus.TIMEOUT,
+                TaskStatus.CANCELLED,
+            ],
             TaskStatus.SUCCEEDED: [],
             TaskStatus.FAILED: [],
             TaskStatus.TIMEOUT: [],
@@ -48,11 +55,17 @@ class TaskStatus(str, Enum):
         return new_status in valid_transitions.get(self, [])
 
     def is_terminal(self) -> bool:
-        return self in [TaskStatus.SUCCEEDED, TaskStatus.FAILED, TaskStatus.TIMEOUT, TaskStatus.CANCELLED]
+        return self in [
+            TaskStatus.SUCCEEDED,
+            TaskStatus.FAILED,
+            TaskStatus.TIMEOUT,
+            TaskStatus.CANCELLED,
+        ]
 
 
 class TaskPriority(str, Enum):
     """任务优先级"""
+
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -61,6 +74,7 @@ class TaskPriority(str, Enum):
 
 class TaskExecutionResult(BaseModel):
     """任务执行结果"""
+
     exit_code: Optional[int] = Field(None, description="退出码")
     stdout: Optional[str] = Field(None, description="标准输出")
     stderr: Optional[str] = Field(None, description="标准错误输出")
@@ -84,18 +98,21 @@ class TaskExecutionResult(BaseModel):
                 "output_size": 1024,
                 "execution_time": 0.5,
                 "started_at": "2026-04-12T15:30:00Z",
-                "completed_at": "2026-04-12T15:30:01Z"
+                "completed_at": "2026-04-12T15:30:01Z",
             }
         }
 
 
 class Task(BaseModel):
     """任务模型"""
+
     task_id: str = Field(..., description="任务唯一标识")
     name: str = Field(..., description="任务名称", min_length=1, max_length=255)
     task_type: TaskType = Field(..., description="任务类型")
     status: TaskStatus = Field(default=TaskStatus.PENDING, description="任务状态")
-    priority: TaskPriority = Field(default=TaskPriority.NORMAL, description="任务优先级")
+    priority: TaskPriority = Field(
+        default=TaskPriority.NORMAL, description="任务优先级"
+    )
 
     # 目标信息
     target_asset_id: str = Field(..., description="目标资产ID")
@@ -123,8 +140,12 @@ class Task(BaseModel):
 
     # 创建信息
     created_by: str = Field(..., description="创建者")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="创建时间")
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="更新时间")
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="创建时间"
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc), description="更新时间"
+    )
 
     # 描述和标签
     description: Optional[str] = Field(None, description="任务描述", max_length=1000)
@@ -149,31 +170,34 @@ class Task(BaseModel):
                 "retry_count": 0,
                 "created_by": "admin",
                 "created_at": "2026-04-12T10:00:00Z",
-                "description": "查询系统详细信息"
+                "description": "查询系统详细信息",
             }
         }
 
-    @validator('task_id')
+    @validator("task_id")
     def validate_task_id(cls, v):
         """验证任务ID格式"""
         if not v or len(v.strip()) == 0:
-            raise ValueError('task_id cannot be empty')
+            raise ValueError("task_id cannot be empty")
         return v.strip()
 
-    @validator('name')
+    @validator("name")
     def validate_name(cls, v):
         """验证任务名称"""
         if not v or len(v.strip()) == 0:
-            raise ValueError('name cannot be empty')
+            raise ValueError("name cannot be empty")
         return v.strip()
 
 
 class TaskCreateRequest(BaseModel):
     """任务创建请求"""
+
     task_id: Optional[str] = Field(None, description="任务ID（不指定则自动生成）")
     name: str = Field(..., description="任务名称", min_length=1, max_length=255)
     task_type: TaskType = Field(default=TaskType.BASIC_EXEC, description="任务类型")
-    priority: TaskPriority = Field(default=TaskPriority.NORMAL, description="任务优先级")
+    priority: TaskPriority = Field(
+        default=TaskPriority.NORMAL, description="任务优先级"
+    )
 
     # 目标信息
     target_asset_id: str = Field(..., description="目标资产ID")
@@ -206,14 +230,17 @@ class TaskCreateRequest(BaseModel):
                 "target_asset_id": "asset-001",
                 "command": "uname -a",
                 "timeout": 30,
-                "description": "查询系统详细信息"
+                "description": "查询系统详细信息",
             }
         }
 
 
 class TaskUpdateRequest(BaseModel):
     """任务更新请求"""
-    name: Optional[str] = Field(None, description="任务名称", min_length=1, max_length=255)
+
+    name: Optional[str] = Field(
+        None, description="任务名称", min_length=1, max_length=255
+    )
     priority: Optional[TaskPriority] = Field(None, description="任务优先级")
     status: Optional[TaskStatus] = Field(None, description="任务状态")
     description: Optional[str] = Field(None, description="任务描述", max_length=1000)
@@ -221,16 +248,12 @@ class TaskUpdateRequest(BaseModel):
     metadata: Optional[Dict[str, Any]] = Field(None, description="任务元数据")
 
     class Config:
-        json_schema_extra = {
-            "example": {
-                "priority": "high",
-                "status": "cancelled"
-            }
-        }
+        json_schema_extra = {"example": {"priority": "high", "status": "cancelled"}}
 
 
 class TaskListResponse(BaseModel):
     """任务列表响应"""
+
     total: int = Field(..., description="总数量")
     tasks: List[Task] = Field(..., description="任务列表")
     page: int = Field(..., description="当前页码")
@@ -244,13 +267,14 @@ class TaskListResponse(BaseModel):
                 "tasks": [],
                 "page": 1,
                 "page_size": 20,
-                "total_pages": 10
+                "total_pages": 10,
             }
         }
 
 
 class TaskQueryParams(BaseModel):
     """任务查询参数"""
+
     task_type: Optional[TaskType] = Field(None, description="按任务类型过滤")
     status: Optional[TaskStatus] = Field(None, description="按状态过滤")
     priority: Optional[TaskPriority] = Field(None, description="按优先级过滤")
@@ -273,17 +297,20 @@ class TaskQueryParams(BaseModel):
                 "page": 1,
                 "page_size": 20,
                 "sort_by": "created_at",
-                "sort_order": "desc"
+                "sort_order": "desc",
             }
         }
 
 
 class TaskStats(BaseModel):
     """任务统计信息"""
+
     total_tasks: int = Field(..., description="总任务数")
     by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
     by_status: Dict[str, int] = Field(default_factory=dict, description="按状态统计")
-    by_priority: Dict[str, int] = Field(default_factory=dict, description="按优先级统计")
+    by_priority: Dict[str, int] = Field(
+        default_factory=dict, description="按优先级统计"
+    )
 
     # 执行统计
     running_tasks: int = Field(..., description="运行中任务数")
@@ -302,7 +329,7 @@ class TaskStats(BaseModel):
                     "basic_exec": 1200,
                     "script_transfer": 200,
                     "file_transfer": 80,
-                    "system_info": 20
+                    "system_info": 20,
                 },
                 "by_status": {
                     "pending": 50,
@@ -311,41 +338,40 @@ class TaskStats(BaseModel):
                     "succeeded": 1300,
                     "failed": 80,
                     "timeout": 15,
-                    "cancelled": 5
+                    "cancelled": 5,
                 },
-                "by_priority": {
-                    "low": 200,
-                    "normal": 1000,
-                    "high": 250,
-                    "urgent": 50
-                },
+                "by_priority": {"low": 200, "normal": 1000, "high": 250, "urgent": 50},
                 "running_tasks": 20,
                 "pending_tasks": 50,
                 "completed_tasks": 1380,
                 "failed_tasks": 95,
-                "success_rate": 93.5
+                "success_rate": 93.5,
             }
         }
 
 
 class TaskDispatchRequest(BaseModel):
     """任务分发请求"""
+
     task_ids: List[str] = Field(..., description="要分发的任务ID列表")
     target_node_id: str = Field(..., description="目标节点ID")
-    dispatch_strategy: str = Field("batch", description="分发策略: batch, round_robin, least_loaded")
+    dispatch_strategy: str = Field(
+        "batch", description="分发策略: batch, round_robin, least_loaded"
+    )
 
     class Config:
         json_schema_extra = {
             "example": {
                 "task_ids": ["task-001", "task-002", "task-003"],
                 "target_node_id": "node-001",
-                "dispatch_strategy": "batch"
+                "dispatch_strategy": "batch",
             }
         }
 
 
 class TaskResultSubmit(BaseModel):
     """任务结果提交"""
+
     task_id: str = Field(..., description="任务ID")
     node_id: str = Field(..., description="执行节点ID")
     status: TaskStatus = Field(..., description="最终状态")
@@ -361,7 +387,7 @@ class TaskResultSubmit(BaseModel):
                     "exit_code": 0,
                     "stdout": "Linux localhost 5.15.0-72-generic",
                     "stderr": "",
-                    "execution_time": 0.5
-                }
+                    "execution_time": 0.5,
+                },
             }
         }

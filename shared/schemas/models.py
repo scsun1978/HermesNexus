@@ -10,9 +10,18 @@ from pydantic import BaseModel, Field, field_validator, field_serializer
 import uuid
 
 from .enums import (
-    NodeStatus, DeviceType, DeviceProtocol, DeviceStatus,
-    JobStatus, JobType, TaskType, TaskPriority,
-    EventType, EventLevel, UserRole, AuditAction
+    NodeStatus,
+    DeviceType,
+    DeviceProtocol,
+    DeviceStatus,
+    JobStatus,
+    JobType,
+    TaskType,
+    TaskPriority,
+    EventType,
+    EventLevel,
+    UserRole,
+    AuditAction,
 )
 
 
@@ -23,6 +32,7 @@ def get_utc_now() -> datetime:
 
 class Node(BaseModel):
     """节点模型"""
+
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     node_id: str = Field(..., min_length=1, max_length=255)
     name: str = Field(..., min_length=1, max_length=255)
@@ -33,17 +43,16 @@ class Node(BaseModel):
     created_at: datetime = Field(default_factory=get_utc_now)
     updated_at: datetime = Field(default_factory=get_utc_now)
 
-    @field_serializer('last_heartbeat', 'created_at', 'updated_at')
+    @field_serializer("last_heartbeat", "created_at", "updated_at")
     def serialize_datetime(self, dt: Optional[datetime]) -> Optional[str]:
         if dt is None:
             return None
         return dt.isoformat()
 
 
-
-
 class Device(BaseModel):
     """设备模型"""
+
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     device_id: str = Field(..., min_length=1, max_length=255)
     name: str = Field(..., min_length=1, max_length=255)
@@ -60,17 +69,16 @@ class Device(BaseModel):
     created_at: datetime = Field(default_factory=get_utc_now)
     updated_at: datetime = Field(default_factory=get_utc_now)
 
-    @field_serializer('last_seen', 'created_at', 'updated_at')
+    @field_serializer("last_seen", "created_at", "updated_at")
     def serialize_datetime(self, dt: Optional[datetime]) -> Optional[str]:
         if dt is None:
             return None
         return dt.isoformat()
 
 
-
-
 class Job(BaseModel):
     """任务模型"""
+
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     job_id: str = Field(..., min_length=1, max_length=255)
     name: str = Field(..., min_length=1, max_length=255)
@@ -95,17 +103,16 @@ class Job(BaseModel):
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
 
-    @field_serializer('created_at', 'updated_at', 'started_at', 'completed_at')
+    @field_serializer("created_at", "updated_at", "started_at", "completed_at")
     def serialize_datetime(self, dt: Optional[datetime]) -> Optional[str]:
         if dt is None:
             return None
         return dt.isoformat()
 
 
-
-
 class Event(BaseModel):
     """事件模型"""
+
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     event_id: str = Field(..., min_length=1, max_length=255)
     type: EventType
@@ -120,15 +127,14 @@ class Event(BaseModel):
     related_node_id: Optional[str] = None
     timestamp: datetime = Field(default_factory=get_utc_now)
 
-    @field_serializer('timestamp')
+    @field_serializer("timestamp")
     def serialize_datetime(self, dt: datetime) -> str:
         return dt.isoformat()
 
 
-
-
 class User(BaseModel):
     """用户模型"""
+
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     username: str = Field(..., min_length=1, max_length=100)
     email: str = Field(..., min_length=5, max_length=255)
@@ -137,20 +143,21 @@ class User(BaseModel):
     created_at: datetime = Field(default_factory=get_utc_now)
     updated_at: datetime = Field(default_factory=get_utc_now)
 
-    @field_validator('email')
+    @field_validator("email")
     def email_format(cls, v):
         """验证邮箱格式"""
-        if '@' not in v:
-            raise ValueError('邮箱格式不正确')
+        if "@" not in v:
+            raise ValueError("邮箱格式不正确")
         return v
 
-    @field_serializer('created_at', 'updated_at')
+    @field_serializer("created_at", "updated_at")
     def serialize_datetime(self, dt: datetime) -> str:
         return dt.isoformat()
 
 
 class AuditLog(BaseModel):
     """审计日志模型"""
+
     id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
     action: AuditAction
     actor: str = Field(..., min_length=1)
@@ -165,6 +172,6 @@ class AuditLog(BaseModel):
     error_message: Optional[str] = None
     timestamp: datetime = Field(default_factory=get_utc_now)
 
-    @field_serializer('timestamp')
+    @field_serializer("timestamp")
     def serialize_datetime(self, dt: datetime) -> str:
         return dt.isoformat()
