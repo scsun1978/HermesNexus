@@ -50,7 +50,8 @@ mkdocs-mermaid2-plugin==1.1.1
 mkdocs-redirects==1.2.1
 
 # API 文档
-redoc==2.0.0
+# redoc package is not available on PyPI; skip in CI until the docs pipeline
+# is updated to use a valid published package or local vendor source.
 
 # ===== CI/CD =====
 # 预提交钩子
