@@ -7,7 +7,7 @@ import unittest
 import tempfile
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import sys
@@ -91,7 +91,7 @@ class TestNodeIdentity(unittest.TestCase):
             region_id="region-001",
             status=NodeStatus.REGISTERED,
             max_concurrent_tasks=5,
-            registered_at=datetime.utcnow()
+            registered_at=datetime.now(timezone.utc)
         )
 
         # 插入
@@ -145,7 +145,7 @@ class TestNodeIdentity(unittest.TestCase):
 
         # 验证Token过期时间
         expires_at = token_info.expires_at
-        self.assertTrue(expires_at > datetime.utcnow())
+        self.assertTrue(expires_at > datetime.now(timezone.utc))
 
         print("  ✅ Token生成和验证测试通过")
         print(f"     - Token有效期至: {expires_at}")
@@ -188,7 +188,7 @@ class TestNodeIdentity(unittest.TestCase):
             tenant_id="tenant-001",
             region_id="region-001",
             status=NodeStatus.ACTIVE,
-            last_heartbeat=datetime.utcnow()
+            last_heartbeat=datetime.now(timezone.utc)
         )
 
         # 测试活跃性检查
@@ -297,7 +297,7 @@ class TestNodeAuthIntegration(unittest.TestCase):
             description=registration_request.description,
             location=registration_request.location,
             tags=registration_request.tags,
-            registered_at=datetime.utcnow()
+            registered_at=datetime.now(timezone.utc)
         )
 
         # 保存到数据库
@@ -374,7 +374,7 @@ class TestNodeAuthIntegration(unittest.TestCase):
             region_id="region-001",
             status=NodeStatus.ACTIVE,
             max_concurrent_tasks=3,
-            last_heartbeat=datetime.utcnow()  # 最近的心跳
+            last_heartbeat=datetime.now(timezone.utc)  # 最近的心跳
         )
 
         inactive_node = NodeIdentity(
@@ -384,7 +384,7 @@ class TestNodeAuthIntegration(unittest.TestCase):
             tenant_id="tenant-001",
             region_id="region-001",
             status=NodeStatus.INACTIVE,
-            last_heartbeat=datetime.utcnow() - timedelta(minutes=10)  # 10分钟前的心跳
+            last_heartbeat=datetime.now(timezone.utc) - timedelta(minutes=10)  # 10分钟前的心跳
         )
 
         # 为活跃节点生成Token
