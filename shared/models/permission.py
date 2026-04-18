@@ -116,14 +116,18 @@ class PermissionContext(BaseModel):
     allowed_asset_types: List[str] = Field(
         default_factory=list, description="允许操作的设备类型"
     )
-    allowed_regions: List[str] = Field(default_factory=list, description="允许操作的区域")
+    allowed_regions: List[str] = Field(
+        default_factory=list, description="允许操作的区域"
+    )
 
     # 时间限制
     not_before: Optional[int] = Field(None, description="权限生效时间（Unix时间戳）")
     not_after: Optional[int] = Field(None, description="权限失效时间（Unix时间戳）")
 
     # 额外属性
-    attributes: Dict[str, Any] = Field(default_factory=dict, description="额外的权限属性")
+    attributes: Dict[str, Any] = Field(
+        default_factory=dict, description="额外的权限属性"
+    )
 
     class Config:
         json_schema_extra = {
@@ -147,7 +151,9 @@ class PermissionCheckResult(BaseModel):
     reason: str = Field(default="", description="拒绝原因（如果拒绝）")
     risk_level: RiskLevel = Field(..., description="操作风险等级")
     requires_approval: bool = Field(default=False, description="是否需要审批")
-    missing_permissions: List[str] = Field(default_factory=list, description="缺失的权限列表")
+    missing_permissions: List[str] = Field(
+        default_factory=list, description="缺失的权限列表"
+    )
 
     class Config:
         json_schema_extra = {
@@ -179,11 +185,17 @@ class PermissionMatrix(BaseModel):
     )
 
     # 白名单和黑名单
-    whitelist: List[str] = Field(default_factory=list, description="白名单：无条件允许的权限表达式")
-    blacklist: List[str] = Field(default_factory=list, description="黑名单：无条件拒绝的权限表达式")
+    whitelist: List[str] = Field(
+        default_factory=list, description="白名单：无条件允许的权限表达式"
+    )
+    blacklist: List[str] = Field(
+        default_factory=list, description="黑名单：无条件拒绝的权限表达式"
+    )
 
     # 高危动作定义
-    high_risk_actions: List[str] = Field(default_factory=list, description="高风险动作列表")
+    high_risk_actions: List[str] = Field(
+        default_factory=list, description="高风险动作列表"
+    )
 
     # 版本控制
     version: str = Field(default="1.1.0", description="权限矩阵版本")

@@ -86,7 +86,9 @@ class AuditLog(BaseModel):
 
     # 操作者信息
     actor: str = Field(..., description="操作发起者")
-    actor_type: str = Field(default="user", description="操作者类型: user, system, node")
+    actor_type: str = Field(
+        default="user", description="操作者类型: user, system, node"
+    )
 
     # 目标信息
     target_type: str = Field(..., description="目标对象类型: task, node, asset, system")
@@ -414,7 +416,9 @@ class SecurityAuditLog(BaseModel):
     level: EventLevel = Field(default=EventLevel.INFO, description="事件级别")
 
     # Phase 3 扩展字段
-    security_event_type: Optional[SecurityEventType] = Field(None, description="安全事件类型")
+    security_event_type: Optional[SecurityEventType] = Field(
+        None, description="安全事件类型"
+    )
     result: ActionResult = Field(default=ActionResult.SUCCESS, description="操作结果")
     risk_level: Optional[RiskLevel] = Field(None, description="风险等级")
 
@@ -511,7 +515,9 @@ class SecurityEvent(BaseModel):
     # 事件详情
     title: str = Field(..., description="事件标题")
     description: str = Field(..., description="事件描述")
-    affected_resources: List[str] = Field(default_factory=list, description="受影响的资源")
+    affected_resources: List[str] = Field(
+        default_factory=list, description="受影响的资源"
+    )
 
     # 攻击者信息
     attacker_id: Optional[str] = Field(None, description="攻击者ID")
@@ -524,12 +530,16 @@ class SecurityEvent(BaseModel):
 
     # 响应信息
     response_status: str = Field(default="detected", description="响应状态")
-    response_actions: List[str] = Field(default_factory=list, description="已采取的响应动作")
+    response_actions: List[str] = Field(
+        default_factory=list, description="已采取的响应动作"
+    )
 
     # 上下文
     context: Dict[str, Any] = Field(default_factory=dict, description="事件上下文")
     correlation_id: Optional[str] = Field(None, description="关联ID")
-    related_audit_logs: List[str] = Field(default_factory=list, description="相关审计日志ID")
+    related_audit_logs: List[str] = Field(
+        default_factory=list, description="相关审计日志ID"
+    )
 
     class Config:
         json_schema_extra = {
@@ -562,11 +572,15 @@ class ComplianceReport(BaseModel):
 
     # 统计信息
     total_events: int = Field(..., description="总事件数")
-    events_by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
+    events_by_type: Dict[str, int] = Field(
+        default_factory=dict, description="按类型统计"
+    )
     events_by_severity: Dict[str, int] = Field(
         default_factory=dict, description="按严重程度统计"
     )
-    events_by_actor: Dict[str, int] = Field(default_factory=dict, description="按操作者统计")
+    events_by_actor: Dict[str, int] = Field(
+        default_factory=dict, description="按操作者统计"
+    )
 
     # 安全指标
     auth_success_rate: float = Field(..., description="认证成功率")
@@ -609,21 +623,29 @@ class AuditStatisticsExtended(BaseModel):
 
     # 总体统计
     total_events: int = Field(..., description="总事件数")
-    events_by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
-    events_by_result: Dict[str, int] = Field(default_factory=dict, description="按结果统计")
+    events_by_type: Dict[str, int] = Field(
+        default_factory=dict, description="按类型统计"
+    )
+    events_by_result: Dict[str, int] = Field(
+        default_factory=dict, description="按结果统计"
+    )
     events_by_risk_level: Dict[str, int] = Field(
         default_factory=dict, description="按风险等级统计"
     )
 
     # 时间统计
-    events_by_hour: Dict[str, int] = Field(default_factory=dict, description="按小时统计")
+    events_by_hour: Dict[str, int] = Field(
+        default_factory=dict, description="按小时统计"
+    )
     events_by_day: Dict[str, int] = Field(default_factory=dict, description="按天统计")
 
     # 操作者统计
     top_actors: List[Dict[str, Any]] = Field(
         default_factory=list, description="最活跃的操作者"
     )
-    actors_by_type: Dict[str, int] = Field(default_factory=dict, description="按操作者类型统计")
+    actors_by_type: Dict[str, int] = Field(
+        default_factory=dict, description="按操作者类型统计"
+    )
 
     # 资源统计
     most_accessed_resources: List[Dict[str, Any]] = Field(

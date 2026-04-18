@@ -139,7 +139,9 @@ class FinalE2ETest:
                             logger.info(f"✅ 创建测试设备: {device_id}")
                             return device_id
                         else:
-                            logger.error(f"❌ 设备创建失败: {create_response.status_code}")
+                            logger.error(
+                                f"❌ 设备创建失败: {create_response.status_code}"
+                            )
                             return None
                 else:
                     logger.error(f"❌ 获取设备列表失败: {response.status_code}")
@@ -194,13 +196,17 @@ class FinalE2ETest:
 
                         # 检查任务是否被分配到节点
                         if "node_id" in job_status:
-                            logger.info(f"✅ 任务已分配到节点: {job_status.get('node_id')}")
+                            logger.info(
+                                f"✅ 任务已分配到节点: {job_status.get('node_id')}"
+                            )
                         else:
                             logger.warning("⚠️  任务未被分配节点")
 
                         return created_job_id, status
                     else:
-                        logger.error(f"❌ 获取任务状态失败: {status_response.status_code}")
+                        logger.error(
+                            f"❌ 获取任务状态失败: {status_response.status_code}"
+                        )
                         return None, None
                 else:
                     logger.error(f"❌ 任务创建失败: {response.status_code}")
@@ -247,7 +253,9 @@ class FinalE2ETest:
                 )
 
                 if create_response.status_code not in [200, 201]:
-                    logger.error(f"❌ 创建取消测试任务失败: {create_response.status_code}")
+                    logger.error(
+                        f"❌ 创建取消测试任务失败: {create_response.status_code}"
+                    )
                     return False
 
                 # 等待任务开始
@@ -277,7 +285,9 @@ class FinalE2ETest:
                             logger.warning(f"⚠️  任务状态: {job_status.get('status')}")
                             return False
                     else:
-                        logger.error(f"❌ 获取取消后状态失败: {status_response.status_code}")
+                        logger.error(
+                            f"❌ 获取取消后状态失败: {status_response.status_code}"
+                        )
                         return False
                 else:
                     logger.error(f"❌ 任务取消失败: {cancel_response.status_code}")

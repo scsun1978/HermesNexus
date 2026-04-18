@@ -184,9 +184,15 @@ class MonitoringDashboard:
         report.append("⚡ 应用性能:")
         api_perf = app_perf["api_performance"]
         if api_perf:
-            report.append(f"  平均响应时间: {api_perf.get('avg_response_time_ms', 0):.1f}ms")
-            report.append(f"  P95响应时间: {api_perf.get('p95_response_time_ms', 0):.1f}ms")
-            report.append(f"  P99响应时间: {api_perf.get('p99_response_time_ms', 0):.1f}ms")
+            report.append(
+                f"  平均响应时间: {api_perf.get('avg_response_time_ms', 0):.1f}ms"
+            )
+            report.append(
+                f"  P95响应时间: {api_perf.get('p95_response_time_ms', 0):.1f}ms"
+            )
+            report.append(
+                f"  P99响应时间: {api_perf.get('p99_response_time_ms', 0):.1f}ms"
+            )
         report.append(f"  错误率: {app_perf['error_rate']:.2f}%")
         report.append("")
 

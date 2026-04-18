@@ -83,6 +83,66 @@ class Database:
         with self.lock:
             return list(self.devices.values())
 
+    def add_devices_batch(self, devices_data: Dict[str, Dict]) -> Dict[str, bool]:
+        """
+        批量添加设备
+
+        Args:
+            devices_data: 设备ID到设备数据的字典
+
+        Returns:
+            设备ID到添加结果的字典
+        """
+        results = {}
+        with self.lock:
+            for device_id, device_data in devices_data.items():
+                self.devices[device_id] = {
+                    **device_data,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }
+                results[device_id] = True
+        return results
+
+    def get_devices_batch(self, device_ids: List[str]) -> Dict[str, Optional[Dict]]:
+        """
+        批量获取设备
+
+        Args:
+            device_ids: 设备ID列表
+
+        Returns:
+            设备ID到设备数据的字典
+        """
+        results = {}
+        with self.lock:
+            for device_id in device_ids:
+                results[device_id] = self.devices.get(device_id)
+        return results
+
+    def update_devices_batch(self, updates: Dict[str, Dict]) -> Dict[str, bool]:
+        """
+        批量更新设备
+
+        Args:
+            updates: 设备ID到更新数据的字典
+
+        Returns:
+            设备ID到更新结果的字典
+        """
+        results = {}
+        with self.lock:
+            for device_id, device_updates in updates.items():
+                if device_id in self.devices:
+                    self.devices[device_id].update(device_updates)
+                    self.devices[device_id]["updated_at"] = datetime.now(
+                        timezone.utc
+                    ).isoformat()
+                    results[device_id] = True
+                else:
+                    results[device_id] = False
+        return results
+
     # 任务操作
     def add_job(self, job_id: str, job_data: Dict) -> bool:
         with self.lock:

@@ -339,7 +339,9 @@ class RollbackService:
                         await self._execute_step(plan, step)
                     else:
                         # 重试次数用完，回滚失败
-                        raise Exception(f"步骤 {step.step_id} 执行失败: {step.error_message}")
+                        raise Exception(
+                            f"步骤 {step.step_id} 执行失败: {step.error_message}"
+                        )
 
             # 所有步骤成功完成
             plan.status = RollbackStatus.COMPLETED

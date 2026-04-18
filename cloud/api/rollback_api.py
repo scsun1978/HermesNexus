@@ -120,7 +120,9 @@ def check_rollback_permission(action: str):
         # 对于执行回滚操作，需要特定角色
         if action == "execute":
             if not any(role in current_user.get("roles", []) for role in allowed_roles):
-                raise HTTPException(status_code=403, detail="权限不足：需要回滚执行权限")
+                raise HTTPException(
+                    status_code=403, detail="权限不足：需要回滚执行权限"
+                )
 
         # 对于创建回滚计划，需要管理员角色
         if action == "create":
@@ -138,7 +140,9 @@ class CreateRollbackPlanRequest(BaseModel):
     """创建回滚计划请求模型"""
 
     name: str = Field(..., description="回滚计划名称", min_length=1, max_length=200)
-    description: str = Field(..., description="回滚计划描述", min_length=1, max_length=1000)
+    description: str = Field(
+        ..., description="回滚计划描述", min_length=1, max_length=1000
+    )
     trigger_reason: str = Field(
         ..., description="触发回滚的原因", min_length=1, max_length=500
     )
@@ -147,7 +151,9 @@ class CreateRollbackPlanRequest(BaseModel):
     original_task_id: Optional[str] = Field(None, description="原始任务ID")
     original_approval_id: Optional[str] = Field(None, description="原始审批ID")
     priority: int = Field(default=5, description="优先级（1-10）", ge=1, le=10)
-    estimated_duration_seconds: int = Field(default=300, description="预计耗时（秒）", ge=0)
+    estimated_duration_seconds: int = Field(
+        default=300, description="预计耗时（秒）", ge=0
+    )
     metadata: Optional[dict] = Field(default=None, description="附加元数据")
 
 
@@ -164,7 +170,9 @@ class CreateFailureRecordRequest(BaseModel):
     task_id: str = Field(..., description="关联任务ID")
     failure_type: str = Field(..., description="故障类型")
     severity: str = Field(..., description="严重程度")
-    error_message: str = Field(..., description="错误消息", min_length=1, max_length=500)
+    error_message: str = Field(
+        ..., description="错误消息", min_length=1, max_length=500
+    )
     node_id: Optional[str] = Field(None, description="关联节点ID")
     asset_id: Optional[str] = Field(None, description="关联资产ID")
     stack_trace: Optional[str] = Field(None, description="错误堆栈")

@@ -415,7 +415,9 @@ class TestCompleteWorkflowE2E(EnhancedE2ETest):
                 user_assets = [a for a in all_assets if a.created_by == user["user_id"]]
                 user_tasks = [t for t in all_tasks if t.created_by == user["user_id"]]
 
-                self.assertEqual(len(user_assets), 1, f"{user['username']}应该有1个资产")
+                self.assertEqual(
+                    len(user_assets), 1, f"{user['username']}应该有1个资产"
+                )
                 self.assertEqual(len(user_tasks), 1, f"{user['username']}应该有1个任务")
 
             self.test_result.add_checkpoint("并发用户验证完成")

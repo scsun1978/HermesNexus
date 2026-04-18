@@ -69,7 +69,9 @@ class TestCompleteWorkflow(unittest.TestCase):
                     )
 
                     if registration_response.status_code not in [200, 201]:
-                        self.skipTest(f"节点注册失败: {registration_response.status_code}")
+                        self.skipTest(
+                            f"节点注册失败: {registration_response.status_code}"
+                        )
                         return
 
                     # 2. 验证节点注册

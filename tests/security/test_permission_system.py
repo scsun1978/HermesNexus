@@ -463,7 +463,9 @@ class TestPermissionMatrixManager(unittest.TestCase):
         print("\n[2/5] 测试角色权限管理...")
 
         # 创建矩阵
-        self.manager.create_matrix(matrix_id="role-test-matrix", name="角色权限测试矩阵")
+        self.manager.create_matrix(
+            matrix_id="role-test-matrix", name="角色权限测试矩阵"
+        )
 
         # 添加角色权限
         permission = Permission(

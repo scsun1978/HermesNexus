@@ -371,9 +371,13 @@ def generate_stress_test_report():
 
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("# HermesNexus 压力测试报告\n\n")
-        f.write(f"**生成时间**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n\n")
+        f.write(
+            f"**生成时间**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n\n"
+        )
         f.write("## 测试目的\n\n")
-        f.write("验证Week 4性能优化在实际高负载场景下的效果，确保系统在压力下稳定运行。\n\n")
+        f.write(
+            "验证Week 4性能优化在实际高负载场景下的效果，确保系统在压力下稳定运行。\n\n"
+        )
 
         f.write("## 测试场景\n\n")
         f.write("### 1. 并发资产操作压力测试\n")
