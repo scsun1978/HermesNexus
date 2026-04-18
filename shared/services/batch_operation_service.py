@@ -603,9 +603,7 @@ class BatchOperationService:
                         )
                         results.append(item_result)
                         # 遇错停止
-                        logger.warning(
-                            f"⚠️ 遇到更新错误，停止处理: {str(single_error)}"
-                        )
+                        logger.warning(f"⚠️ 遇到更新错误，停止处理: {str(single_error)}")
                         break
             else:
                 # 使用批量数据库操作（带回滚机制）
@@ -672,9 +670,7 @@ class BatchOperationService:
                     results.append(item_result)
 
                     if request.stop_on_first_error:
-                        logger.warning(
-                            f"⚠️ 遇到更新错误，停止处理: {str(single_error)}"
-                        )
+                        logger.warning(f"⚠️ 遇到更新错误，停止处理: {str(single_error)}")
                         break
 
         # 构建响应

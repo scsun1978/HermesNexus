@@ -31,7 +31,8 @@ class SQLiteDatabase:
                 conn.execute("PRAGMA journal_mode = WAL")
 
                 # 创建节点表
-                conn.execute("""
+                conn.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS nodes (
                         node_id TEXT PRIMARY KEY,
                         name TEXT NOT NULL,
@@ -45,10 +46,12 @@ class SQLiteDatabase:
                         memory_usage REAL DEFAULT 0.0,
                         active_tasks INTEGER DEFAULT 0
                     )
-                """)
+                """
+                )
 
                 # 创建设备表
-                conn.execute("""
+                conn.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS devices (
                         id TEXT PRIMARY KEY,
                         device_id TEXT UNIQUE NOT NULL,
@@ -67,10 +70,12 @@ class SQLiteDatabase:
                         updated_at TEXT NOT NULL,
                         enabled INTEGER DEFAULT 1
                     )
-                """)
+                """
+                )
 
                 # 创建任务表
-                conn.execute("""
+                conn.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS jobs (
                         job_id TEXT PRIMARY KEY,
                         name TEXT NOT NULL,
@@ -94,10 +99,12 @@ class SQLiteDatabase:
                         error_message TEXT,
                         error_code TEXT
                     )
-                """)
+                """
+                )
 
                 # 创建事件表
-                conn.execute("""
+                conn.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS events (
                         event_id TEXT PRIMARY KEY,
                         type TEXT NOT NULL,
@@ -112,10 +119,12 @@ class SQLiteDatabase:
                         data TEXT,
                         timestamp TEXT NOT NULL
                     )
-                """)
+                """
+                )
 
                 # 创建审计日志表
-                conn.execute("""
+                conn.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS audit_logs (
                         log_id TEXT PRIMARY KEY,
                         action TEXT NOT NULL,
@@ -127,7 +136,8 @@ class SQLiteDatabase:
                         user_agent TEXT,
                         timestamp TEXT NOT NULL
                     )
-                """)
+                """
+                )
 
                 # 创建索引
                 conn.execute(
