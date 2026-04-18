@@ -125,21 +125,91 @@ app.include_router(asset_api.router, prefix="")
 app.include_router(approval_api.router, prefix="")
 # Phase 3 Day 4: 注册回滚API路由
 app.include_router(rollback_api.router, prefix="")
-# 也注册兼容的 jobs 路由
-app.include_router(task_api.jobs_router, prefix="")
+# 注释掉兼容的 jobs 路由 - legacy endpoints causing 422 errors with *args, **kwargs
+# 这些通用端点劫持了 /api/v1/jobs 路径，导致 FastAPI 无法正确匹配参数
+# app.include_router(task_api.jobs_router, prefix="")
 
 
 # 节点管理 API
 # 节点管理 API
 @app.get("/api/v1/nodes")
 async def list_nodes(status: Optional[str] = None):
-    """获取节点列表"""
+    """获取节点列表 (旧接口，向后兼容)"""
     nodes_list = db.list_nodes()
 
     if status:
         nodes_list = [n for n in nodes_list if n.get("status") == status]
 
     return {"nodes": nodes_list, "total": len(nodes_list)}
+
+
+@app.post("/api/v1/nodes/query")
+async def query_nodes(request: Dict[str, Any]):
+    """增强节点列表查询 - v1.2 支持分页、筛选、排序"""
+    try:
+        from shared.models.node_list import NodeListRequest
+        from shared.services.node_list_service import get_node_list_service
+
+        # 构建查询请求
+        query_request = NodeListRequest(
+            page=request.get("page", 1),
+            page_size=request.get("page_size", 20),
+            filters=request.get("filters", {}),
+            status=request.get("status"),
+            node_type=request.get("node_type"),
+            tags=request.get("tags"),
+            location=request.get("location"),
+            search=request.get("search"),
+            heartbeat_after=request.get("heartbeat_after"),
+            heartbeat_before=request.get("heartbeat_before"),
+            created_after=request.get("created_after"),
+            created_before=request.get("created_before"),
+            sort_by=request.get("sort_by", "created_at"),
+            sort_order=request.get("sort_order", "desc"),
+            include_heartbeat_stats=request.get("include_heartbeat_stats", False),
+            include_task_summary=request.get("include_task_summary", False),
+            include_audit_summary=request.get("include_audit_summary", False)
+        )
+
+        # 查询节点列表
+        service = get_node_list_service()
+        result = service.get_node_list(query_request)
+
+        logger.info(f"✅ 查询节点列表: page={query_request.page}, found={result.total} nodes")
+
+        return result.dict()
+
+    except Exception as e:
+        logger.error(f"❌ 查询节点列表失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/nodes/batch")
+async def get_nodes_batch(request: Dict[str, Any]):
+    """批量获取节点详情 - v1.2 支持批量查询和增强信息"""
+    try:
+        from shared.models.node_list import BatchNodeRequest
+        from shared.services.node_list_service import get_node_list_service
+
+        # 构建批量请求
+        batch_request = BatchNodeRequest(
+            node_ids=request.get("node_ids", []),
+            include_heartbeat_stats=request.get("include_heartbeat_stats", False),
+            include_task_summary=request.get("include_task_summary", False),
+            include_audit_summary=request.get("include_audit_summary", False)
+        )
+
+        # 批量查询节点
+        service = get_node_list_service()
+        result = service.get_nodes_batch(batch_request)
+
+        logger.info(f"✅ 批量查询节点: requested={len(batch_request.node_ids)}, found={result.found_nodes}")
+
+        return result.dict()
+
+    except Exception as e:
+        logger.error(f"❌ 批量查询节点失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/v1/nodes/{node_id}/register")
@@ -163,7 +233,7 @@ async def register_node(node_id: str, registration_data: Dict[str, Any]):
             tags=registration_data.get("tags", []),
             metadata=registration_data.get("metadata", {}),
             registered_at=datetime.now(timezone.utc),
-            created_at=datetime.now(timezone.utc()),
+            created_at=datetime.now(timezone.utc),
         )
 
         # 检查节点是否已存在
@@ -283,13 +353,44 @@ async def register_node(node_id: str, registration_data: Dict[str, Any]):
 
 
 @app.get("/api/v1/nodes/{node_id}")
-async def get_node(node_id: str):
-    """获取节点详情"""
-    node = db.get_node(node_id)
-    if node:
-        return node
-    else:
-        raise HTTPException(status_code=404, detail=f"节点不存在: {node_id}")
+async def get_node(node_id: str, include_details: bool = False):
+    """获取节点详情 - v1.2 支持增强信息"""
+    try:
+        # 基础节点信息
+        node = db.get_node(node_id)
+        if not node:
+            raise HTTPException(status_code=404, detail=f"节点不存在: {node_id}")
+
+        # 如果不要求详细信息，直接返回
+        if not include_details:
+            return node
+
+        # 增强节点信息
+        from shared.services.node_list_service import get_node_list_service
+        from shared.models.node import NodeIdentity
+
+        service = get_node_list_service()
+
+        # 将字典转换为NodeIdentity对象
+        node_identity = NodeIdentity(**node)
+
+        # 增强节点数据
+        enhanced_node = service._enhance_node_data(
+            node_identity,
+            include_heartbeat_stats=True,
+            include_task_summary=True,
+            include_audit_summary=True
+        )
+
+        logger.info(f"✅ 获取节点详情: {node_id}")
+
+        return enhanced_node
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ 获取节点详情失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/v1/nodes/{node_id}/heartbeat")
@@ -808,6 +909,220 @@ async def list_audit_logs(
 async def http_exception_handler(request, exc):
     """HTTP 异常处理"""
     return JSONResponse(status_code=exc.status_code, content={"error": exc.detail})
+
+
+# ==================== 批量操作 API ====================
+
+@app.post("/api/v1/batch/assets")
+async def batch_assets_operation(request_data: Dict[str, Any]):
+    """批量资产操作 - v1.2 支持创建、更新、删除"""
+    try:
+        from shared.models.batch_operations import AssetBatchCreateRequest, AssetBatchUpdateRequest
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        operation = request_data.get("operation", "create")
+        service = get_batch_operation_service(db)
+
+        if operation == "create":
+            request = AssetBatchCreateRequest(**request_data)
+            result = await service.create_assets_batch(request)
+        elif operation == "update":
+            request = AssetBatchUpdateRequest(**request_data)
+            result = await service.update_assets_batch(request)
+        else:
+            raise HTTPException(status_code=400, detail=f"不支持的操作类型: {operation}")
+
+        logger.info(f"✅ 批量资产操作完成: {operation}, operation_id={result.operation_id}")
+
+        return result.dict()
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ 批量资产操作失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/batch/assets/create")
+async def batch_create_assets(request_data: Dict[str, Any]):
+    """批量创建资产"""
+    try:
+        from shared.models.batch_operations import AssetBatchCreateRequest
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        request = AssetBatchCreateRequest(**request_data)
+        service = get_batch_operation_service(db)
+        result = await service.create_assets_batch(request)
+
+        logger.info(f"✅ 批量创建资产完成: operation_id={result.operation_id}")
+
+        return result.dict()
+
+    except Exception as e:
+        logger.error(f"❌ 批量创建资产失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/batch/assets/update")
+async def batch_update_assets(request_data: Dict[str, Any]):
+    """批量更新资产"""
+    try:
+        from shared.models.batch_operations import AssetBatchUpdateRequest
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        request = AssetBatchUpdateRequest(**request_data)
+        service = get_batch_operation_service(db)
+        result = await service.update_assets_batch(request)
+
+        logger.info(f"✅ 批量更新资产完成: operation_id={result.operation_id}")
+
+        return result.dict()
+
+    except Exception as e:
+        logger.error(f"❌ 批量更新资产失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/batch/assets/delete")
+async def batch_delete_assets(request_data: Dict[str, Any]):
+    """批量删除资产"""
+    try:
+        from shared.models.batch_operations import AssetBatchDeleteRequest
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        request = AssetBatchDeleteRequest(**request_data)
+        service = get_batch_operation_service(db)
+        result = await service.delete_assets_batch(request)
+
+        logger.info(f"✅ 批量删除资产完成: operation_id={result.operation_id}")
+
+        return result.dict()
+
+    except Exception as e:
+        logger.error(f"❌ 批量删除资产失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/batch/assets/deactivate")
+async def batch_deactivate_assets(request_data: Dict[str, Any]):
+    """批量停用资产"""
+    try:
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        asset_ids = request_data.get("asset_ids", [])
+        stop_on_first_error = request_data.get("stop_on_first_error", False)
+        idempotency_key = request_data.get("idempotency_key")
+        user_id = request_data.get("user_id")
+        username = request_data.get("username")
+        request_ip = request_data.get("request_ip")
+        user_agent = request_data.get("user_agent")
+
+        service = get_batch_operation_service(db)
+        result = await service.deactivate_assets_batch(
+            asset_ids=asset_ids,
+            stop_on_first_error=stop_on_first_error,
+            idempotency_key=idempotency_key,
+            user_id=user_id,
+            username=username,
+            request_ip=request_ip,
+            user_agent=user_agent
+        )
+
+        logger.info(f"✅ 批量停用资产完成: operation_id={result.operation_id}")
+
+        return result.dict()
+
+    except Exception as e:
+        logger.error(f"❌ 批量停用资产失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/batch/tasks")
+async def batch_tasks_operation(request_data: Dict[str, Any]):
+    """批量任务操作 - v1.2 支持创建、下发、取消"""
+    try:
+        from shared.models.batch_operations import TaskBatchCreateRequest
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        operation = request_data.get("operation", "create")
+        service = get_batch_operation_service(db)
+
+        if operation == "create":
+            request = TaskBatchCreateRequest(**request_data)
+            result = await service.create_tasks_batch(request)
+        else:
+            raise HTTPException(status_code=400, detail=f"不支持的操作类型: {operation}")
+
+        logger.info(f"✅ 批量任务操作完成: {operation}, operation_id={result.operation_id}")
+
+        return result.dict()
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ 批量任务操作失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/batch/tasks/create")
+async def batch_create_tasks(request_data: Dict[str, Any]):
+    """批量创建任务"""
+    try:
+        from shared.models.batch_operations import TaskBatchCreateRequest
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        request = TaskBatchCreateRequest(**request_data)
+        service = get_batch_operation_service(db)
+        result = await service.create_tasks_batch(request)
+
+        logger.info(f"✅ 批量创建任务完成: operation_id={result.operation_id}")
+
+        return result.dict()
+
+    except Exception as e:
+        logger.error(f"❌ 批量创建任务失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/batch/tasks/dispatch")
+async def batch_dispatch_tasks(request_data: Dict[str, Any]):
+    """批量下发任务"""
+    try:
+        from shared.models.batch_operations import TaskBatchDispatchRequest
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        request = TaskBatchDispatchRequest(**request_data)
+        service = get_batch_operation_service(db)
+        result = await service.dispatch_tasks_batch(request)
+
+        logger.info(f"✅ 批量下发任务完成: operation_id={result.operation_id}")
+
+        return result.dict()
+
+    except Exception as e:
+        logger.error(f"❌ 批量下发任务失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/v1/batch/operations/{operation_id}")
+async def get_batch_operation(operation_id: str):
+    """获取批量操作状态"""
+    try:
+        from shared.services.batch_operation_service import get_batch_operation_service
+
+        service = get_batch_operation_service(db)
+
+        # 从历史记录中获取操作结果
+        if operation_id in service._operation_history:
+            return service._operation_history[operation_id].dict()
+        else:
+            raise HTTPException(status_code=404, detail=f"操作不存在: {operation_id}")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ 获取批量操作状态失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.exception_handler(Exception)

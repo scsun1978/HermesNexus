@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>资产管理 - HermesNexus 控制台</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <div class="container">
@@ -14,6 +14,7 @@
             <div class="header-actions">
                 <button class="btn btn-primary" onclick="showCreateModal()">+ 新增资产</button>
                 <button class="btn btn-secondary" onclick="refreshAssets()">刷新</button>
+                <button class="btn btn-batch" onclick="showBatchOperationModal()" id="batch-btn" style="display: none;">批量操作 (0)</button>
             </div>
         </header>
 
@@ -72,6 +73,7 @@
             <table class="table" id="assets-table">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll()"></th>
                         <th>资产ID</th>
                         <th>名称</th>
                         <th>类型</th>
@@ -168,6 +170,79 @@
             </div>
             <div class="modal-body" id="detail-content">
                 <!-- 详情内容将动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Operation Modal -->
+    <div id="batch-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>批量操作资产</h2>
+                <button class="close-btn" onclick="closeBatchModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="batch-info">
+                    <p>已选择 <strong id="selected-count">0</strong> 个资产</p>
+                </div>
+
+                <div class="form-group">
+                    <label>操作类型 *</label>
+                    <select id="batch-operation-type" required onchange="updateBatchOperationFields()">
+                        <option value="">请选择操作类型</option>
+                        <option value="update">批量更新</option>
+                        <option value="delete">批量删除</option>
+                        <option value="deactivate">批量停用</option>
+                    </select>
+                </div>
+
+                <div id="batch-update-fields" style="display: none;">
+                    <div class="form-group">
+                        <label>状态</label>
+                        <select id="batch-status">
+                            <option value="">保持不变</option>
+                            <option value="active">设为活跃</option>
+                            <option value="inactive">设为非活跃</option>
+                            <option value="decommissioned">设为已退役</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="batch-description" rows="2" placeholder="新的描述（留空保持不变）"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>添加标签</label>
+                        <input type="text" id="batch-tags" placeholder="tag1,tag2,tag3">
+                        <small>用逗号分隔多个标签</small>
+                    </div>
+                </div>
+
+                <div class="batch-options">
+                    <div class="form-group">
+                        <input type="checkbox" id="batch-stop-on-error">
+                        <label for="batch-stop-on-error">遇到错误时停止</label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary" onclick="executeBatchOperation()">执行操作</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeBatchModal()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Operation Result Modal -->
+    <div id="batch-result-modal" class="modal" style="display: none;">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>批量操作结果</h2>
+                <button class="close-btn" onclick="closeBatchResultModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="batch-result-content">
+                <!-- 结果将动态加载 -->
             </div>
         </div>
     </div>

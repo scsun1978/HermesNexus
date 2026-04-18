@@ -10,6 +10,8 @@ const API_BASE = '/api/v1';
 let currentPage = 1;
 let pageSize = 20;
 let totalPages = 1;
+let selectedAssetIds = new Set();
+let allCurrentPageAssets = [];
 
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
@@ -61,13 +63,18 @@ async function loadAssets() {
 function displayAssets(assets) {
     const tbody = document.getElementById('assets-tbody');
 
+    // Store current page assets for selection
+    allCurrentPageAssets = assets;
+
     if (assets.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center">暂无数据</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center">暂无数据</td></tr>';
+        updateBatchButton();
         return;
     }
 
     tbody.innerHTML = assets.map(asset => `
-        <tr>
+        <tr data-asset-id="${asset.asset_id}">
+            <td><input type="checkbox" class="asset-checkbox" value="${asset.asset_id}" onchange="updateSelection()"></td>
             <td><code>${asset.asset_id}</code></td>
             <td><strong>${asset.name}</strong></td>
             <td>${getAssetTypeLabel(asset.asset_type)}</td>
@@ -82,6 +89,8 @@ function displayAssets(assets) {
             </td>
         </tr>
     `).join('');
+
+    updateBatchButton();
 }
 
 // 更新分页信息
@@ -339,4 +348,269 @@ function showSuccess(message) {
 
 function showError(message) {
     alert('错误: ' + message);
+}
+
+// ==================== 批量操作功能 ====================
+
+// 全选/取消全选
+function toggleSelectAll() {
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    const checkboxes = document.querySelectorAll('.asset-checkbox');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
+    });
+
+    updateSelection();
+}
+
+// 更新选择状态
+function updateSelection() {
+    const checkboxes = document.querySelectorAll('.asset-checkbox:checked');
+    selectedAssetIds = new Set(Array.from(checkboxes).map(cb => cb.value));
+
+    // Update select all checkbox state
+    const allCheckboxes = document.querySelectorAll('.asset-checkbox');
+    const selectAllCheckbox = document.getElementById('select-all-checkbox');
+    if (allCheckboxes.length > 0) {
+        selectAllCheckbox.checked = checkboxes.length === allCheckboxes.length;
+    }
+
+    updateBatchButton();
+}
+
+// 更新批量操作按钮
+function updateBatchButton() {
+    const batchBtn = document.getElementById('batch-btn');
+    if (selectedAssetIds.size > 0) {
+        batchBtn.style.display = 'inline-block';
+        batchBtn.textContent = `批量操作 (${selectedAssetIds.size})`;
+    } else {
+        batchBtn.style.display = 'none';
+    }
+}
+
+// 显示批量操作模态框
+function showBatchOperationModal() {
+    if (selectedAssetIds.size === 0) {
+        showError('请先选择要操作的资产');
+        return;
+    }
+
+    document.getElementById('selected-count').textContent = selectedAssetIds.size;
+    document.getElementById('batch-operation-type').value = '';
+    document.getElementById('batch-update-fields').style.display = 'none';
+    document.getElementById('batch-status').value = '';
+    document.getElementById('batch-description').value = '';
+    document.getElementById('batch-tags').value = '';
+    document.getElementById('batch-stop-on-error').checked = false;
+    document.getElementById('batch-modal').style.display = 'block';
+}
+
+// 关闭批量操作模态框
+function closeBatchModal() {
+    document.getElementById('batch-modal').style.display = 'none';
+}
+
+// 更新批量操作字段显示
+function updateBatchOperationFields() {
+    const operationType = document.getElementById('batch-operation-type').value;
+    const updateFields = document.getElementById('batch-update-fields');
+
+    if (operationType === 'update') {
+        updateFields.style.display = 'block';
+    } else {
+        updateFields.style.display = 'none';
+    }
+}
+
+// 执行批量操作
+async function executeBatchOperation() {
+    const operationType = document.getElementById('batch-operation-type').value;
+
+    if (!operationType) {
+        showError('请选择操作类型');
+        return;
+    }
+
+    const selectedIds = Array.from(selectedAssetIds);
+    let requestData = {
+        operation: operationType,  // 显式指定操作类型
+        asset_ids: selectedIds,
+        stop_on_first_error: document.getElementById('batch-stop-on-error').checked
+    };
+
+    // Prepare request data based on operation type
+    if (operationType === 'update') {
+        const updates = {};
+
+        const status = document.getElementById('batch-status').value;
+        if (status) updates.status = status;
+
+        const description = document.getElementById('batch-description').value;
+        if (description) updates.description = description;
+
+        const tags = document.getElementById('batch-tags').value;
+        if (tags) {
+            updates.metadata = { tags: tags.split(',').map(t => t.trim()) };
+        }
+
+        if (Object.keys(updates).length === 0) {
+            showError('请至少选择一个要更新的字段');
+            return;
+        }
+
+        requestData.updates = updates;
+    }
+
+    try {
+        // Show loading indicator
+        const batchBtn = document.querySelector('#batch-modal .btn-primary');
+        const originalText = batchBtn.textContent;
+        batchBtn.textContent = '处理中...';
+        batchBtn.disabled = true;
+
+        // Call batch operation API
+        const response = await fetch(`${API_BASE}/batch/assets`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        const result = await response.json();
+
+        // Reset button
+        batchBtn.textContent = originalText;
+        batchBtn.disabled = false;
+
+        if (response.ok) {
+            closeBatchModal();
+            showBatchResult(result);
+        } else {
+            showError(result.error?.message || '批量操作失败');
+        }
+    } catch (error) {
+        console.error('Batch operation failed:', error);
+        showError('批量操作失败: ' + error.message);
+    }
+}
+
+// 显示批量操作结果
+function showBatchResult(result) {
+    const resultHtml = `
+        <div class="batch-result-summary">
+            <h3>操作完成</h3>
+            <div class="result-stats">
+                <div class="stat-item">
+                    <span class="stat-label">操作ID:</span>
+                    <span class="stat-value"><code>${result.operation_id}</code></span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">状态:</span>
+                    <span class="stat-value">${getStatusBadge(result.status)}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">总数:</span>
+                    <span class="stat-value">${result.summary.total_items}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">成功:</span>
+                    <span class="stat-value stat-success">${result.summary.successful_items}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">失败:</span>
+                    <span class="stat-value stat-danger">${result.summary.failed_items}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">成功率:</span>
+                    <span class="stat-value">${result.summary.success_rate.toFixed(1)}%</span>
+                </div>
+            </div>
+        </div>
+
+        ${result.error_summary && Object.keys(result.error_summary).length > 0 ? `
+        <div class="batch-result-errors">
+            <h4>错误摘要</h4>
+            <ul>
+                ${Object.entries(result.error_summary).map(([error_type, count]) => `
+                    <li>${getErrorTypeLabel(error_type)}: ${count} 个</li>
+                `).join('')}
+            </ul>
+        </div>
+        ` : ''}
+
+        <div class="batch-result-details">
+            <h4>详细结果</h4>
+            <div class="result-list">
+                ${result.results.map(item => `
+                    <div class="result-item ${item.success ? 'success' : 'failed'}">
+                        <div class="result-header">
+                            <strong>${item.id}</strong>
+                            <span class="result-status">${item.success ? '✓ 成功' : '✗ 失败'}</span>
+                        </div>
+                        ${!item.success ? `<div class="result-error">${item.message || '操作失败'}</div>` : ''}
+                        ${item.error_code ? `<div class="result-error-code">错误代码: ${item.error_code}</div>` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+
+        <div class="batch-result-actions">
+            <button class="btn btn-primary" onclick="closeBatchResultModal()">关闭</button>
+            <button class="btn btn-secondary" onclick="exportBatchResult('${result.operation_id}')">导出结果</button>
+        </div>
+    `;
+
+    document.getElementById('batch-result-content').innerHTML = resultHtml;
+    document.getElementById('batch-result-modal').style.display = 'block';
+
+    // Refresh asset list to show updates
+    loadAssets();
+}
+
+// 关闭批量操作结果模态框
+function closeBatchResultModal() {
+    document.getElementById('batch-result-modal').style.display = 'none';
+    // Clear selection
+    selectedAssetIds.clear();
+    document.querySelectorAll('.asset-checkbox').forEach(cb => cb.checked = false);
+    document.getElementById('select-all-checkbox').checked = false;
+    updateBatchButton();
+}
+
+// 导出批量操作结果
+async function exportBatchResult(operationId) {
+    try {
+        const response = await fetch(`${API_BASE}/batch/operations/${operationId}`);
+        const result = await response.json();
+
+        // Create downloadable file
+        const dataStr = JSON.stringify(result, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `batch-operation-${operationId}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        showSuccess('结果已导出');
+    } catch (error) {
+        console.error('Export failed:', error);
+        showError('导出失败: ' + error.message);
+    }
+}
+
+// 获取错误类型标签
+function getErrorTypeLabel(errorType) {
+    const labels = {
+        'validation_error': '验证错误',
+        'duplicate_error': '重复错误',
+        'not_found_error': '未找到错误',
+        'operation_error': '操作错误',
+        'database_error': '数据库错误'
+    };
+    return labels[errorType] || errorType;
 }
