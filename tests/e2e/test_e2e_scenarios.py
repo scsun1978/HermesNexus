@@ -8,29 +8,24 @@ import asyncio
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any
 
-from tests.e2e.conftest import (
-    E2ETestHelper,
-    SmokeTestSuite,
-    run_smoke_tests_async
-)
+from tests.e2e.conftest import E2ETestHelper, SmokeTestSuite, run_smoke_tests_async
 from shared.models.batch_operations import (
     AssetBatchCreateRequest,
     AssetBatchUpdateRequest,
     AssetBatchDeleteRequest,
     TaskBatchCreateRequest,
-    TaskBatchDispatchRequest
+    TaskBatchDispatchRequest,
 )
-from shared.models.audit_models import (
-    AuditQueryRequest,
-    AuditOperationType
-)
+from shared.models.audit_models import AuditQueryRequest, AuditOperationType
 
 
 class TestNodeManagementE2E:
     """节点管理端到端测试"""
 
     @pytest.mark.asyncio
-    async def test_node_registration_to_heartbeat_complete_flow(self, e2e_helper: E2ETestHelper):
+    async def test_node_registration_to_heartbeat_complete_flow(
+        self, e2e_helper: E2ETestHelper
+    ):
         """测试节点注册到心跳的完整流程"""
         # 1. 节点注册
         node_id = "e2e-node-001"
@@ -54,7 +49,9 @@ class TestNodeManagementE2E:
 
         # 5. 测试心跳超时（模拟长时间未心跳）
         old_heartbeat = node_info["last_heartbeat"]
-        node_info["last_heartbeat"] = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+        node_info["last_heartbeat"] = (
+            datetime.now(timezone.utc) - timedelta(minutes=10)
+        ).isoformat()
 
         # 6. 验证节点状态变化（应该变为inactive）
         # 这里可以实现超时检测逻辑
@@ -92,7 +89,9 @@ class TestBatchAssetOperationsE2E:
     """批量资产操作端到端测试"""
 
     @pytest.mark.asyncio
-    async def test_batch_asset_operations_complete_flow(self, e2e_helper: E2ETestHelper):
+    async def test_batch_asset_operations_complete_flow(
+        self, e2e_helper: E2ETestHelper
+    ):
         """测试批量资产操作完整流程"""
         batch_service = e2e_helper.batch_service
 
@@ -103,7 +102,7 @@ class TestBatchAssetOperationsE2E:
                 "asset_id": f"batch-e2e-{i:04d}",
                 "name": f"Batch E2E Asset {i}",
                 "asset_type": "linux_host",
-                "metadata": {"index": i}
+                "metadata": {"index": i},
             }
             for i in range(asset_count)
         ]
@@ -129,7 +128,7 @@ class TestBatchAssetOperationsE2E:
         update_asset_ids = [f"batch-e2e-{i:04d}" for i in range(50)]  # 更新前50个
         update_request = AssetBatchUpdateRequest(
             asset_ids=update_asset_ids,
-            updates={"status": "active", "metadata": {"updated": True}}
+            updates={"status": "active", "metadata": {"updated": True}},
         )
         update_response = await batch_service.update_assets_batch(update_request)
 
@@ -149,7 +148,9 @@ class TestBatchAssetOperationsE2E:
             assert asset_data.get("metadata", {}).get("updated") is True
 
         # 5. 批量删除部分资产
-        delete_asset_ids = [f"batch-e2e-{i:04d}" for i in range(10, 20)]  # 删除第10-19个
+        delete_asset_ids = [
+            f"batch-e2e-{i:04d}" for i in range(10, 20)
+        ]  # 删除第10-19个
         delete_request = AssetBatchDeleteRequest(asset_ids=delete_asset_ids)
         delete_response = await batch_service.delete_assets_batch(delete_request)
 
@@ -167,12 +168,21 @@ class TestBatchAssetOperationsE2E:
             asset_data = e2e_helper.database.get_device(asset_id)
             # 根据实现，删除可能标记为decommissioned或完全移除
             # 这里我们检查数据是否存在或状态
-            assert asset_data is None or asset_data.get("status") in ["decommissioned", "deleted"]
+            assert asset_data is None or asset_data.get("status") in [
+                "decommissioned",
+                "deleted",
+            ]
 
         # 7. 验证审计记录完整性
-        create_audit = await e2e_helper.audit_service.get_audit_by_operation_id(create_response.operation_id)
-        update_audit = await e2e_helper.audit_service.get_audit_by_operation_id(update_response.operation_id)
-        delete_audit = await e2e_helper.audit_service.get_audit_by_operation_id(delete_response.operation_id)
+        create_audit = await e2e_helper.audit_service.get_audit_by_operation_id(
+            create_response.operation_id
+        )
+        update_audit = await e2e_helper.audit_service.get_audit_by_operation_id(
+            update_response.operation_id
+        )
+        delete_audit = await e2e_helper.audit_service.get_audit_by_operation_id(
+            delete_response.operation_id
+        )
 
         assert create_audit is not None
         assert update_audit is not None
@@ -197,26 +207,28 @@ class TestBatchAssetOperationsE2E:
         update_asset_ids = [
             "error-test-asset-000",  # 存在
             "error-test-asset-001",  # 存在
-            "non-existent-999",      # 不存在
+            "non-existent-999",  # 不存在
             "error-test-asset-002",  # 存在
         ]
 
         update_request = AssetBatchUpdateRequest(
             asset_ids=update_asset_ids,
             updates={"status": "active"},
-            stop_on_first_error=False  # 遇错继续
+            stop_on_first_error=False,  # 遇错继续
         )
         update_response = await batch_service.update_assets_batch(update_request)
 
         # 3. 验证部分失败处理
         assert update_response.summary.total_items == 4
         assert update_response.summary.successful_items == 3  # 3个存在
-        assert update_response.summary.failed_items == 1     # 1个不存在
+        assert update_response.summary.failed_items == 1  # 1个不存在
         assert update_response.summary.success_rate == 75.0  # 75%成功率
 
         # 4. 验证审计记录包含错误信息
         await asyncio.sleep(0.1)
-        audit = await e2e_helper.audit_service.get_audit_by_operation_id(update_response.operation_id)
+        audit = await e2e_helper.audit_service.get_audit_by_operation_id(
+            update_response.operation_id
+        )
 
         assert audit is not None
         assert audit.failed_items == 1
@@ -233,7 +245,9 @@ class TestBatchTaskDistributionE2E:
     """批量任务分发端到端测试"""
 
     @pytest.mark.asyncio
-    async def test_batch_task_distribution_complete_flow(self, e2e_helper: E2ETestHelper):
+    async def test_batch_task_distribution_complete_flow(
+        self, e2e_helper: E2ETestHelper
+    ):
         """测试批量任务分发完整流程"""
         batch_service = e2e_helper.batch_service
 
@@ -249,7 +263,7 @@ class TestBatchTaskDistributionE2E:
                 "task_id": f"task-e2e-{i:04d}",
                 "name": f"E2E Task {i}",
                 "command": f"echo 'Task {i}'",
-                "target_node": node_ids[i % 3]  # 分发到不同节点
+                "target_node": node_ids[i % 3],  # 分发到不同节点
             }
             for i in range(task_count)
         ]
@@ -285,16 +299,23 @@ class TestBatchTaskDistributionE2E:
         for task in dispatched_tasks:
             # 更新任务状态为执行完成
             task["status"] = "completed"
-            task["result"] = {"exit_code": 0, "output": f"Task {task['task_id']} completed"}
+            task["result"] = {
+                "exit_code": 0,
+                "output": f"Task {task['task_id']} completed",
+            }
 
         # 7. 验证审计记录
         await asyncio.sleep(0.1)
-        audit = await e2e_helper.audit_service.get_audit_by_operation_id(create_response.operation_id)
+        audit = await e2e_helper.audit_service.get_audit_by_operation_id(
+            create_response.operation_id
+        )
 
         assert audit is not None
         assert audit.operation_type == AuditOperationType.BATCH_TASK_CREATE
 
-        print(f"✅ 批量任务分发E2E测试通过: 创建并分发{task_count}个任务到{len(node_ids)}个节点")
+        print(
+            f"✅ 批量任务分发E2E测试通过: 创建并分发{task_count}个任务到{len(node_ids)}个节点"
+        )
 
 
 class TestAuditTrailE2E:
@@ -310,7 +331,14 @@ class TestAuditTrailE2E:
         operations = []
 
         # 批量创建
-        assets = [{"asset_id": f"audit-asset-{i}", "name": f"Audit Asset {i}", "asset_type": "linux_host"} for i in range(5)]
+        assets = [
+            {
+                "asset_id": f"audit-asset-{i}",
+                "name": f"Audit Asset {i}",
+                "asset_type": "linux_host",
+            }
+            for i in range(5)
+        ]
         create_request = AssetBatchCreateRequest(assets=assets)
         create_response = await batch_service.create_assets_batch(create_request)
         operations.append(("create", create_response))
@@ -320,7 +348,7 @@ class TestAuditTrailE2E:
         # 批量更新
         update_request = AssetBatchUpdateRequest(
             asset_ids=[f"audit-asset-{i}" for i in range(5)],
-            updates={"status": "active"}
+            updates={"status": "active"},
         )
         update_response = await batch_service.update_assets_batch(update_request)
         operations.append(("update", update_response))
@@ -349,8 +377,7 @@ class TestAuditTrailE2E:
         # 5. 验证错误操作查询（如果有失败的操作）
         # 这里我们创建一个会失败的操作
         failed_update_request = AssetBatchUpdateRequest(
-            asset_ids=["non-existent-999"],
-            updates={"status": "active"}
+            asset_ids=["non-existent-999"], updates={"status": "active"}
         )
         failed_response = await batch_service.update_assets_batch(failed_update_request)
 
@@ -362,16 +389,10 @@ class TestAuditTrailE2E:
 
         # 6. 导出审计数据
         query = AuditQueryRequest(
-            start_time=start_time,
-            end_time=end_time,
-            page=1,
-            page_size=100
+            start_time=start_time, end_time=end_time, page=1, page_size=100
         )
         exported_data = await audit_service.export_audits(
-            query=query,
-            format_type="json",
-            include_details=True,
-            max_records=100
+            query=query, format_type="json", include_details=True, max_records=100
         )
 
         assert exported_data is not None
@@ -379,6 +400,7 @@ class TestAuditTrailE2E:
 
         # 7. 验证导出数据格式
         import json
+
         export_dict = json.loads(exported_data)
         assert "records" in export_dict
         assert "export_time" in export_dict

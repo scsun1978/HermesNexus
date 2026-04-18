@@ -14,7 +14,7 @@ import sys
 import os
 
 # 添加项目根目录到路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 from cloud.database.db import Database
 from shared.services.batch_operation_service import BatchOperationService
@@ -24,7 +24,7 @@ from shared.models.batch_operations import (
     AssetBatchCreateRequest,
     AssetBatchUpdateRequest,
     AssetBatchDeleteRequest,
-    TaskBatchCreateRequest
+    TaskBatchCreateRequest,
 )
 
 
@@ -53,15 +53,14 @@ async def test_services(test_database, test_storage) -> dict:
     """创建测试服务集合"""
     audit_service = BatchAuditService(storage=test_storage)
     batch_service = BatchOperationService(
-        database=test_database,
-        audit_service=audit_service
+        database=test_database, audit_service=audit_service
     )
 
     return {
         "database": test_database,
         "audit_storage": test_storage,
         "audit_service": audit_service,
-        "batch_service": batch_service
+        "batch_service": batch_service,
     }
 
 
@@ -77,7 +76,7 @@ async def sample_node(test_services) -> dict:
         "hostname": "test-server.local",
         "ip_address": "192.168.1.100",
         "status": "active",
-        "last_heartbeat": datetime.now(timezone.utc).isoformat()
+        "last_heartbeat": datetime.now(timezone.utc).isoformat(),
     }
 
     # 注册节点到数据库
@@ -94,7 +93,11 @@ async def sample_assets(test_services) -> list:
 
     # 批量创建测试资产
     assets = [
-        {"asset_id": f"e2e-asset-{i:03d}", "name": f"E2E Test Asset {i}", "asset_type": "linux_host"}
+        {
+            "asset_id": f"e2e-asset-{i:03d}",
+            "name": f"E2E Test Asset {i}",
+            "asset_type": "linux_host",
+        }
         for i in range(10)
     ]
 
@@ -123,7 +126,7 @@ class E2ETestHelper:
             "hostname": f"{node_id}.local",
             "ip_address": f"192.168.1.{hash(node_id) % 250 + 1}",
             "status": "active",
-            "last_heartbeat": datetime.now(timezone.utc).isoformat()
+            "last_heartbeat": datetime.now(timezone.utc).isoformat(),
         }
 
         self.database.add_device(node_id, node_data)
@@ -135,7 +138,7 @@ class E2ETestHelper:
             {
                 "asset_id": f"{prefix}-asset-{i:03d}",
                 "name": f"{prefix.title()} Asset {i}",
-                "asset_type": "linux_host"
+                "asset_type": "linux_host",
             }
             for i in range(count)
         ]
@@ -201,7 +204,7 @@ class SmokeTestSuite:
             test_device = {
                 "name": "Smoke Test Device",
                 "type": "linux_host",
-                "status": "active"
+                "status": "active",
             }
             self.database.add_device("smoke-test-001", test_device)
 
@@ -231,9 +234,15 @@ class SmokeTestSuite:
         """测试批量操作服务可用性"""
         try:
             # 测试简单的批量创建
-            request = AssetBatchCreateRequest(assets=[
-                {"asset_id": "smoke-asset-001", "name": "Smoke Asset", "asset_type": "linux_host"}
-            ])
+            request = AssetBatchCreateRequest(
+                assets=[
+                    {
+                        "asset_id": "smoke-asset-001",
+                        "name": "Smoke Asset",
+                        "asset_type": "linux_host",
+                    }
+                ]
+            )
             response = await self.batch_service.create_assets_batch(request)
 
             assert response is not None
@@ -254,6 +263,7 @@ class SmokeTestSuite:
 
             # 测试查询功能
             from shared.models.audit_models import AuditQueryRequest
+
             query = AuditQueryRequest(page=1, page_size=10)
             response = await self.audit_service.query_audits(query)
 
@@ -269,10 +279,18 @@ class SmokeTestSuite:
         """测试基本端到端流程"""
         try:
             # 1. 创建资产
-            create_request = AssetBatchCreateRequest(assets=[
-                {"asset_id": "smoke-e2e-001", "name": "E2E Asset", "asset_type": "linux_host"}
-            ])
-            create_response = await self.batch_service.create_assets_batch(create_request)
+            create_request = AssetBatchCreateRequest(
+                assets=[
+                    {
+                        "asset_id": "smoke-e2e-001",
+                        "name": "E2E Asset",
+                        "asset_type": "linux_host",
+                    }
+                ]
+            )
+            create_response = await self.batch_service.create_assets_batch(
+                create_request
+            )
 
             # 2. 验证创建成功
             assert create_response.summary.successful_items == 1
@@ -280,18 +298,23 @@ class SmokeTestSuite:
             # 3. 更新资产
             await asyncio.sleep(0.1)  # 等待审计
             update_request = AssetBatchUpdateRequest(
-                asset_ids=["smoke-e2e-001"],
-                updates={"status": "active"}
+                asset_ids=["smoke-e2e-001"], updates={"status": "active"}
             )
-            update_response = await self.batch_service.update_assets_batch(update_request)
+            update_response = await self.batch_service.update_assets_batch(
+                update_request
+            )
 
             # 4. 验证更新成功
             assert update_response.summary.successful_items == 1
 
             # 5. 验证审计记录
             await asyncio.sleep(0.1)  # 等待审计
-            create_audit = await self.audit_service.get_audit_by_operation_id(create_response.operation_id)
-            update_audit = await self.audit_service.get_audit_by_operation_id(update_response.operation_id)
+            create_audit = await self.audit_service.get_audit_by_operation_id(
+                create_response.operation_id
+            )
+            update_audit = await self.audit_service.get_audit_by_operation_id(
+                update_response.operation_id
+            )
 
             assert create_audit is not None
             assert update_audit is not None
@@ -315,7 +338,7 @@ def run_smoke_tests(smoke_suite: SmokeTestSuite) -> dict:
         "total_tests": 4,
         "passed_tests": 0,
         "failed_tests": 0,
-        "test_results": []
+        "test_results": [],
     }
 
     async def run_tests():
@@ -323,17 +346,13 @@ def run_smoke_tests(smoke_suite: SmokeTestSuite) -> dict:
             ("数据库基本操作", smoke_suite.test_database_basic_operations),
             ("批量操作服务可用性", smoke_suite.test_batch_service_availability),
             ("审计服务可用性", smoke_suite.test_audit_service_availability),
-            ("端到端基本流程", smoke_suite.test_end_to_end_basic_flow)
+            ("端到端基本流程", smoke_suite.test_end_to_end_basic_flow),
         ]
 
         for test_name, test_func in tests:
             try:
                 result = await test_func()
-                test_result = {
-                    "name": test_name,
-                    "passed": result,
-                    "error": None
-                }
+                test_result = {"name": test_name, "passed": result, "error": None}
 
                 if result:
                     results["passed_tests"] += 1
@@ -343,11 +362,7 @@ def run_smoke_tests(smoke_suite: SmokeTestSuite) -> dict:
                 results["test_results"].append(test_result)
 
             except Exception as e:
-                test_result = {
-                    "name": test_name,
-                    "passed": False,
-                    "error": str(e)
-                }
+                test_result = {"name": test_name, "passed": False, "error": str(e)}
                 results["failed_tests"] += 1
                 results["test_results"].append(test_result)
 
@@ -366,24 +381,20 @@ async def run_smoke_tests_async(smoke_suite: SmokeTestSuite) -> dict:
         "total_tests": 4,
         "passed_tests": 0,
         "failed_tests": 0,
-        "test_results": []
+        "test_results": [],
     }
 
     tests = [
         ("数据库基本操作", smoke_suite.test_database_basic_operations),
         ("批量操作服务可用性", smoke_suite.test_batch_service_availability),
         ("审计服务可用性", smoke_suite.test_audit_service_availability),
-        ("端到端基本流程", smoke_suite.test_end_to_end_basic_flow)
+        ("端到端基本流程", smoke_suite.test_end_to_end_basic_flow),
     ]
 
     for test_name, test_func in tests:
         try:
             result = await test_func()
-            test_result = {
-                "name": test_name,
-                "passed": result,
-                "error": None
-            }
+            test_result = {"name": test_name, "passed": result, "error": None}
 
             if result:
                 results["passed_tests"] += 1
@@ -393,11 +404,7 @@ async def run_smoke_tests_async(smoke_suite: SmokeTestSuite) -> dict:
             results["test_results"].append(test_result)
 
         except Exception as e:
-            test_result = {
-                "name": test_name,
-                "passed": False,
-                "error": str(e)
-            }
+            test_result = {"name": test_name, "passed": False, "error": str(e)}
             results["failed_tests"] += 1
             results["test_results"].append(test_result)
 

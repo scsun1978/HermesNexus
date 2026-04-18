@@ -125,7 +125,8 @@ app.include_router(asset_api.router, prefix="")
 app.include_router(approval_api.router, prefix="")
 # Phase 3 Day 4: 注册回滚API路由
 app.include_router(rollback_api.router, prefix="")
-# 注释掉兼容的 jobs 路由 - legacy endpoints causing 422 errors with *args, **kwargs
+# 注释掉兼容的 jobs 路由
+# legacy endpoints causing 422 errors with *args, **kwargs
 # 这些通用端点劫持了 /api/v1/jobs 路径，导致 FastAPI 无法正确匹配参数
 # app.include_router(task_api.jobs_router, prefix="")
 
@@ -168,14 +169,16 @@ async def query_nodes(request: Dict[str, Any]):
             sort_order=request.get("sort_order", "desc"),
             include_heartbeat_stats=request.get("include_heartbeat_stats", False),
             include_task_summary=request.get("include_task_summary", False),
-            include_audit_summary=request.get("include_audit_summary", False)
+            include_audit_summary=request.get("include_audit_summary", False),
         )
 
         # 查询节点列表
         service = get_node_list_service()
         result = service.get_node_list(query_request)
 
-        logger.info(f"✅ 查询节点列表: page={query_request.page}, found={result.total} nodes")
+        logger.info(
+            f"✅ 查询节点列表: page={query_request.page}, found={result.total} nodes"
+        )
 
         return result.dict()
 
@@ -196,14 +199,16 @@ async def get_nodes_batch(request: Dict[str, Any]):
             node_ids=request.get("node_ids", []),
             include_heartbeat_stats=request.get("include_heartbeat_stats", False),
             include_task_summary=request.get("include_task_summary", False),
-            include_audit_summary=request.get("include_audit_summary", False)
+            include_audit_summary=request.get("include_audit_summary", False),
         )
 
         # 批量查询节点
         service = get_node_list_service()
         result = service.get_nodes_batch(batch_request)
 
-        logger.info(f"✅ 批量查询节点: requested={len(batch_request.node_ids)}, found={result.found_nodes}")
+        logger.info(
+            f"✅ 批量查询节点: requested={len(batch_request.node_ids)}, found={result.found_nodes}"
+        )
 
         return result.dict()
 
@@ -379,7 +384,7 @@ async def get_node(node_id: str, include_details: bool = False):
             node_identity,
             include_heartbeat_stats=True,
             include_task_summary=True,
-            include_audit_summary=True
+            include_audit_summary=True,
         )
 
         logger.info(f"✅ 获取节点详情: {node_id}")
@@ -913,11 +918,15 @@ async def http_exception_handler(request, exc):
 
 # ==================== 批量操作 API ====================
 
+
 @app.post("/api/v1/batch/assets")
 async def batch_assets_operation(request_data: Dict[str, Any]):
     """批量资产操作 - v1.2 支持创建、更新、删除"""
     try:
-        from shared.models.batch_operations import AssetBatchCreateRequest, AssetBatchUpdateRequest
+        from shared.models.batch_operations import (
+            AssetBatchCreateRequest,
+            AssetBatchUpdateRequest,
+        )
         from shared.services.batch_operation_service import get_batch_operation_service
 
         operation = request_data.get("operation", "create")
@@ -930,9 +939,13 @@ async def batch_assets_operation(request_data: Dict[str, Any]):
             request = AssetBatchUpdateRequest(**request_data)
             result = await service.update_assets_batch(request)
         else:
-            raise HTTPException(status_code=400, detail=f"不支持的操作类型: {operation}")
+            raise HTTPException(
+                status_code=400, detail=f"不支持的操作类型: {operation}"
+            )
 
-        logger.info(f"✅ 批量资产操作完成: {operation}, operation_id={result.operation_id}")
+        logger.info(
+            f"✅ 批量资产操作完成: {operation}, operation_id={result.operation_id}"
+        )
 
         return result.dict()
 
@@ -1025,7 +1038,7 @@ async def batch_deactivate_assets(request_data: Dict[str, Any]):
             user_id=user_id,
             username=username,
             request_ip=request_ip,
-            user_agent=user_agent
+            user_agent=user_agent,
         )
 
         logger.info(f"✅ 批量停用资产完成: operation_id={result.operation_id}")
@@ -1051,9 +1064,13 @@ async def batch_tasks_operation(request_data: Dict[str, Any]):
             request = TaskBatchCreateRequest(**request_data)
             result = await service.create_tasks_batch(request)
         else:
-            raise HTTPException(status_code=400, detail=f"不支持的操作类型: {operation}")
+            raise HTTPException(
+                status_code=400, detail=f"不支持的操作类型: {operation}"
+            )
 
-        logger.info(f"✅ 批量任务操作完成: {operation}, operation_id={result.operation_id}")
+        logger.info(
+            f"✅ 批量任务操作完成: {operation}, operation_id={result.operation_id}"
+        )
 
         return result.dict()
 

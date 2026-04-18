@@ -8,14 +8,10 @@ import asyncio
 import time
 from datetime import datetime, timezone, timedelta
 
-from tests.e2e.conftest import (
-    E2ETestHelper,
-    SmokeTestSuite,
-    run_smoke_tests_async
-)
+from tests.e2e.conftest import E2ETestHelper, SmokeTestSuite, run_smoke_tests_async
 from shared.models.batch_operations import (
     AssetBatchCreateRequest,
-    AssetBatchUpdateRequest
+    AssetBatchUpdateRequest,
 )
 
 
@@ -32,7 +28,7 @@ class TestSystemBasicsSmoke:
         test_device = {
             "name": "Smoke Test DB Device",
             "type": "linux_host",
-            "status": "active"
+            "status": "active",
         }
 
         # 添加设备
@@ -64,12 +60,9 @@ class TestSystemBasicsSmoke:
         from shared.storage.audit_storage import AuditStorage
         from shared.models.batch_operations import (
             AssetBatchCreateRequest,
-            BatchOperationResponse
+            BatchOperationResponse,
         )
-        from shared.models.audit_models import (
-            BatchOperationAudit,
-            AuditQueryRequest
-        )
+        from shared.models.audit_models import BatchOperationAudit, AuditQueryRequest
 
         print("✅ 核心依赖导入测试通过")
 
@@ -84,7 +77,11 @@ class TestBatchOperationsSmoke:
 
         # 创建小批量数据
         assets = [
-            {"asset_id": f"smoke-asset-{i}", "name": f"Smoke Asset {i}", "asset_type": "linux_host"}
+            {
+                "asset_id": f"smoke-asset-{i}",
+                "name": f"Smoke Asset {i}",
+                "asset_type": "linux_host",
+            }
             for i in range(5)
         ]
 
@@ -109,15 +106,23 @@ class TestBatchOperationsSmoke:
 
         # 先创建一些资产
         assets = [
-            {"asset_id": "smoke-update-001", "name": "Smoke Update 1", "asset_type": "linux_host"},
-            {"asset_id": "smoke-update-002", "name": "Smoke Update 2", "asset_type": "linux_host"}
+            {
+                "asset_id": "smoke-update-001",
+                "name": "Smoke Update 1",
+                "asset_type": "linux_host",
+            },
+            {
+                "asset_id": "smoke-update-002",
+                "name": "Smoke Update 2",
+                "asset_type": "linux_host",
+            },
         ]
         await batch_service.create_assets_batch(AssetBatchCreateRequest(assets=assets))
 
         # 更新这些资产
         update_request = AssetBatchUpdateRequest(
             asset_ids=["smoke-update-001", "smoke-update-002"],
-            updates={"status": "active"}
+            updates={"status": "active"},
         )
 
         start_time = time.time()
@@ -137,13 +142,19 @@ class TestBatchOperationsSmoke:
         batch_service = test_services["batch_service"]
 
         # 先创建一个存在的资产
-        assets = [{"asset_id": "smoke-error-001", "name": "Smoke Error", "asset_type": "linux_host"}]
+        assets = [
+            {
+                "asset_id": "smoke-error-001",
+                "name": "Smoke Error",
+                "asset_type": "linux_host",
+            }
+        ]
         await batch_service.create_assets_batch(AssetBatchCreateRequest(assets=assets))
 
         # 尝试更新包含不存在资产的列表
         update_request = AssetBatchUpdateRequest(
             asset_ids=["smoke-error-001", "non-existent-999"],
-            updates={"status": "active"}
+            updates={"status": "active"},
         )
 
         response = await batch_service.update_assets_batch(update_request)
@@ -151,7 +162,7 @@ class TestBatchOperationsSmoke:
         # 验证部分成功处理
         assert response.summary.total_items == 2
         assert response.summary.successful_items == 1  # 只有存在的成功
-        assert response.summary.failed_items == 1     # 不存在的失败
+        assert response.summary.failed_items == 1  # 不存在的失败
         assert response.summary.success_rate == 50.0
 
         print("✅ 包含错误的批量操作测试通过")
@@ -167,8 +178,16 @@ class TestAuditSmoke:
         audit_service = test_services["audit_service"]
 
         # 执行批量操作
-        assets = [{"asset_id": "smoke-audit-001", "name": "Smoke Audit", "asset_type": "linux_host"}]
-        response = await batch_service.create_assets_batch(AssetBatchCreateRequest(assets=assets))
+        assets = [
+            {
+                "asset_id": "smoke-audit-001",
+                "name": "Smoke Audit",
+                "asset_type": "linux_host",
+            }
+        ]
+        response = await batch_service.create_assets_batch(
+            AssetBatchCreateRequest(assets=assets)
+        )
 
         # 等待审计记录
         await asyncio.sleep(0.1)
@@ -188,6 +207,7 @@ class TestAuditSmoke:
 
         # 执行基本查询
         from shared.models.audit_models import AuditQueryRequest
+
         query = AuditQueryRequest(page=1, page_size=10)
 
         start_time = time.time()
@@ -233,7 +253,11 @@ class TestPerformanceSmoke:
         # 测试中等规模批量操作性能
         asset_count = 50
         assets = [
-            {"asset_id": f"smoke-perf-{i:03d}", "name": f"Smoke Perf {i}", "asset_type": "linux_host"}
+            {
+                "asset_id": f"smoke-perf-{i:03d}",
+                "name": f"Smoke Perf {i}",
+                "asset_type": "linux_host",
+            }
             for i in range(asset_count)
         ]
 
@@ -247,7 +271,9 @@ class TestPerformanceSmoke:
         assert elapsed_time < 5.0  # 50个资产应该在5秒内完成
 
         throughput = asset_count / elapsed_time
-        print(f"✅ 批量操作性能测试通过: {asset_count}个资产, {elapsed_time:.2f}s, {throughput:.1f} assets/s")
+        print(
+            f"✅ 批量操作性能测试通过: {asset_count}个资产, {elapsed_time:.2f}s, {throughput:.1f} assets/s"
+        )
 
     @pytest.mark.asyncio
     async def test_concurrent_operations(self, test_services):
@@ -256,7 +282,11 @@ class TestPerformanceSmoke:
 
         async def create_batch(batch_id: int):
             assets = [
-                {"asset_id": f"smoke-concurrent-{batch_id}-{i}", "name": f"Concurrent {batch_id}-{i}", "asset_type": "linux_host"}
+                {
+                    "asset_id": f"smoke-concurrent-{batch_id}-{i}",
+                    "name": f"Concurrent {batch_id}-{i}",
+                    "asset_type": "linux_host",
+                }
                 for i in range(10)
             ]
             request = AssetBatchCreateRequest(assets=assets)
@@ -265,9 +295,7 @@ class TestPerformanceSmoke:
         # 并发执行多个批量操作
         start_time = time.time()
         results = await asyncio.gather(
-            create_batch(1),
-            create_batch(2),
-            create_batch(3)
+            create_batch(1), create_batch(2), create_batch(3)
         )
         elapsed_time = time.time() - start_time
 
@@ -276,7 +304,9 @@ class TestPerformanceSmoke:
         assert total_assets == 30  # 3个操作，每个10个资产
         assert elapsed_time < 10.0  # 并发操作应该在10秒内完成
 
-        print(f"✅ 并发操作性能测试通过: 3个并发操作, {total_assets}个资产, {elapsed_time:.2f}s")
+        print(
+            f"✅ 并发操作性能测试通过: 3个并发操作, {total_assets}个资产, {elapsed_time:.2f}s"
+        )
 
 
 class TestIntegrationSmoke:
@@ -289,16 +319,23 @@ class TestIntegrationSmoke:
         audit_service = test_services["audit_service"]
 
         # 1. 创建资产
-        assets = [{"asset_id": "smoke-e2e-001", "name": "Smoke E2E", "asset_type": "linux_host"}]
-        create_response = await batch_service.create_assets_batch(AssetBatchCreateRequest(assets=assets))
+        assets = [
+            {
+                "asset_id": "smoke-e2e-001",
+                "name": "Smoke E2E",
+                "asset_type": "linux_host",
+            }
+        ]
+        create_response = await batch_service.create_assets_batch(
+            AssetBatchCreateRequest(assets=assets)
+        )
         assert create_response.summary.successful_items == 1
 
         await asyncio.sleep(0.1)
 
         # 2. 更新资产
         update_request = AssetBatchUpdateRequest(
-            asset_ids=["smoke-e2e-001"],
-            updates={"status": "active"}
+            asset_ids=["smoke-e2e-001"], updates={"status": "active"}
         )
         update_response = await batch_service.update_assets_batch(update_request)
         assert update_response.summary.successful_items == 1
@@ -306,8 +343,12 @@ class TestIntegrationSmoke:
         await asyncio.sleep(0.1)
 
         # 3. 验证审计记录
-        create_audit = await audit_service.get_audit_by_operation_id(create_response.operation_id)
-        update_audit = await audit_service.get_audit_by_operation_id(update_response.operation_id)
+        create_audit = await audit_service.get_audit_by_operation_id(
+            create_response.operation_id
+        )
+        update_audit = await audit_service.get_audit_by_operation_id(
+            update_response.operation_id
+        )
 
         assert create_audit is not None
         assert update_audit is not None
