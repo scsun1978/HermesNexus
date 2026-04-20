@@ -28,8 +28,11 @@ class TaskExecutor:
             # 1. 更新状态为running
             self.task_manager.update_task_status(task.task_id, TaskStatus.RUNNING)
 
-            # 2. 执行命令
-            result = self._execute_command(task.command, device_config)
+            # 2. 执行命令 - 根据设备配置选择执行方式
+            if device_config.get('execution_type') == 'local':
+                result = self.execute_local(task.command)
+            else:
+                result = self._execute_command(task.command, device_config)
 
             # 3. 根据执行结果更新任务状态
             if result['success']:
