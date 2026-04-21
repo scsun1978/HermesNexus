@@ -59,9 +59,7 @@ class BatchAuditService:
             # 计算操作时长
             duration_seconds = None
             if operation.completed_at and operation.started_at:
-                duration_seconds = (
-                    operation.completed_at - operation.started_at
-                ).total_seconds()
+                duration_seconds = (operation.completed_at - operation.started_at).total_seconds()
 
             # 提取关联信息
             related_assets = []
@@ -155,9 +153,7 @@ class BatchAuditService:
             records=results,
         )
 
-    async def get_audit_by_operation_id(
-        self, operation_id: str
-    ) -> Optional[BatchOperationAudit]:
+    async def get_audit_by_operation_id(self, operation_id: str) -> Optional[BatchOperationAudit]:
         """根据操作ID获取审计记录"""
         return self.storage.get_audit_by_operation_id(operation_id)
 
@@ -165,9 +161,7 @@ class BatchAuditService:
         """获取审计记录"""
         return self.storage.get_audit(audit_id)
 
-    async def get_asset_history(
-        self, asset_id: str, limit: int = 100
-    ) -> List[BatchOperationAudit]:
+    async def get_asset_history(self, asset_id: str, limit: int = 100) -> List[BatchOperationAudit]:
         """获取资产审计历史"""
         return self.storage.get_asset_history(asset_id, limit)
 
@@ -179,13 +173,9 @@ class BatchAuditService:
         limit: int = 100,
     ) -> List[BatchOperationAudit]:
         """获取失败的操作"""
-        return self.storage.get_failed_operations(
-            error_type, start_time, end_time, limit
-        )
+        return self.storage.get_failed_operations(error_type, start_time, end_time, limit)
 
-    async def get_statistics(
-        self, start_time: datetime, end_time: datetime
-    ) -> AuditStatistics:
+    async def get_statistics(self, start_time: datetime, end_time: datetime) -> AuditStatistics:
         """获取审计统计信息"""
         return self.storage.get_statistics(start_time, end_time)
 
@@ -207,9 +197,7 @@ class BatchAuditService:
         else:
             raise ValueError(f"不支持的导出格式: {format_type}")
 
-    def _export_json(
-        self, records: List[BatchOperationAudit], include_details: bool
-    ) -> str:
+    def _export_json(self, records: List[BatchOperationAudit], include_details: bool) -> str:
         """导出为JSON格式"""
         import json
 

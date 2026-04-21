@@ -163,9 +163,7 @@ class AuditQueryResponse(BaseModel):
     page: int = Field(..., description="当前页码")
     page_size: int = Field(..., description="每页大小")
     total_pages: int = Field(..., description="总页数")
-    records: List[BatchOperationAudit] = Field(
-        default_factory=list, description="审计记录"
-    )
+    records: List[BatchOperationAudit] = Field(default_factory=list, description="审计记录")
 
 
 class AuditStatistics(BaseModel):
@@ -177,34 +175,22 @@ class AuditStatistics(BaseModel):
     success_rate: float = Field(..., description="成功率")
 
     # 操作类型统计
-    operation_type_counts: Dict[str, int] = Field(
-        default_factory=dict, description="操作类型统计"
-    )
+    operation_type_counts: Dict[str, int] = Field(default_factory=dict, description="操作类型统计")
 
     # 错误类型统计
-    error_type_counts: Dict[str, int] = Field(
-        default_factory=dict, description="错误类型统计"
-    )
+    error_type_counts: Dict[str, int] = Field(default_factory=dict, description="错误类型统计")
 
     # 用户活动统计
-    user_activity: Dict[str, int] = Field(
-        default_factory=dict, description="用户活动统计"
-    )
+    user_activity: Dict[str, int] = Field(default_factory=dict, description="用户活动统计")
 
     # 时间分布
-    hourly_distribution: Dict[str, int] = Field(
-        default_factory=dict, description="每小时分布"
-    )
+    hourly_distribution: Dict[str, int] = Field(default_factory=dict, description="每小时分布")
 
     # 资产活跃度
-    most_active_assets: List[Dict[str, Any]] = Field(
-        default_factory=list, description="最活跃资产"
-    )
+    most_active_assets: List[Dict[str, Any]] = Field(default_factory=list, description="最活跃资产")
 
     # 节点活跃度
-    most_active_nodes: List[Dict[str, Any]] = Field(
-        default_factory=list, description="最活跃节点"
-    )
+    most_active_nodes: List[Dict[str, Any]] = Field(default_factory=list, description="最活跃节点")
 
 
 class AuditExportRequest(BaseModel):

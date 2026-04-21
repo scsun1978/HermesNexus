@@ -147,7 +147,5 @@ class SQLiteBackend(DatabaseBackend):
             "path": self.db_path,
             "connection_string": self.connection_string,
             "file_exists": os.path.exists(self.db_path),
-            "file_size": (
-                os.path.getsize(self.db_path) if os.path.exists(self.db_path) else 0
-            ),
+            "file_size": (os.path.getsize(self.db_path) if os.path.exists(self.db_path) else 0),
         }

@@ -305,9 +305,7 @@ class MetricsCollector:
 
         return metrics
 
-    def record_counter(
-        self, name: str, value: float = 1.0, labels: Dict[str, str] = None
-    ):
+    def record_counter(self, name: str, value: float = 1.0, labels: Dict[str, str] = None):
         """记录计数器指标"""
         label_key = self._make_label_key(labels)
         self.metrics[name][label_key] += value
@@ -322,9 +320,7 @@ class MetricsCollector:
         label_key = self._make_label_key(labels)
         self.histograms[name][label_key].append(value)
 
-    def record_api_request(
-        self, endpoint: str, method: str, status: str, duration: float
-    ):
+    def record_api_request(self, endpoint: str, method: str, status: str, duration: float):
         """记录API请求"""
         # 请求计数
         self.record_counter(
@@ -351,9 +347,7 @@ class MetricsCollector:
     def record_db_query(self, operation: str, table: str, duration: float):
         """记录数据库查询"""
         # 查询计数
-        self.record_counter(
-            "db_query_count", 1.0, {"operation": operation, "table": table}
-        )
+        self.record_counter("db_query_count", 1.0, {"operation": operation, "table": table})
 
         # 查询耗时
         self.record_histogram(

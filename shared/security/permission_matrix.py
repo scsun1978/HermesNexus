@@ -33,9 +33,7 @@ class PermissionMatrixManager:
         # 权限矩阵缓存
         self._matrix_cache: Dict[str, PermissionMatrix] = {}
 
-    def load_matrix(
-        self, matrix_id: str, force_reload: bool = False
-    ) -> Optional[PermissionMatrix]:
+    def load_matrix(self, matrix_id: str, force_reload: bool = False) -> Optional[PermissionMatrix]:
         """
         加载权限矩阵
 
@@ -200,9 +198,7 @@ class PermissionMatrixManager:
             print(f"创建权限矩阵失败: {e}")
             return None
 
-    def add_role_permission(
-        self, matrix_id: str, role: str, permission: Permission
-    ) -> bool:
+    def add_role_permission(self, matrix_id: str, role: str, permission: Permission) -> bool:
         """
         为角色添加权限
 
@@ -322,9 +318,7 @@ class PermissionMatrixManager:
             role_permissions[role] = [
                 {
                     "action": (
-                        perm.action.value
-                        if hasattr(perm.action, "value")
-                        else str(perm.action)
+                        perm.action.value if hasattr(perm.action, "value") else str(perm.action)
                     ),
                     "resource": (
                         perm.resource.value

@@ -43,9 +43,7 @@ class EdgeStorage:
                     data = json.load(f)
                     # 恢复任务状态
                     for task_id, task_data in data.get("tasks", {}).items():
-                        self.task_status[task_id] = task_data.get(
-                            "status", JobStatus.PENDING
-                        )
+                        self.task_status[task_id] = task_data.get("status", JobStatus.PENDING)
                 logger.info(f"✅ 加载了 {len(self.task_status)} 个任务状态")
         except Exception as e:
             logger.warning(f"⚠️  加载状态失败: {e}")
@@ -55,8 +53,7 @@ class EdgeStorage:
         try:
             state = {
                 "tasks": {
-                    task_id: {"status": status}
-                    for task_id, status in self.task_status.items()
+                    task_id: {"status": status} for task_id, status in self.task_status.items()
                 },
                 "updated_at": datetime.now(timezone.utc).isoformat(),
             }
@@ -120,18 +117,10 @@ class EdgeStorage:
     def get_stats(self) -> Dict[str, Any]:
         """获取统计信息"""
         total_tasks = len(self.tasks)
-        pending_tasks = len(
-            [t for t, s in self.task_status.items() if s == JobStatus.PENDING]
-        )
-        running_tasks = len(
-            [t for t, s in self.task_status.items() if s == JobStatus.RUNNING]
-        )
-        success_tasks = len(
-            [t for t, s in self.task_status.items() if s == JobStatus.SUCCESS]
-        )
-        failed_tasks = len(
-            [t for t, s in self.task_status.items() if s in JobStatus.FAILED]
-        )
+        pending_tasks = len([t for t, s in self.task_status.items() if s == JobStatus.PENDING])
+        running_tasks = len([t for t, s in self.task_status.items() if s == JobStatus.RUNNING])
+        success_tasks = len([t for t, s in self.task_status.items() if s == JobStatus.SUCCESS])
+        failed_tasks = len([t for t, s in self.task_status.items() if s in JobStatus.FAILED])
 
         return {
             "total_tasks": total_tasks,

@@ -28,6 +28,9 @@ from cloud.database.db import db
 # 导入新的 API 路由
 from cloud.api import task_api, asset_api
 
+# Phase 4 Day 2: 导入监控API
+from cloud.api import monitoring_api
+
 # Phase 3 Day 3: 导入审批API
 from cloud.api import approval_api
 
@@ -125,10 +128,9 @@ app.include_router(asset_api.router, prefix="")
 app.include_router(approval_api.router, prefix="")
 # Phase 3 Day 4: 注册回滚API路由
 app.include_router(rollback_api.router, prefix="")
-# 注释掉兼容的 jobs 路由
-# legacy endpoints causing 422 errors with *args, **kwargs
-# 这些通用端点劫持了 /api/v1/jobs 路径，导致 FastAPI 无法正确匹配参数
-# app.include_router(task_api.jobs_router, prefix="")
+
+# Phase 4 Day 2: 注册监控API路由
+app.include_router(monitoring_api.router, prefix="")
 
 
 # 节点管理 API
@@ -176,9 +178,7 @@ async def query_nodes(request: Dict[str, Any]):
         service = get_node_list_service()
         result = service.get_node_list(query_request)
 
-        logger.info(
-            f"✅ 查询节点列表: page={query_request.page}, found={result.total} nodes"
-        )
+        logger.info(f"✅ 查询节点列表: page={query_request.page}, found={result.total} nodes")
 
         return result.dict()
 
@@ -231,6 +231,8 @@ async def register_node(node_id: str, registration_data: Dict[str, Any]):
             node_name=registration_data.get("node_name", node_id),
             node_type=NodeType(registration_data.get("node_type", "physical")),
             status=NodeStatus.REGISTERED,
+            tenant_id=registration_data.get("tenant_id", "default"),
+            region_id=registration_data.get("region_id", "default"),
             capabilities=registration_data.get("capabilities", {}),
             max_concurrent_tasks=registration_data.get("max_concurrent_tasks", 3),
             description=registration_data.get("description", ""),
@@ -288,9 +290,7 @@ async def register_node(node_id: str, registration_data: Dict[str, Any]):
                 "name": registration_data.get("node_name", node_id),
                 "status": NodeStatus.REGISTERED.value,
                 "capabilities": registration_data.get("capabilities", {}),
-                "max_concurrent_tasks": registration_data.get(
-                    "max_concurrent_tasks", 3
-                ),
+                "max_concurrent_tasks": registration_data.get("max_concurrent_tasks", 3),
                 "last_heartbeat": datetime.now(timezone.utc).isoformat(),
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat(),
@@ -348,9 +348,7 @@ async def register_node(node_id: str, registration_data: Dict[str, Any]):
 
     except Exception as e:
         logger.error(f"❌ 节点注册失败: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
     except Exception as e:
         logger.error(f"❌ 节点注册失败: {e}")
@@ -498,9 +496,7 @@ async def receive_task_result(node_id: str, task_id: str, result: Dict[str, Any]
             db.update_job(task_id, update_data)
 
             # 记录事件
-            event_type = (
-                "job_completed" if result.get("status") == "success" else "job_failed"
-            )
+            event_type = "job_completed" if result.get("status") == "success" else "job_failed"
             db.add_event(
                 {
                     "event_id": str(uuid.uuid4()),
@@ -527,9 +523,7 @@ async def receive_task_result(node_id: str, task_id: str, result: Dict[str, Any]
             db.add_audit_log(
                 {
                     "action": (
-                        "job_completed"
-                        if result.get("status") == "success"
-                        else "job_failed"
+                        "job_completed" if result.get("status") == "success" else "job_failed"
                     ),
                     "actor": node_id,
                     "resource_type": "job",
@@ -652,9 +646,7 @@ async def create_device(device: Device):
 
 # 任务管理 API
 @app.get("/api/v1/jobs")
-async def list_jobs(
-    status: Optional[str] = None, node_id: Optional[str] = None, limit: int = 100
-):
+async def list_jobs(status: Optional[str] = None, node_id: Optional[str] = None, limit: int = 100):
     """获取任务列表"""
     try:
         jobs_list = db.list_jobs(status=status, node_id=node_id)
@@ -688,9 +680,7 @@ async def create_job(job_data: Dict[str, Any]):
         # 获取目标设备
         device = db.get_device(job_data["target_device_id"])
         if not device:
-            raise HTTPException(
-                status_code=404, detail=f"设备不存在: {job_data['target_device_id']}"
-            )
+            raise HTTPException(status_code=404, detail=f"设备不存在: {job_data['target_device_id']}")
 
         # 获取分配的节点 (简单轮询)
         available_nodes = db.list_nodes(status="online")
@@ -909,6 +899,102 @@ async def list_audit_logs(
         return {"logs": [], "total": 0, "limit": limit}
 
 
+# 审计回放 API
+@app.post("/api/v1/audit/{audit_id}/replay")
+async def replay_audit_log(audit_id: str, replay_request: Dict[str, Any]):
+    """回放审计日志"""
+    try:
+        from shared.services.audit_replay_service import get_replay_service, ReplayMode
+
+        # 获取回放服务
+        replay_service = get_replay_service(db)
+
+        # 解析回放参数
+        mode_str = replay_request.get("mode", "simulation")
+        actor = replay_request.get("actor", "api_user")
+        overrides = replay_request.get("overrides", {})
+
+        # 转换回放模式
+        try:
+            mode = ReplayMode(mode_str)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"无效的回放模式: {mode_str}. 可用模式: simulation, validation, execution",
+            )
+
+        logger.info(f"🔄 开始审计回放: {audit_id} (模式: {mode_str})")
+
+        # 执行回放
+        result = replay_service.replay_audit_log(
+            audit_id=audit_id,
+            mode=mode,
+            actor=actor,
+            overrides=overrides,
+        )
+
+        # 记录回放操作的审计日志
+        db.add_audit_log(
+            {
+                "action": "audit_replay",
+                "actor": actor,
+                "resource_type": "audit_log",
+                "resource_id": audit_id,
+                "details": {
+                    "replay_mode": mode_str,
+                    "replay_result": result.get("success", False),
+                    "replay_id": result.get("replay_id"),
+                },
+                "success": result.get("success", False),
+            }
+        )
+
+        if result.get("success"):
+            logger.info(f"✅ 审计回放成功: {result.get('replay_id')}")
+            return result
+        else:
+            logger.warning(f"⚠️  审计回放失败: {result.get('error')}")
+            raise HTTPException(status_code=400, detail=result.get("error"))
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ 审计回放失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/v1/audit/{audit_id}/replay-capability")
+async def check_replay_capability(audit_id: str):
+    """检查审计日志是否支持回放"""
+    try:
+        from shared.services.audit_replay_service import get_replay_service
+
+        replay_service = get_replay_service(db)
+
+        # 获取原始审计日志
+        original_audit = db.get_audit_log(audit_id)
+        if not original_audit:
+            raise HTTPException(status_code=404, detail=f"审计日志不存在: {audit_id}")
+
+        # 检查回放能力
+        capability = replay_service._check_replay_capability(original_audit)
+
+        return {
+            "audit_id": audit_id,
+            "can_replay": capability["can_replay"],
+            "reason": capability["reason"],
+            "action": original_audit.get("action"),
+            "target_type": original_audit.get("target_type"),
+            "target_id": original_audit.get("target_id"),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ 检查回放能力失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # 错误处理
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
@@ -939,13 +1025,9 @@ async def batch_assets_operation(request_data: Dict[str, Any]):
             request = AssetBatchUpdateRequest(**request_data)
             result = await service.update_assets_batch(request)
         else:
-            raise HTTPException(
-                status_code=400, detail=f"不支持的操作类型: {operation}"
-            )
+            raise HTTPException(status_code=400, detail=f"不支持的操作类型: {operation}")
 
-        logger.info(
-            f"✅ 批量资产操作完成: {operation}, operation_id={result.operation_id}"
-        )
+        logger.info(f"✅ 批量资产操作完成: {operation}, operation_id={result.operation_id}")
 
         return result.dict()
 
@@ -1064,13 +1146,9 @@ async def batch_tasks_operation(request_data: Dict[str, Any]):
             request = TaskBatchCreateRequest(**request_data)
             result = await service.create_tasks_batch(request)
         else:
-            raise HTTPException(
-                status_code=400, detail=f"不支持的操作类型: {operation}"
-            )
+            raise HTTPException(status_code=400, detail=f"不支持的操作类型: {operation}")
 
-        logger.info(
-            f"✅ 批量任务操作完成: {operation}, operation_id={result.operation_id}"
-        )
+        logger.info(f"✅ 批量任务操作完成: {operation}, operation_id={result.operation_id}")
 
         return result.dict()
 

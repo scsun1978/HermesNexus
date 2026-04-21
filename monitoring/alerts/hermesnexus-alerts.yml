@@ -1,0 +1,160 @@
+groups:
+  - name: hermesnexus_alerts
+    interval: 30s
+    rules:
+      # 系统资源告警
+      - alert: HighCPUUsage
+        expr: hermes_system_cpu_percent > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "CPU使用率过高"
+          description: "节点 {{ $labels.instance }} CPU使用率 {{ $value }}% 超过80%"
+
+      - alert: CriticalCPUUsage
+        expr: hermes_system_cpu_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "CPU使用率严重过高"
+          description: "节点 {{ $labels.instance }} CPU使用率 {{ $value }}% 超过95%"
+
+      - alert: HighMemoryUsage
+        expr: hermes_system_memory_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "内存使用率过高"
+          description: "节点 {{ $labels.instance }} 内存使用率 {{ $value }}% 超过85%"
+
+      - alert: CriticalMemoryUsage
+        expr: hermes_system_memory_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "内存使用率严重过高"
+          description: "节点 {{ $labels.instance }} 内存使用率 {{ $value }}% 超过95%"
+
+      - alert: HighDiskUsage
+        expr: hermes_system_disk_percent > 90
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "磁盘使用率过高"
+          description: "节点 {{ $labels.instance }} 磁盘使用率 {{ $value }}% 超过90%"
+
+      - alert: CriticalDiskUsage
+        expr: hermes_system_disk_percent > 95
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "磁盘使用率严重过高"
+          description: "节点 {{ $labels.instance }} 磁盘使用率 {{ $value }}% 超过95%"
+
+      # 业务指标告警
+      - alert: TooManyOfflineNodes
+        expr: (hermes_nodes_total - hermes_nodes_online) > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "有节点离线"
+          description: "{{ $value }} 个节点处于离线状态"
+
+      - alert: NoOnlineNodes
+        expr: hermes_nodes_online == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: business
+        annotations:
+          summary: "所有节点离线"
+          description: "没有在线节点，系统无法正常工作"
+
+      - alert: TooManyRunningJobs
+        expr: hermes_jobs_running > 50
+        for: 10m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "运行中任务过多"
+          description: "当前有 {{ $value }} 个任务正在运行"
+
+      - alert: HighFailedJobRate
+        expr: (hermes_jobs_failed / hermes_jobs_total) > 0.1
+        for: 15m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "任务失败率过高"
+          description: "任务失败率 {{ $value | humanizePercentage }} 超过10%"
+
+      # 服务可用性告警
+      - alert: ServiceDown
+        expr: up{job="hermesnexus-v12-cloud"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: service
+        annotations:
+          summary: "HermesNexus服务宕机"
+          description: "HermesNexus Cloud API服务无法访问"
+
+      - alert: EdgeNodeDown
+        expr: up{job="hermesnexus-v12-edge"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: service
+        annotations:
+          summary: "Edge节点离线"
+          description: "Edge节点 {{ $labels.instance }} 无法访问"
+
+  - name: hermesnexus_slos
+    interval: 1m
+    rules:
+      # SLA相关告警
+      - alert: APIResponseTimeHigh
+        expr: |
+          (
+            sum(rate(http_request_duration_seconds_sum{job="hermesnexus-v12-cloud"}[5m]))
+            /
+            sum(rate(http_request_duration_seconds_count{job="hermesnexus-v12-cloud"}[5m]))
+          ) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "API响应时间过长"
+          description: "API平均响应时间 {{ $value }}s 超过500ms"
+
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{job="hermesnexus-v12-cloud",status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total{job="hermesnexus-v12-cloud"}[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: performance
+        annotations:
+          summary: "API错误率过高"
+          description: "API错误率 {{ $value | humanizePercentage }} 超过5%"

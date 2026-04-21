@@ -6,6 +6,19 @@
 // API 基础URL
 const API_BASE = '/api/v1';
 
+// HTML转义函数 - 防止XSS攻击
+function escapeHtml(unsafe) {
+    if (unsafe === null || unsafe === undefined) {
+        return '';
+    }
+    return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 // 当前状态
 let currentPage = 1;
 let pageSize = 20;
@@ -47,14 +60,20 @@ async function loadTasks() {
     if (filterPriority) url += `&priority=${filterPriority}`;
     if (filterSearch) url += `&search=${encodeURIComponent(filterSearch)}`;
 
+    const isFirstLoad = document.querySelector('.loading-indicator');
+    const loadingId = isFirstLoad ? showLoading('正在加载任务列表...') : null;
+
     try {
         const response = await fetch(url);
         const data = await response.json();
 
         displayTasks(data.tasks || []);
         updatePagination(data);
+
+        if (loadingId) hideLoading(loadingId);
     } catch (error) {
         console.error('Failed to load tasks:', error);
+        if (loadingId) hideLoading(loadingId);
         showError('加载任务列表失败');
     }
 }
@@ -70,21 +89,21 @@ function displayTasks(tasks) {
 
     tbody.innerHTML = tasks.map(task => `
         <tr>
-            <td><code>${task.task_id}</code></td>
-            <td><strong>${task.name}</strong></td>
+            <td><code>${escapeHtml(task.task_id)}</code></td>
+            <td><strong>${escapeHtml(task.name)}</strong></td>
             <td>${getTaskTypeLabel(task.task_type)}</td>
             <td>${getStatusBadge(task.status)}</td>
             <td>${getPriorityBadge(task.priority)}</td>
-            <td><code>${task.target_asset_id}</code></td>
-            <td>${task.target_node_id ? `<code>${task.target_node_id}</code>` : '-'}</td>
+            <td><code>${escapeHtml(task.target_asset_id)}</code></td>
+            <td>${task.target_node_id ? `<code>${escapeHtml(task.target_node_id)}</code>` : '-'}</td>
             <td>${formatDate(task.created_at)}</td>
             <td>
-                <button class="btn btn-sm" onclick="viewTask('${task.task_id}')">查看</button>
+                <button class="btn btn-sm" onclick="viewTask('${escapeHtml(task.task_id)}')">查看</button>
                 ${task.status === 'pending' || task.status === 'assigned' ? `
-                    <button class="btn btn-sm btn-warning" onclick="cancelTask('${task.task_id}')">取消</button>
+                    <button class="btn btn-sm btn-warning" onclick="cancelTask('${escapeHtml(task.task_id)}')">取消</button>
                 ` : ''}
                 ${task.status === 'succeeded' || task.status === 'failed' ? `
-                    <button class="btn btn-sm btn-primary" onclick="viewResult('${task.task_id}')">结果</button>
+                    <button class="btn btn-sm btn-primary" onclick="viewResult('${escapeHtml(task.task_id)}')">结果</button>
                 ` : ''}
             </td>
         </tr>
@@ -298,6 +317,9 @@ function setupFormHandlers() {
             tags: document.getElementById('task-tags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
         };
 
+        // Show loading notification
+        const loadingId = showLoading('正在创建任务...');
+
         try {
             const response = await fetch(`${API_BASE}/tasks`, {
                 method: 'POST',
@@ -308,15 +330,18 @@ function setupFormHandlers() {
             });
 
             if (response.ok) {
+                hideLoading(loadingId);
                 showSuccess('任务创建成功');
                 closeModal();
                 loadTasks();
             } else {
+                hideLoading(loadingId);
                 const error = await response.json();
                 showError(error.error?.message || '创建失败');
             }
         } catch (error) {
             console.error('Failed to create task:', error);
+            hideLoading(loadingId);
             showError('创建任务失败');
         }
     });
@@ -377,9 +402,9 @@ function formatDate(dateString) {
 }
 
 function showSuccess(message) {
-    alert(message); // 简化实现，生产环境应使用更好的通知组件
+    return notificationSystem.success(message);
 }
 
 function showError(message) {
-    alert('错误: ' + message);
+    return notificationSystem.error(message);
 }

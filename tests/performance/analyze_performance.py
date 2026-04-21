@@ -245,9 +245,7 @@ class PerformanceAnalyzer:
 
         # 输出优化计划
         for i, opt in enumerate(optimizations, 1):
-            priority_symbol = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(
-                opt["priority"], "⚪"
-            )
+            priority_symbol = {"high": "🔴", "medium": "🟡", "low": "🟢"}.get(opt["priority"], "⚪")
 
             print(f"\n{priority_symbol} 优化 {i}: {opt['action']}")
             print(f"   优先级: {opt['priority']}")
@@ -283,9 +281,7 @@ class PerformanceAnalyzer:
         print("\n📋 性能分析摘要:")
         print(f"   发现瓶颈: {len(self.bottlenecks)} 个")
         print(f"   优化建议: {len(self.optimizations)} 个")
-        print(
-            f"   高优先级优化: {len([o for o in self.optimizations if o['priority'] == 'high'])} 个"
-        )
+        print(f"   高优先级优化: {len([o for o in self.optimizations if o['priority'] == 'high'])} 个")
 
     def _generate_summary(self):
         """生成摘要"""

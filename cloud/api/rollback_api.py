@@ -120,9 +120,7 @@ def check_rollback_permission(action: str):
         # 对于执行回滚操作，需要特定角色
         if action == "execute":
             if not any(role in current_user.get("roles", []) for role in allowed_roles):
-                raise HTTPException(
-                    status_code=403, detail="权限不足：需要回滚执行权限"
-                )
+                raise HTTPException(status_code=403, detail="权限不足：需要回滚执行权限")
 
         # 对于创建回滚计划，需要管理员角色
         if action == "create":
@@ -140,20 +138,14 @@ class CreateRollbackPlanRequest(BaseModel):
     """创建回滚计划请求模型"""
 
     name: str = Field(..., description="回滚计划名称", min_length=1, max_length=200)
-    description: str = Field(
-        ..., description="回滚计划描述", min_length=1, max_length=1000
-    )
-    trigger_reason: str = Field(
-        ..., description="触发回滚的原因", min_length=1, max_length=500
-    )
+    description: str = Field(..., description="回滚计划描述", min_length=1, max_length=1000)
+    trigger_reason: str = Field(..., description="触发回滚的原因", min_length=1, max_length=500)
     rollback_type: str = Field(..., description="回滚类型")
     target_resources: List[str] = Field(..., description="目标资源列表")
     original_task_id: Optional[str] = Field(None, description="原始任务ID")
     original_approval_id: Optional[str] = Field(None, description="原始审批ID")
     priority: int = Field(default=5, description="优先级（1-10）", ge=1, le=10)
-    estimated_duration_seconds: int = Field(
-        default=300, description="预计耗时（秒）", ge=0
-    )
+    estimated_duration_seconds: int = Field(default=300, description="预计耗时（秒）", ge=0)
     metadata: Optional[dict] = Field(default=None, description="附加元数据")
 
 
@@ -170,9 +162,7 @@ class CreateFailureRecordRequest(BaseModel):
     task_id: str = Field(..., description="关联任务ID")
     failure_type: str = Field(..., description="故障类型")
     severity: str = Field(..., description="严重程度")
-    error_message: str = Field(
-        ..., description="错误消息", min_length=1, max_length=500
-    )
+    error_message: str = Field(..., description="错误消息", min_length=1, max_length=500)
     node_id: Optional[str] = Field(None, description="关联节点ID")
     asset_id: Optional[str] = Field(None, description="关联资产ID")
     stack_trace: Optional[str] = Field(None, description="错误堆栈")
@@ -248,9 +238,7 @@ def _plan_to_dict(plan: Any) -> Dict[str, Any]:
         step_data.setdefault("operation", getattr(step, "operation", ""))
         step_data.setdefault("parameters", getattr(step, "parameters", {}))
         step_data.setdefault("requires_backup", getattr(step, "requires_backup", False))
-        step_data.setdefault(
-            "validation_criteria", getattr(step, "validation_criteria", [])
-        )
+        step_data.setdefault("validation_criteria", getattr(step, "validation_criteria", []))
         step_data.setdefault("timeout_seconds", getattr(step, "timeout_seconds", 300))
         step_data.setdefault("retry_count", getattr(step, "retry_count", 0))
         step_data.setdefault("max_retries", getattr(step, "max_retries", 3))
@@ -311,17 +299,13 @@ def _failure_to_dict(failure: Any) -> Dict[str, Any]:
         "task_id": pick("task_id", ""),
         "node_id": pick("node_id"),
         "asset_id": pick("asset_id"),
-        "failure_type": _enum_or_value(
-            pick("failure_type", FailureType.EXECUTION_FAILURE)
-        ),
+        "failure_type": _enum_or_value(pick("failure_type", FailureType.EXECUTION_FAILURE)),
         "severity": _enum_or_value(pick("severity", FailureSeverity.MEDIUM)),
         "error_message": pick("error_message", ""),
         "stack_trace": pick("stack_trace"),
         "occurred_at": pick("occurred_at", datetime.utcnow()),
         "detected_by": pick("detected_by", "system"),
-        "recovery_action": _enum_or_value(
-            pick("recovery_action", RecoveryAction.IGNORE)
-        ),
+        "recovery_action": _enum_or_value(pick("recovery_action", RecoveryAction.IGNORE)),
         "recovery_status": pick("recovery_status", "pending"),
         "recovery_result": pick("recovery_result"),
         "recovered_at": pick("recovered_at"),
@@ -353,9 +337,7 @@ def _recovery_to_dict(plan: Any) -> Dict[str, Any]:
         "failure_id": pick("failure_id", ""),
         "name": pick("name", ""),
         "description": pick("description", ""),
-        "recovery_action": _enum_or_value(
-            pick("recovery_action", RecoveryAction.IGNORE)
-        ),
+        "recovery_action": _enum_or_value(pick("recovery_action", RecoveryAction.IGNORE)),
         "priority": pick("priority", 5),
         "steps": pick("steps", []) or [],
         "validation_criteria": pick("validation_criteria", []) or [],

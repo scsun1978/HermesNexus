@@ -46,9 +46,7 @@ class RollbackStep(BaseModel):
     parameters: Dict[str, Any] = Field(default_factory=dict, description="操作参数")
 
     # 执行信息
-    status: RollbackStatus = Field(
-        default=RollbackStatus.PLANNED, description="步骤状态"
-    )
+    status: RollbackStatus = Field(default=RollbackStatus.PLANNED, description="步骤状态")
     executed_at: Optional[datetime] = Field(None, description="执行时间")
     result: Optional[str] = Field(None, description="执行结果")
     error_message: Optional[str] = Field(None, description="错误信息")
@@ -108,9 +106,7 @@ class RollbackPlan(BaseModel):
     steps: List[RollbackStep] = Field(..., description="回滚步骤列表")
 
     # 状态信息
-    status: RollbackStatus = Field(
-        default=RollbackStatus.PLANNED, description="回滚状态"
-    )
+    status: RollbackStatus = Field(default=RollbackStatus.PLANNED, description="回滚状态")
     current_step: int = Field(default=0, description="当前执行步骤")
     started_at: Optional[datetime] = Field(None, description="开始时间")
     completed_at: Optional[datetime] = Field(None, description="完成时间")
@@ -304,9 +300,7 @@ class RollbackStatistics(BaseModel):
 
     # 分类统计
     by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
-    by_trigger: Dict[str, int] = Field(
-        default_factory=dict, description="按触发原因统计"
-    )
+    by_trigger: Dict[str, int] = Field(default_factory=dict, description="按触发原因统计")
 
     # 时间统计
     avg_duration_seconds: float = Field(..., description="平均回滚耗时")

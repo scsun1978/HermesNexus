@@ -70,11 +70,7 @@ class AssetDAO(BaseDAO):
 
         try:
             # 查询数据库
-            asset_model = (
-                session.query(AssetModel)
-                .filter(AssetModel.asset_id == asset_id)
-                .first()
-            )
+            asset_model = session.query(AssetModel).filter(AssetModel.asset_id == asset_id).first()
 
             if not asset_model:
                 return None
@@ -100,9 +96,7 @@ class AssetDAO(BaseDAO):
         try:
             # 查询现有资产
             asset_model = (
-                session.query(AssetModel)
-                .filter(AssetModel.asset_id == asset.asset_id)
-                .first()
+                session.query(AssetModel).filter(AssetModel.asset_id == asset.asset_id).first()
             )
 
             if not asset_model:
@@ -145,11 +139,7 @@ class AssetDAO(BaseDAO):
 
         try:
             # 查询并删除资产
-            asset_model = (
-                session.query(AssetModel)
-                .filter(AssetModel.asset_id == asset_id)
-                .first()
-            )
+            asset_model = session.query(AssetModel).filter(AssetModel.asset_id == asset_id).first()
 
             if not asset_model:
                 return False
@@ -277,9 +267,7 @@ class AssetDAO(BaseDAO):
         try:
             # 批量查询 - 一次查询获取所有数据
             asset_models = (
-                session.query(AssetModel)
-                .filter(AssetModel.asset_id.in_(asset_ids))
-                .all()
+                session.query(AssetModel).filter(AssetModel.asset_id.in_(asset_ids)).all()
             )
 
             # 转换为资产对象列表
@@ -354,9 +342,7 @@ class AssetDAO(BaseDAO):
             for asset in assets:
                 # 查询并更新每个资产
                 asset_model = (
-                    session.query(AssetModel)
-                    .filter(AssetModel.asset_id == asset.asset_id)
-                    .first()
+                    session.query(AssetModel).filter(AssetModel.asset_id == asset.asset_id).first()
                 )
 
                 if asset_model:
@@ -365,9 +351,7 @@ class AssetDAO(BaseDAO):
                     asset_model.asset_type = asset.asset_type
                     asset_model.status = asset.status
                     asset_model.description = asset.description
-                    asset_model.meta_data = (
-                        asset.metadata.dict() if asset.metadata else None
-                    )
+                    asset_model.meta_data = asset.metadata.dict() if asset.metadata else None
                     asset_model.updated_at = current_time
                     if asset.last_heartbeat:
                         asset_model.last_heartbeat = asset.last_heartbeat

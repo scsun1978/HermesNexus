@@ -61,9 +61,7 @@ class NodeTokenService:
         """加载PEM格式密钥"""
         from cryptography.hazmat.primitives import serialization
 
-        return serialization.load_pem_private_key(
-            key_string.encode("utf-8"), password=None
-        )
+        return serialization.load_pem_private_key(key_string.encode("utf-8"), password=None)
 
     def generate_token(self, node_identity: NodeIdentity) -> NodeTokenInfo:
         """
@@ -144,9 +142,7 @@ class NodeTokenService:
             print(f"Token verification error: {e}")
             return None
 
-    def refresh_token(
-        self, old_token: str, node_identity: NodeIdentity
-    ) -> NodeTokenInfo:
+    def refresh_token(self, old_token: str, node_identity: NodeIdentity) -> NodeTokenInfo:
         """
         刷新节点Token
 

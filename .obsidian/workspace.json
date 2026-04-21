@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "21399726366a3924",
+        "id": "21fe2b3e5b50af40",
         "type": "tabs",
         "children": [
           {
-            "id": "49d067fda9fe8113",
+            "id": "f791982dad831b30",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/64-总索引与推荐阅读顺序.md",
+                "file": "docs/plans/2026-04-20-task-orchestration-phase4-plan.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "64-总索引与推荐阅读顺序"
+              "title": "2026-04-20-task-orchestration-phase4-plan"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "honcho",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -78,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 335.5
   },
   "right": {
     "id": "68c8ab3c2a0c17df",
@@ -183,44 +183,44 @@
       "bases:新建数据库": false
     }
   },
-  "active": "49d067fda9fe8113",
+  "active": "2c76d9f5f6c716df",
   "lastOpenFiles": [
+    "docs/reports/2026-04-21-code-review-fixes-report.md",
+    "tests/task/__pycache__/test_templates.cpython-311-pytest-9.0.3.pyc",
+    "tests/task/__pycache__/test_model.cpython-311-pytest-9.0.3.pyc",
+    "tests/task/__pycache__/test_manager.cpython-311-pytest-9.0.3.pyc",
+    "tests/integration/__pycache__/test_task_execution.cpython-311-pytest-9.0.3.pyc",
+    "hermesnexus/task/__pycache__/templates.cpython-311.pyc",
+    "hermesnexus/task/__pycache__/executor.cpython-311.pyc",
+    "hermesnexus/task/__pycache__/manager.cpython-311.pyc",
+    "hermesnexus/task/__pycache__/model.cpython-311.pyc",
+    "hermesnexus/task/__pycache__/__init__.cpython-311.pyc",
+    "hermesnexus/__pycache__/__init__.cpython-311.pyc",
+    "docs/reports/2026-04-21-week3-mvp-four-task-types-acceptance.md",
+    "docs/reports/2026-04-21-week2-mvp-troubleshooting-acceptance.md",
+    "docs/plan/2026-04-21-phase4a-mvp-integration-plan.md",
+    "docs/reports/2026-04-21-phase4a-week1-day1-completion-report.md",
+    "docs/reports/2026-04-21-v12-mvp-compliance-analysis.md",
+    "docs/plans/2026-04-20-phase4a-core-orchestration-plan.md",
+    "docs/plans/2026-04-20-task-orchestration-phase4-plan.md",
+    "docs/plans/2026-04-19-phase4-day1-launch.md",
+    "docs/plan/2026-04-20-phase4a-execution-plan.md",
+    "docs/reports/2026-04-20-phase4-plan-review.md",
+    "docs/reports/2026-04-20-architecture-strategy-analysis.md",
+    "docs/plans/2026-04-19-audit-replay-completion-report.md",
+    "docs/ENVIRONMENT-BOUNDARIES.md",
     "docs/Hermes分布式边缘设备管理系统.md",
-    "docs/plans/2026-04-11-hermesnexus-next-development-roadmap.md",
-    "docs/plans/2026-04-11-edge-management-mvp-environment-plan.md",
-    "docs/plans/2026-04-11-mvp-gap-checklist-for-claude-code.md",
+    "docs/OPERATIONS-MANUAL.md",
     "docs/DEVELOPMENT-SERVER-DEPLOYMENT.md",
-    "docs/Archived/completed/65-Claude Code MVP落地开发与集成步骤.md",
-    "docs/64-总索引与推荐阅读顺序.md",
-    "docs/Archived/drafts/49-云边消息样例与重试策略.md",
-    "docs/Archived/drafts/71-开发启动Checklist.md",
-    "docs/Archived/drafts/47-K8s部署草案与清单.md",
-    "docs/Archived/drafts/46-DockerCompose开发环境.md",
-    "docs/Archived/drafts/44-接口契约样例.md",
-    "docs/Archived/drafts/38-部署清单与DockerComposeK8s草案.md",
-    "docs/Archived/drafts/21-数据库表结构草案.md",
-    "docs/Archived/drafts",
-    "docs/Archived/plans-reports/MVP-COMPLETION.md",
-    "docs/Archived/completed/80-仓库骨架完成总结.md",
-    "docs/Archived/completed/84-开发启动Checklist详细检查报告.md",
-    "docs/Archived/completed/83-开工前10条清单完成总结.md",
-    "docs/Archived/completed/82-开工前10条清单检查报告.md",
-    "docs/Archived/completed/81-SSH连接配置完成总结.md",
-    "docs/Archived/plans-reports/PROJECT-STATUS.md",
-    "docs/Archived/plans-reports/PHASE4-COMPLETION-REPORT.md",
-    "docs/Archived/plans-reports/PHASE-2-COMPLETION-REPORT.md",
-    "docs/Archived/plans-reports/MVP-VALIDATION-REPORT.md",
-    "docs/Archived/plans-reports/MVP-FINAL-ACCEPTANCE-REPORT-FINAL.md",
-    "docs/Archived/plans-reports/MVP-DEPLOYMENT-STATUS-REPORT.md",
-    "docs/Archived/plans-reports",
-    "docs/Archived/legacy-archives",
-    "docs/Archived/completed",
-    "docs/Archived",
-    "docs/Archives",
-    "docs/v1.0",
-    "docs/plans/mvp",
-    "docs/plans/technical",
-    "docs/plans/reports",
+    "docs/plans/phase-4-planning-draft.md",
+    "docs/reports/2026-04-20-ultimate-deployment-completion-report.md",
+    "docs/reports/2026-04-20-deployment-status-update.md",
+    "fix/START_HERE.md",
+    "fix/README.md",
+    "scripts/EMERGENCY_FIX_README.md",
+    "scripts/DEPLOYMENT_CHECKLIST.md",
+    "scripts/QUICK_DEPLOY_GUIDE.md",
+    "docs/reports/2026-04-19-api-v1-compatibility-deployment-ready.md",
     "venv/lib/python3.14/site-packages/coverage/htmlfiles/keybd_closed.png",
     "venv/lib/python3.14/site-packages/coverage/htmlfiles/favicon_32.png"
   ]

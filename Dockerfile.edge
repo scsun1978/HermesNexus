@@ -1,0 +1,80 @@
+# HermesNexus Edge Node Dockerfile
+# 边缘节点专用Docker镜像
+
+# ===================================
+# Stage 1: Builder
+# ===================================
+FROM python:3.12-slim AS builder
+
+WORKDIR /build
+
+# 安装edge节点构建依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    make \
+    libc-dev \
+    libssl-dev \
+    openssh-client \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt requirements-dev.txt ./
+
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# ===================================
+# Stage 2: Runtime
+# ===================================
+FROM python:3.12-slim AS runtime
+
+LABEL maintainer="HermesNexus Team" \
+      org.opencontainers.image.title="HermesNexus Edge Node" \
+      org.opencontainers.image.description="分布式边缘设备管理系统 - 边缘节点" \
+      org.opencontainers.image.version="1.2.0"
+
+# 创建非root用户
+RUN groupadd -r hermes && useradd -r -g hermes hermes
+
+# 安装edge节点运行时依赖
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    openssh-client \
+    iputils-ping \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+WORKDIR /app
+
+# 从构建阶段复制依赖
+COPY --from=builder /root/.local /root/.local
+
+ENV PATH=/root/.local/bin:$PATH \
+    PYTHONPATH=/root/.local/lib/python3.12/site-packages \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    HERMES_HOME=/app \
+    HERMES_NODE_TYPE=edge
+
+# 复制edge节点代码
+COPY edge/ ./edge/
+COPY shared/ ./shared/
+
+# 创建必要目录
+RUN mkdir -p /app/data /app/logs /app/temp /app/ssh_keys \
+    && chown -R hermes:hermes /app
+
+USER hermes
+
+# 健康检查
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=2 \
+  CMD curl -f http://localhost:8888/health || exit 1
+
+EXPOSE 8888
+
+# 启动edge节点
+CMD ["python3", "-m", "edge.runtime.core", \
+    "--cloud-url", "http://hermes-cloud:8080", \
+    "--port", "8888", \
+    "--log-level", "info"]

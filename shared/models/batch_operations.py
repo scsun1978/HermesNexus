@@ -54,9 +54,7 @@ class BatchOperationSummary(BaseModel):
     def calculate_success_rate(self):
         """自动计算成功率"""
         if self.total_items > 0:
-            self.success_rate = round(
-                (self.successful_items / self.total_items) * 100, 1
-            )
+            self.success_rate = round((self.successful_items / self.total_items) * 100, 1)
         else:
             self.success_rate = 0.0
         return self
@@ -81,9 +79,7 @@ class BatchOperationResponse(BaseModel):
     operation_type: str = Field(..., description="操作类型")
     status: BatchOperationStatus = Field(..., description="操作状态")
     summary: BatchOperationSummary = Field(..., description="操作汇总")
-    results: List[BatchItemResult] = Field(
-        default_factory=list, description="单项结果列表"
-    )
+    results: List[BatchItemResult] = Field(default_factory=list, description="单项结果列表")
     started_at: datetime = Field(default_factory=datetime.now, description="开始时间")
     completed_at: Optional[datetime] = Field(None, description="完成时间")
     error_summary: Dict[str, int] = Field(default_factory=dict, description="错误统计")
@@ -114,9 +110,7 @@ class BatchOperationResponse(BaseModel):
 class AssetBatchCreateRequest(BaseModel):
     """资产批量创建请求"""
 
-    assets: List[Dict[str, Any]] = Field(
-        ..., description="资产列表", min_items=1, max_items=100
-    )
+    assets: List[Dict[str, Any]] = Field(..., description="资产列表", min_items=1, max_items=100)
     stop_on_first_error: bool = Field(False, description="遇错是否停止")
     validate_only: bool = Field(False, description="仅验证不执行")
     idempotency_key: Optional[str] = Field(None, description="幂等性键")
@@ -152,9 +146,7 @@ class AssetBatchCreateRequest(BaseModel):
 class AssetBatchUpdateRequest(BaseModel):
     """资产批量更新请求"""
 
-    asset_ids: List[str] = Field(
-        ..., description="资产ID列表", min_items=1, max_items=100
-    )
+    asset_ids: List[str] = Field(..., description="资产ID列表", min_items=1, max_items=100)
     updates: Dict[str, Any] = Field(..., description="要更新的字段")
     stop_on_first_error: bool = Field(False, description="遇错是否停止")
     validate_only: bool = Field(False, description="仅验证不执行")
@@ -181,9 +173,7 @@ class AssetBatchUpdateRequest(BaseModel):
 class AssetBatchDeleteRequest(BaseModel):
     """资产批量删除请求"""
 
-    asset_ids: List[str] = Field(
-        ..., description="资产ID列表", min_items=1, max_items=100
-    )
+    asset_ids: List[str] = Field(..., description="资产ID列表", min_items=1, max_items=100)
     force: bool = Field(False, description="强制删除")
     stop_on_first_error: bool = Field(False, description="遇错是否停止")
     idempotency_key: Optional[str] = Field(None, description="幂等性键")
@@ -205,9 +195,7 @@ class AssetBatchDeleteRequest(BaseModel):
 class AssetBatchOperationRequest(BaseModel):
     """资产批量操作统一请求"""
 
-    operation: Literal["create", "update", "delete", "deactivate"] = Field(
-        ..., description="操作类型"
-    )
+    operation: Literal["create", "update", "delete", "deactivate"] = Field(..., description="操作类型")
     items: List[Dict[str, Any]] = Field(..., description="操作项目列表")
     options: Dict[str, Any] = Field(default_factory=dict, description="操作选项")
     idempotency_key: Optional[str] = Field(None, description="幂等性键")
@@ -234,9 +222,7 @@ class AssetBatchOperationRequest(BaseModel):
 class TaskBatchCreateRequest(BaseModel):
     """任务批量创建请求"""
 
-    tasks: List[Dict[str, Any]] = Field(
-        ..., description="任务列表", min_items=1, max_items=50
-    )
+    tasks: List[Dict[str, Any]] = Field(..., description="任务列表", min_items=1, max_items=50)
     stop_on_first_error: bool = Field(False, description="遇错是否停止")
     validate_only: bool = Field(False, description="仅验证不执行")
     idempotency_key: Optional[str] = Field(None, description="幂等性键")
@@ -274,13 +260,9 @@ class TaskBatchCreateRequest(BaseModel):
 class TaskBatchDispatchRequest(BaseModel):
     """任务批量下发请求"""
 
-    task_ids: List[str] = Field(
-        ..., description="任务ID列表", min_items=1, max_items=50
-    )
+    task_ids: List[str] = Field(..., description="任务ID列表", min_items=1, max_items=50)
     target_node_ids: List[str] = Field(..., description="目标节点ID列表")
-    dispatch_options: Dict[str, Any] = Field(
-        default_factory=dict, description="下发选项"
-    )
+    dispatch_options: Dict[str, Any] = Field(default_factory=dict, description="下发选项")
     idempotency_key: Optional[str] = Field(None, description="幂等性键")
     user_id: Optional[str] = Field(None, description="操作用户ID")
     username: Optional[str] = Field(None, description="操作用户名")
@@ -300,9 +282,7 @@ class TaskBatchDispatchRequest(BaseModel):
 class TaskBatchOperationRequest(BaseModel):
     """任务批量操作统一请求"""
 
-    operation: Literal["create", "dispatch", "cancel", "retry"] = Field(
-        ..., description="操作类型"
-    )
+    operation: Literal["create", "dispatch", "cancel", "retry"] = Field(..., description="操作类型")
     tasks: List[Dict[str, Any]] = Field(..., description="任务列表")
     options: Dict[str, Any] = Field(default_factory=dict, description="操作选项")
     idempotency_key: Optional[str] = Field(None, description="幂等性键")
@@ -332,9 +312,7 @@ class IdempotencyResult(BaseModel):
 
     is_idempotent: bool = Field(..., description="是否幂等")
     existing_operation_id: Optional[str] = Field(None, description="已存在的操作ID")
-    cached_result: Optional[BatchOperationResponse] = Field(
-        None, description="缓存的结果"
-    )
+    cached_result: Optional[BatchOperationResponse] = Field(None, description="缓存的结果")
     message: str = Field(..., description="结果消息")
 
     class Config:
@@ -374,9 +352,7 @@ class BatchPartialFailureHandling(BaseModel):
     """批量部分失败处理策略"""
 
     continue_on_error: bool = Field(True, description="出错时是否继续")
-    failure_threshold_percent: float = Field(
-        50.0, ge=0.0, le=100.0, description="失败阈值(%)"
-    )
+    failure_threshold_percent: float = Field(50.0, ge=0.0, le=100.0, description="失败阈值(%)")
     rollback_on_threshold_exceeded: bool = Field(False, description="超过阈值是否回滚")
     save_partial_results: bool = Field(True, description="是否保存部分结果")
 

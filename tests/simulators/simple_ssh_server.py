@@ -159,12 +159,8 @@ class SSHTestServer:
         """更新系统状态"""
         while self.running:
             # 随机波动系统资源使用率
-            self.cpu_usage = max(
-                10.0, min(90.0, self.cpu_usage + random.uniform(-3, 3))
-            )
-            self.memory_usage = max(
-                15.0, min(85.0, self.memory_usage + random.uniform(-2, 2))
-            )
+            self.cpu_usage = max(10.0, min(90.0, self.cpu_usage + random.uniform(-3, 3)))
+            self.memory_usage = max(15.0, min(85.0, self.memory_usage + random.uniform(-2, 2)))
             time.sleep(5)
 
     def _handle_client(self, client_sock, client_addr):
@@ -229,11 +225,7 @@ class SSHTestServer:
 
                     # 处理完整命令
                     while "\\n" in buffer or "\\r" in buffer:
-                        line_end = (
-                            buffer.find("\\n")
-                            if "\\n" in buffer
-                            else buffer.find("\\r")
-                        )
+                        line_end = buffer.find("\\n") if "\\n" in buffer else buffer.find("\\r")
                         command = buffer[:line_end].strip()
                         buffer = buffer[line_end + 1 :]
 

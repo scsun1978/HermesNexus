@@ -84,9 +84,7 @@ class FinalE2ETest:
 
                     # 验证节点可以查询
                     await asyncio.sleep(1)
-                    node_response = await client.get(
-                        f"{self.cloud_url}/api/v1/nodes/{node_id}"
-                    )
+                    node_response = await client.get(f"{self.cloud_url}/api/v1/nodes/{node_id}")
 
                     if node_response.status_code == 200:
                         node_data = node_response.json()
@@ -139,9 +137,7 @@ class FinalE2ETest:
                             logger.info(f"✅ 创建测试设备: {device_id}")
                             return device_id
                         else:
-                            logger.error(
-                                f"❌ 设备创建失败: {create_response.status_code}"
-                            )
+                            logger.error(f"❌ 设备创建失败: {create_response.status_code}")
                             return None
                 else:
                     logger.error(f"❌ 获取设备列表失败: {response.status_code}")
@@ -172,9 +168,7 @@ class FinalE2ETest:
                     "created_by": "e2e_test",
                 }
 
-                response = await client.post(
-                    f"{self.cloud_url}/api/v1/jobs", json=task_data
-                )
+                response = await client.post(f"{self.cloud_url}/api/v1/jobs", json=task_data)
 
                 if response.status_code in [200, 201]:
                     result_data = response.json()
@@ -196,17 +190,13 @@ class FinalE2ETest:
 
                         # 检查任务是否被分配到节点
                         if "node_id" in job_status:
-                            logger.info(
-                                f"✅ 任务已分配到节点: {job_status.get('node_id')}"
-                            )
+                            logger.info(f"✅ 任务已分配到节点: {job_status.get('node_id')}")
                         else:
                             logger.warning("⚠️  任务未被分配节点")
 
                         return created_job_id, status
                     else:
-                        logger.error(
-                            f"❌ 获取任务状态失败: {status_response.status_code}"
-                        )
+                        logger.error(f"❌ 获取任务状态失败: {status_response.status_code}")
                         return None, None
                 else:
                     logger.error(f"❌ 任务创建失败: {response.status_code}")
@@ -253,9 +243,7 @@ class FinalE2ETest:
                 )
 
                 if create_response.status_code not in [200, 201]:
-                    logger.error(
-                        f"❌ 创建取消测试任务失败: {create_response.status_code}"
-                    )
+                    logger.error(f"❌ 创建取消测试任务失败: {create_response.status_code}")
                     return False
 
                 # 等待任务开始
@@ -272,9 +260,7 @@ class FinalE2ETest:
 
                     # 验证任务状态
                     await asyncio.sleep(2)
-                    status_response = await client.get(
-                        f"{self.cloud_url}/api/v1/jobs/{job_id}"
-                    )
+                    status_response = await client.get(f"{self.cloud_url}/api/v1/jobs/{job_id}")
 
                     if status_response.status_code == 200:
                         job_status = status_response.json()
@@ -285,9 +271,7 @@ class FinalE2ETest:
                             logger.warning(f"⚠️  任务状态: {job_status.get('status')}")
                             return False
                     else:
-                        logger.error(
-                            f"❌ 获取取消后状态失败: {status_response.status_code}"
-                        )
+                        logger.error(f"❌ 获取取消后状态失败: {status_response.status_code}")
                         return False
                 else:
                     logger.error(f"❌ 任务取消失败: {cancel_response.status_code}")
@@ -553,9 +537,7 @@ async def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="HermesNexus 最终端到端测试")
-    parser.add_argument(
-        "--cloud-url", default="http://localhost:8080", help="云端API URL"
-    )
+    parser.add_argument("--cloud-url", default="http://localhost:8080", help="云端API URL")
     parser.add_argument("--quick", action="store_true", help="快速测试模式")
 
     args = parser.parse_args()

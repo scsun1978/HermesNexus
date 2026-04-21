@@ -23,9 +23,7 @@ class TestNodeManagementE2E:
     """节点管理端到端测试"""
 
     @pytest.mark.asyncio
-    async def test_node_registration_to_heartbeat_complete_flow(
-        self, e2e_helper: E2ETestHelper
-    ):
+    async def test_node_registration_to_heartbeat_complete_flow(self, e2e_helper: E2ETestHelper):
         """测试节点注册到心跳的完整流程"""
         # 1. 节点注册
         node_id = "e2e-node-001"
@@ -89,9 +87,7 @@ class TestBatchAssetOperationsE2E:
     """批量资产操作端到端测试"""
 
     @pytest.mark.asyncio
-    async def test_batch_asset_operations_complete_flow(
-        self, e2e_helper: E2ETestHelper
-    ):
+    async def test_batch_asset_operations_complete_flow(self, e2e_helper: E2ETestHelper):
         """测试批量资产操作完整流程"""
         batch_service = e2e_helper.batch_service
 
@@ -148,9 +144,7 @@ class TestBatchAssetOperationsE2E:
             assert asset_data.get("metadata", {}).get("updated") is True
 
         # 5. 批量删除部分资产
-        delete_asset_ids = [
-            f"batch-e2e-{i:04d}" for i in range(10, 20)
-        ]  # 删除第10-19个
+        delete_asset_ids = [f"batch-e2e-{i:04d}" for i in range(10, 20)]  # 删除第10-19个
         delete_request = AssetBatchDeleteRequest(asset_ids=delete_asset_ids)
         delete_response = await batch_service.delete_assets_batch(delete_request)
 
@@ -245,9 +239,7 @@ class TestBatchTaskDistributionE2E:
     """批量任务分发端到端测试"""
 
     @pytest.mark.asyncio
-    async def test_batch_task_distribution_complete_flow(
-        self, e2e_helper: E2ETestHelper
-    ):
+    async def test_batch_task_distribution_complete_flow(self, e2e_helper: E2ETestHelper):
         """测试批量任务分发完整流程"""
         batch_service = e2e_helper.batch_service
 
@@ -313,9 +305,7 @@ class TestBatchTaskDistributionE2E:
         assert audit is not None
         assert audit.operation_type == AuditOperationType.BATCH_TASK_CREATE
 
-        print(
-            f"✅ 批量任务分发E2E测试通过: 创建并分发{task_count}个任务到{len(node_ids)}个节点"
-        )
+        print(f"✅ 批量任务分发E2E测试通过: 创建并分发{task_count}个任务到{len(node_ids)}个节点")
 
 
 class TestAuditTrailE2E:
@@ -362,7 +352,7 @@ class TestAuditTrailE2E:
             assert audit.operation_id == response.operation_id
 
         # 3. 查询审计历史
-        asset_history = await audit_service.get_asset_history("audit-asset-001")
+        asset_history = await audit_service.get_asset_history("audit-asset-0")
         assert len(asset_history) >= 2  # 至少有创建和更新
 
         # 4. 验证审计统计数据
@@ -388,9 +378,7 @@ class TestAuditTrailE2E:
         assert len(failed_ops) > 0
 
         # 6. 导出审计数据
-        query = AuditQueryRequest(
-            start_time=start_time, end_time=end_time, page=1, page_size=100
-        )
+        query = AuditQueryRequest(start_time=start_time, end_time=end_time, page=1, page_size=100)
         exported_data = await audit_service.export_audits(
             query=query, format_type="json", include_details=True, max_records=100
         )

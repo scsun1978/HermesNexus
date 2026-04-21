@@ -23,9 +23,7 @@ logger = logging.getLogger(__name__)
 class CloudClient:
     """云端API客户端"""
 
-    def __init__(
-        self, cloud_server_url: str, api_key: str, node_id: str, timeout: int = 30
-    ):
+    def __init__(self, cloud_server_url: str, api_key: str, node_id: str, timeout: int = 30):
         self.cloud_server_url = cloud_server_url.rstrip("/")
         self.api_key = api_key
         self.node_id = node_id

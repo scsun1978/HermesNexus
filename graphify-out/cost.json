@@ -5,6 +5,13 @@
       "input_tokens": 134350,
       "output_tokens": 22755,
       "files": 194
+    },
+    {
+      "date": "2026-04-20T16:09:25.848444+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 162,
+      "type": "AST-only"
     }
   ],
   "total_input_tokens": 134350,

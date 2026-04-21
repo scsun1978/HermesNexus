@@ -56,9 +56,7 @@ class EdgeNodeIntegrator:
 
             # 2. 创建云端客户端
             logger.info("2️⃣ 创建云端连接...")
-            self.cloud_client = CloudClient(
-                cloud_url=self.cloud_url, node_id=self.node_id
-            )
+            self.cloud_client = CloudClient(cloud_url=self.cloud_url, node_id=self.node_id)
 
             # 3. 创建边缘运行时
             logger.info("3️⃣ 创建边缘运行时...")
@@ -128,9 +126,7 @@ class EdgeNodeIntegrator:
             logger.info(f"运行时状态: {'运行中' if is_running else '未运行'}")
 
             # 检查连接状态
-            is_connected = (
-                self.cloud_client.is_connected if self.cloud_client else False
-            )
+            is_connected = self.cloud_client.is_connected if self.cloud_client else False
             logger.info(f"云端连接: {'已连接' if is_connected else '未连接'}")
 
             # 检查统计信息
@@ -260,9 +256,7 @@ class EdgeNodeIntegrator:
 async def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="边缘节点集成脚本")
-    parser.add_argument(
-        "--cloud-url", default="http://localhost:8080", help="云端API URL"
-    )
+    parser.add_argument("--cloud-url", default="http://localhost:8080", help="云端API URL")
     parser.add_argument("--node-id", help="节点ID")
     parser.add_argument("--test-device", help="测试设备ID")
     parser.add_argument("--test-command", default="uptime", help="测试命令")

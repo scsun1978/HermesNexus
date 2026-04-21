@@ -70,9 +70,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
         self.assertEqual(created_asset.asset_id, "test-asset-integration-001")
 
         # 验证审计日志
-        audit_logs = self.audit_service.query_by_asset(
-            "test-asset-integration-001", limit=5
-        )
+        audit_logs = self.audit_service.query_by_asset("test-asset-integration-001", limit=5)
         self.assertGreater(len(audit_logs), 0, "应该有审计日志记录")
 
         # Step 2: 创建并执行任务
@@ -98,9 +96,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
         self.assertEqual(created_task.status, TaskStatus.PENDING)
 
         # 验证任务相关的审计日志
-        task_audit_logs = self.audit_service.query_by_task(
-            "test-task-integration-001", limit=5
-        )
+        task_audit_logs = self.audit_service.query_by_task("test-task-integration-001", limit=5)
         self.assertGreater(len(task_audit_logs), 0, "应该有任务相关的审计日志")
 
         # Step 3: 模拟任务状态变更
@@ -113,9 +109,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
         self.assertEqual(updated_task.status, TaskStatus.ASSIGNED)
 
         # 开始执行
-        updated_task = self.task_service.start_task(
-            "test-task-integration-001", "test-node-001"
-        )
+        updated_task = self.task_service.start_task("test-task-integration-001", "test-node-001")
         self.assertEqual(updated_task.status, TaskStatus.RUNNING)
         self.assertIsNotNone(updated_task.started_at)
 
@@ -128,9 +122,7 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
             stderr="",
             completed_at=datetime.utcnow(),
         )
-        updated_task = self.task_service.complete_task(
-            "test-task-integration-001", result
-        )
+        updated_task = self.task_service.complete_task("test-task-integration-001", result)
         self.assertEqual(updated_task.status, TaskStatus.COMPLETED)
         self.assertIsNotNone(updated_task.completed_at)
 
@@ -138,18 +130,14 @@ class TestAssetTaskAuditIntegration(unittest.TestCase):
         print("Step 4: 验证审计追踪完整性")
 
         # 查询资产相关的所有审计日志
-        asset_audit_logs = self.audit_service.query_by_asset(
-            "test-asset-integration-001"
-        )
+        asset_audit_logs = self.audit_service.query_by_asset("test-asset-integration-001")
         print(f"资产相关审计日志数量: {len(asset_audit_logs)}")
 
         # 应该包含: 资产创建、任务创建、任务分配、任务开始、任务完成等
         audit_actions = [log.action for log in asset_audit_logs]
         print(f"审计操作类型: {audit_actions}")
 
-        self.assertIn(
-            AuditAction.ASSET_REGISTERED, audit_actions, "应该包含资产创建操作"
-        )
+        self.assertIn(AuditAction.ASSET_REGISTERED, audit_actions, "应该包含资产创建操作")
         self.assertIn(AuditAction.TASK_CREATED, audit_actions, "应该包含任务创建操作")
 
         # Step 5: 验证资产状态变更

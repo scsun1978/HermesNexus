@@ -80,9 +80,7 @@ class AssetService:
         """
         return self._assets.get(asset_id)
 
-    def update_asset(
-        self, asset_id: str, request: AssetUpdateRequest
-    ) -> Optional[Asset]:
+    def update_asset(self, asset_id: str, request: AssetUpdateRequest) -> Optional[Asset]:
         """
         更新资产
 
@@ -111,9 +109,7 @@ class AssetService:
         # 状态转换验证
         if request.status is not None:
             if not asset.status.can_transition_to(request.status):
-                raise ValueError(
-                    f"Invalid status transition: {asset.status} -> {request.status}"
-                )
+                raise ValueError(f"Invalid status transition: {asset.status} -> {request.status}")
             asset.status = request.status
 
         asset.updated_at = datetime.utcnow()
@@ -176,15 +172,11 @@ class AssetService:
             ]
 
         if params.tags:
-            assets = [
-                a for a in assets if any(tag in a.metadata.tags for tag in params.tags)
-            ]
+            assets = [a for a in assets if any(tag in a.metadata.tags for tag in params.tags)]
 
         if params.groups:
             assets = [
-                a
-                for a in assets
-                if any(group in a.metadata.groups for group in params.groups)
+                a for a in assets if any(group in a.metadata.groups for group in params.groups)
             ]
 
         # 排序

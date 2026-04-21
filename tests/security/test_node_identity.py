@@ -77,9 +77,7 @@ class TestNodeIdentity(unittest.TestCase):
         self.assertEqual(node_identity.node_id, "test-node-001")
         self.assertEqual(node_identity.node_type, NodeType.PHYSICAL)
         self.assertEqual(node_identity.status, NodeStatus.REGISTERED)
-        self.assertFalse(
-            node_identity.is_token_valid()
-        )  # 初始状态无Token，应该返回False
+        self.assertFalse(node_identity.is_token_valid())  # 初始状态无Token，应该返回False
 
         print("  ✅ 节点身份对象创建成功")
 
@@ -174,9 +172,7 @@ class TestNodeIdentity(unittest.TestCase):
         self.assertTrue(node_identity.status.can_transition_to(NodeStatus.REGISTERED))
 
         # 测试无效状态转换
-        self.assertFalse(
-            node_identity.status.can_transition_to(NodeStatus.DEREGISTERED)
-        )
+        self.assertFalse(node_identity.status.can_transition_to(NodeStatus.DEREGISTERED))
 
         # 测试状态转换
         node_identity.status = NodeStatus.REGISTERED
@@ -389,8 +385,7 @@ class TestNodeAuthIntegration(unittest.TestCase):
             tenant_id="tenant-001",
             region_id="region-001",
             status=NodeStatus.INACTIVE,
-            last_heartbeat=datetime.now(timezone.utc)
-            - timedelta(minutes=10),  # 10分钟前的心跳
+            last_heartbeat=datetime.now(timezone.utc) - timedelta(minutes=10),  # 10分钟前的心跳
         )
 
         # 为活跃节点生成Token

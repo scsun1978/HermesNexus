@@ -1,44 +1,207 @@
+# HermesNexus Docker Compose Configuration
+# 完整的系统编排配置 - Cloud + Edge + Monitoring
+
 version: '3.8'
 
 services:
-  hermesnexus-cloud:
-    build: .
-    container_name: hermesnexus-cloud
+  # ===================================
+  # Hermes Cloud API (Production Ready)
+  # ===================================
+  hermes-cloud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-2024-04-19}
+        VERSION: ${VERSION:-1.2.0}
+        VCS_REF: ${VCS_REF:-main}
+    image: hermesnexus/cloud:${VERSION:-1.2.0}
+    container_name: hermes-cloud
+    restart: unless-stopped
     ports:
       - "8080:8080"
-    volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
+      - "8443:8443"  # Future HTTPS
     environment:
+      - HERMES_ENV=production
+      - DATABASE_URL=sqlite:///app/data/hermesnexus.db
+      - LOG_LEVEL=info
+      - WORKERS=4
+      - CLOUD_HOST=0.0.0.0
+      - CLOUD_PORT=8080
       - PYTHONPATH=/app
       - HERMES_HOME=/app
       - SQLITE_DB_PATH=/app/data/hermesnexus.db
-      - LOG_LEVEL=INFO
-    restart: unless-stopped
-    networks:
-      - hermesnexus-network
-
-  # 可选：添加Edge节点容器
-  hermesnexus-edge:
-    build: .
-    container_name: hermesnexus-edge
-    depends_on:
-      - hermesnexus-cloud
     volumes:
-      - ./logs:/app/logs
+      - hermes-data:/app/data
+      - hermes-logs:/app/logs
+      - hermes-ssh-keys:/app/ssh_keys
+      - hermes-temp:/app/temp
+    networks:
+      - hermes-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===================================
+  # Hermes Edge Node (Multi-instance support)
+  # ===================================
+  hermes-edge-1:
+    build:
+      context: .
+      dockerfile: Dockerfile.edge
+      args:
+        BUILD_DATE: ${BUILD_DATE:-2024-04-19}
+        VERSION: ${VERSION:-1.2.0}
+    image: hermesnexus/edge:${VERSION:-1.2.0}
+    container_name: hermes-edge-1
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
     environment:
+      - HERMES_ENV=production
+      - HERMES_NODE_ID=edge-node-1
+      - HERMES_NODE_NAME=Production Edge Node 1
+      - HERMES_CLOUD_URL=http://hermes-cloud:8080
+      - HERMES_EDGE_PORT=8888
+      - LOG_LEVEL=info
       - PYTHONPATH=/app
       - HERMES_HOME=/app
-      - CLOUD_API_URL=http://hermesnexus-cloud:8080
-      - NODE_ID=dev-edge-node-001
-    command: ["python3", "-m", "edge.runtime.core"]
-    restart: unless-stopped
+      - CLOUD_API_URL=http://hermes-cloud:8080
+      - NODE_ID=edge-node-1
+    volumes:
+      - hermes-edge-1-data:/app/data
+      - hermes-edge-1-logs:/app/logs
+      - hermes-ssh-keys:/app/ssh_keys:ro
     networks:
-      - hermesnexus-network
+      - hermes-network
+    depends_on:
+      hermes-cloud:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 2
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
 
+  # ===================================
+  # Monitoring Stack (Optional)
+  # ===================================
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: hermes-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - hermes-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: hermes-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - hermes-network
+    depends_on:
+      - prometheus
+    profiles:
+      - monitoring
+
+  # ===================================
+  # Redis (Optional - for enhanced features)
+  # ===================================
+  redis:
+    image: redis:7-alpine
+    container_name: hermes-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    networks:
+      - hermes-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    profiles:
+      - enhanced
+
+# ===================================
+# Networks
+# ===================================
 networks:
-  hermesnexus-network:
+  hermes-network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
 
+# ===================================
+# Volumes
+# ===================================
 volumes:
-  hermesnexus-data:
+  # Cloud volumes
+  hermes-data:
+    driver: local
+  hermes-logs:
+    driver: local
+  hermes-ssh-keys:
+    driver: local
+  hermes-temp:
+    driver: local
+
+  # Edge volumes
+  hermes-edge-1-data:
+    driver: local
+  hermes-edge-1-logs:
+    driver: local
+
+  # Monitoring volumes
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+  # Enhanced volumes
+  redis-data:
+    driver: local

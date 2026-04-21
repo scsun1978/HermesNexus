@@ -124,9 +124,7 @@ class AuthMiddleware:
         # 检查权限
         user_permissions = current_user.get("permissions", [])
 
-        if not PermissionChecker.check_any_permission(
-            user_permissions, required_permissions
-        ):
+        if not PermissionChecker.check_any_permission(user_permissions, required_permissions):
             raise HTTPException(
                 status_code=403,
                 detail={
@@ -134,8 +132,7 @@ class AuthMiddleware:
                         "code": ErrorCode.AUTH_INSUFFICIENT_PERMISSIONS,
                         "message": "Insufficient permissions",
                         "details": (
-                            "Required permissions: "
-                            f"{[p.value for p in required_permissions]}"
+                            "Required permissions: " f"{[p.value for p in required_permissions]}"
                         ),
                     }
                 },

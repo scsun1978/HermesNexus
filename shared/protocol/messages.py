@@ -35,9 +35,7 @@ class BaseMessage:
     """消息基类"""
 
     type: MessageType
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     node_id: Optional[str] = None
     message_id: str = field(default_factory=lambda: str(uuid.uuid4()))
 

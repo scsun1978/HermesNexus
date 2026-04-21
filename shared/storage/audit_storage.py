@@ -29,9 +29,7 @@ class AuditStorage:
         self._node_id_index: Dict[str, List[str]] = {}  # node_id -> [audit_ids]
         self._task_id_index: Dict[str, List[str]] = {}  # task_id -> [audit_ids]
         self._error_type_index: Dict[str, List[str]] = {}  # error_type -> [audit_ids]
-        self._operation_type_index: Dict[str, List[str]] = (
-            {}
-        )  # operation_type -> [audit_ids]
+        self._operation_type_index: Dict[str, List[str]] = {}  # operation_type -> [audit_ids]
         self._timestamp_index: Dict[str, List[str]] = {}  # date -> [audit_ids]
 
     def save_audit(self, audit: BatchOperationAudit) -> bool:
@@ -58,9 +56,7 @@ class AuditStorage:
         with self._lock:
             return self._audit_records.get(audit_id)
 
-    def get_audit_by_operation_id(
-        self, operation_id: str
-    ) -> Optional[BatchOperationAudit]:
+    def get_audit_by_operation_id(self, operation_id: str) -> Optional[BatchOperationAudit]:
         """根据操作ID获取审计记录"""
         with self._lock:
             audit_id = self._operation_id_index.get(operation_id)
@@ -68,9 +64,7 @@ class AuditStorage:
                 return self._audit_records.get(audit_id)
             return None
 
-    def query_audits(
-        self, query: AuditQueryRequest
-    ) -> tuple[List[BatchOperationAudit], int]:
+    def query_audits(self, query: AuditQueryRequest) -> tuple[List[BatchOperationAudit], int]:
         """查询审计记录"""
         with self._lock:
             results = list(self._audit_records.values())
@@ -139,9 +133,7 @@ class AuditStorage:
 
             return paginated_results, total_count
 
-    def get_statistics(
-        self, start_time: datetime, end_time: datetime
-    ) -> AuditStatistics:
+    def get_statistics(self, start_time: datetime, end_time: datetime) -> AuditStatistics:
         """获取审计统计信息"""
         with self._lock:
             # 获取时间范围内的所有审计记录（分批获取）
@@ -222,16 +214,13 @@ class AuditStorage:
             # 计算成功率
             if statistics.total_operations > 0:
                 statistics.success_rate = round(
-                    (statistics.successful_operations / statistics.total_operations)
-                    * 100,
+                    (statistics.successful_operations / statistics.total_operations) * 100,
                     1,
                 )
 
             return statistics
 
-    def get_asset_history(
-        self, asset_id: str, limit: int = 100
-    ) -> List[BatchOperationAudit]:
+    def get_asset_history(self, asset_id: str, limit: int = 100) -> List[BatchOperationAudit]:
         """获取资产审计历史"""
         with self._lock:
             audit_ids = self._asset_id_index.get(asset_id, [])

@@ -70,23 +70,17 @@ def main():
 
     # 3. 模拟器测试
     print("\n📋 第三阶段: 模拟器测试")
-    success, returncode = run_command(
-        "python tests/test_simulators.py", "运行模拟器测试", timeout=60
-    )
+    success, returncode = run_command("python tests/test_simulators.py", "运行模拟器测试", timeout=60)
     results.append(("模拟器测试", success, returncode))
 
     # 4. 控制台测试
     print("\n📋 第四阶段: 控制台测试")
-    success, returncode = run_command(
-        "python tests/test_console.py", "运行控制台测试", timeout=60
-    )
+    success, returncode = run_command("python tests/test_console.py", "运行控制台测试", timeout=60)
     results.append(("控制台测试", success, returncode))
 
     # 5. SSH执行器测试
     print("\n📋 第五阶段: SSH执行器测试")
-    success, returncode = run_command(
-        "python tests/test_ssh_executor.py", "运行SSH执行器测试", timeout=60
-    )
+    success, returncode = run_command("python tests/test_ssh_executor.py", "运行SSH执行器测试", timeout=60)
     results.append(("SSH执行器测试", success, returncode))
 
     # 6. 云端边缘集成测试

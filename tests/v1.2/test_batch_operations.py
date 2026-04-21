@@ -166,10 +166,7 @@ def test_error_classification():
 
         # 测试各种错误分类
         assert _classify_error("Validation failed: invalid input") == "validation_error"
-        assert (
-            _classify_error("Duplicate entry: asset already exists")
-            == "duplicate_error"
-        )
+        assert _classify_error("Duplicate entry: asset already exists") == "duplicate_error"
         assert _classify_error("Asset not found") == "not_found_error"
         assert _classify_error("Connection timeout") == "timeout"
         assert _classify_error("Permission denied") == "permission_error"

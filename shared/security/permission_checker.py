@@ -95,9 +95,7 @@ class PermissionChecker:
             )
 
         # 5. 检查租户和区域权限
-        if not self._check_tenant_region_permission(
-            context, resource_id, additional_context
-        ):
+        if not self._check_tenant_region_permission(context, resource_id, additional_context):
             return PermissionCheckResult(
                 allowed=False,
                 reason="用户无权访问该租户或区域的资源",
@@ -320,9 +318,7 @@ class PermissionChecker:
 
         return True
 
-    def _is_asset_type_allowed(
-        self, context: PermissionContext, asset_type: str
-    ) -> bool:
+    def _is_asset_type_allowed(self, context: PermissionContext, asset_type: str) -> bool:
         """检查是否允许操作特定类型的设备"""
         if not context.allowed_asset_types:
             return True  # 没有限制，允许所有类型
@@ -431,9 +427,7 @@ def create_permission_checker(
     Returns:
         权限检查器实例
     """
-    return PermissionChecker(
-        permission_matrix=permission_matrix, risk_assessor=risk_assessor
-    )
+    return PermissionChecker(permission_matrix=permission_matrix, risk_assessor=risk_assessor)
 
 
 # 权限检查装饰器

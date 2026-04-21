@@ -96,12 +96,8 @@ class NodeStatusSummary(BaseModel):
     is_online: bool = Field(..., description="是否在线")
     is_active: bool = Field(..., description="是否活跃")
     can_accept_tasks: bool = Field(..., description="是否能接受任务")
-    health_status: str = Field(
-        ..., description="健康状态: healthy, degraded, error, unknown"
-    )
-    last_heartbeat_age_seconds: Optional[int] = Field(
-        None, description="最后心跳距现在的秒数"
-    )
+    health_status: str = Field(..., description="健康状态: healthy, degraded, error, unknown")
+    last_heartbeat_age_seconds: Optional[int] = Field(None, description="最后心跳距现在的秒数")
     heartbeat_timeout_seconds: int = Field(300, description="心跳超时秒数")
 
     class Config:
@@ -123,12 +119,8 @@ class NodeHeartbeatStats(BaseModel):
     total_heartbeats: int = Field(0, description="总心跳次数")
     successful_heartbeats: int = Field(0, description="成功心跳次数")
     failed_heartbeats: int = Field(0, description="失败心跳次数")
-    avg_heartbeat_interval_seconds: Optional[float] = Field(
-        None, description="平均心跳间隔(秒)"
-    )
-    last_successful_heartbeat: Optional[str] = Field(
-        None, description="最后成功心跳时间"
-    )
+    avg_heartbeat_interval_seconds: Optional[float] = Field(None, description="平均心跳间隔(秒)")
+    last_successful_heartbeat: Optional[str] = Field(None, description="最后成功心跳时间")
     last_failed_heartbeat: Optional[str] = Field(None, description="最后失败心跳时间")
 
     class Config:
@@ -154,9 +146,7 @@ class NodeTaskSummary(BaseModel):
     current_task_load: int = Field(0, description="当前任务负载")
     max_concurrent_tasks: int = Field(3, description="最大并发任务数")
     task_utilization_percent: float = Field(0.0, description="任务利用率百分比")
-    recent_task_ids: List[str] = Field(
-        default_factory=list, description="最近任务ID列表"
-    )
+    recent_task_ids: List[str] = Field(default_factory=list, description="最近任务ID列表")
 
     class Config:
         json_schema_extra = {
@@ -182,9 +172,7 @@ class NodeAuditSummary(BaseModel):
     last_error: Optional[str] = Field(None, description="最后错误信息")
     last_error_time: Optional[str] = Field(None, description="最后错误时间")
     last_audit_log: Optional[str] = Field(None, description="最后审计日志时间")
-    recent_audit_activities: List[str] = Field(
-        default_factory=list, description="最近审计活动"
-    )
+    recent_audit_activities: List[str] = Field(default_factory=list, description="最近审计活动")
 
     class Config:
         json_schema_extra = {
@@ -216,12 +204,8 @@ class NodeListResponse(BaseModel):
     has_prev: bool = Field(False, description="是否有上一页")
 
     # 汇总信息
-    status_summary: Dict[str, int] = Field(
-        default_factory=dict, description="状态摘要统计"
-    )
-    health_summary: Dict[str, int] = Field(
-        default_factory=dict, description="健康状态摘要统计"
-    )
+    status_summary: Dict[str, int] = Field(default_factory=dict, description="状态摘要统计")
+    health_summary: Dict[str, int] = Field(default_factory=dict, description="健康状态摘要统计")
 
     class Config:
         json_schema_extra = {
@@ -252,9 +236,7 @@ class NodeListResponse(BaseModel):
 class BatchNodeRequest(BaseModel):
     """批量节点查询请求"""
 
-    node_ids: List[str] = Field(
-        ..., description="节点ID列表", min_items=1, max_items=100
-    )
+    node_ids: List[str] = Field(..., description="节点ID列表", min_items=1, max_items=100)
     include_heartbeat_stats: bool = Field(False, description="是否包含心跳统计")
     include_task_summary: bool = Field(False, description="是否包含任务摘要")
     include_audit_summary: bool = Field(False, description="是否包含审计摘要")
@@ -273,13 +255,9 @@ class BatchNodeRequest(BaseModel):
 class BatchNodeResponse(BaseModel):
     """批量节点查询响应"""
 
-    nodes: Dict[str, Dict[str, Any]] = Field(
-        default_factory=dict, description="节点详情字典，key为node_id"
-    )
+    nodes: Dict[str, Dict[str, Any]] = Field(default_factory=dict, description="节点详情字典，key为node_id")
     found_nodes: int = Field(0, description="找到的节点数")
-    missing_nodes: List[str] = Field(
-        default_factory=list, description="未找到的节点ID列表"
-    )
+    missing_nodes: List[str] = Field(default_factory=list, description="未找到的节点ID列表")
 
     class Config:
         json_schema_extra = {

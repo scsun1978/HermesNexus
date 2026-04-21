@@ -82,21 +82,15 @@ class TestAuthIntegration(unittest.TestCase):
         user_permissions = validated_user.get("permissions", [])
 
         # 应该有资产读取权限
-        has_asset_read = PermissionChecker.check_permission(
-            user_permissions, Permission.ASSET_READ
-        )
+        has_asset_read = PermissionChecker.check_permission(user_permissions, Permission.ASSET_READ)
         self.assertTrue(has_asset_read, "应该有资产读取权限")
 
         # 应该有任务写入权限
-        has_task_write = PermissionChecker.check_permission(
-            user_permissions, Permission.TASK_WRITE
-        )
+        has_task_write = PermissionChecker.check_permission(user_permissions, Permission.TASK_WRITE)
         self.assertTrue(has_task_write, "应该有任务写入权限")
 
         # 不应该有用户管理权限
-        has_user_write = PermissionChecker.check_permission(
-            user_permissions, Permission.USER_WRITE
-        )
+        has_user_write = PermissionChecker.check_permission(user_permissions, Permission.USER_WRITE)
         self.assertFalse(has_user_write, "不应该有用户管理权限")
 
         print("✅ Token认证流程测试通过")
@@ -107,9 +101,7 @@ class TestAuthIntegration(unittest.TestCase):
 
         # Step 1: 创建API Key
         print("Step 1: 创建API Key")
-        api_key = self.auth_manager.create_api_key(
-            user_id="user-002", name="test-api-key"
-        )
+        api_key = self.auth_manager.create_api_key(user_id="user-002", name="test-api-key")
 
         self.assertIsNotNone(api_key)
         print(f"生成的API Key: {api_key[:16]}...")
@@ -169,9 +161,7 @@ class TestAuthIntegration(unittest.TestCase):
 
             # 验证预期权限
             for perm in expected_permissions:
-                has_permission = PermissionChecker.check_permission(
-                    user_permissions, perm
-                )
+                has_permission = PermissionChecker.check_permission(user_permissions, perm)
                 self.assertTrue(has_permission, f"{role} 角色应该有 {perm.value} 权限")
 
             # 验证不应该有的权限
@@ -234,9 +224,7 @@ class TestAuthIntegration(unittest.TestCase):
         user_permissions = [Permission.ASSET_READ.value, Permission.TASK_READ.value]
 
         # 应该有读取权限
-        self.assertTrue(
-            PermissionChecker.check_permission(user_permissions, Permission.ASSET_READ)
-        )
+        self.assertTrue(PermissionChecker.check_permission(user_permissions, Permission.ASSET_READ))
 
         # 不应该有写入权限
         self.assertFalse(
@@ -288,19 +276,13 @@ class TestAuthIntegration(unittest.TestCase):
         self.audit_service.log_action(denial_request)
 
         # 查询认证相关审计日志
-        auth_logs = self.audit_service.list_audit_logs(
-            filters={"category": AuditCategory.SECURITY}
-        )
+        auth_logs = self.audit_service.list_audit_logs(filters={"category": AuditCategory.SECURITY})
 
         self.assertGreater(len(auth_logs), 0, "应该有认证相关的审计日志")
 
         # 验证日志内容
-        success_log = [
-            log for log in auth_logs if log.action == AuditAction.AUTH_SUCCESS
-        ]
-        denial_log_result = [
-            log for log in auth_logs if log.action == AuditAction.AUTH_DENIED
-        ]
+        success_log = [log for log in auth_logs if log.action == AuditAction.AUTH_SUCCESS]
+        denial_log_result = [log for log in auth_logs if log.action == AuditAction.AUTH_DENIED]
 
         self.assertGreater(len(success_log), 0, "应该有认证成功日志")
         self.assertGreater(len(denial_log_result), 0, "应该有权限拒绝日志")

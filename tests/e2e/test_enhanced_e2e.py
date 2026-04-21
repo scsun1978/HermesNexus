@@ -46,9 +46,7 @@ class E2ETestResult:
 
     def add_checkpoint(self, name: str, details: str = ""):
         """添加检查点"""
-        self.checkpoints.append(
-            {"name": name, "details": details, "timestamp": time.time()}
-        )
+        self.checkpoints.append({"name": name, "details": details, "timestamp": time.time()})
 
     def add_error(self, error: str, details: str = ""):
         """添加错误"""
@@ -63,9 +61,7 @@ class E2ETestResult:
 
     def add_warning(self, warning: str, details: str = ""):
         """添加警告"""
-        self.warnings.append(
-            {"warning": warning, "details": details, "timestamp": time.time()}
-        )
+        self.warnings.append({"warning": warning, "details": details, "timestamp": time.time()})
 
     def finish(self, success: bool = True):
         """完成测试"""
@@ -156,9 +152,7 @@ class EnhancedE2ETest(unittest.TestCase):
             if not self._outcome.errors and not self._outcome.failures:
                 self._cleanup_temp_files()
             else:
-                self.test_result.add_warning(
-                    "临时文件保留", f"由于测试失败，临时文件已保留在: {self.temp_dir}"
-                )
+                self.test_result.add_warning("临时文件保留", f"由于测试失败，临时文件已保留在: {self.temp_dir}")
 
             # 生成测试报告
             success = not (self._outcome.errors or self._outcome.failures)
@@ -209,9 +203,7 @@ class TestCompleteWorkflowE2E(EnhancedE2ETest):
                 description="端到端测试资产",
                 created_by="e2e-user-001",  # 添加created_by字段
             )
-            created_asset = self.services["asset"].create_asset(
-                asset, created_by="e2e-user-001"
-            )
+            created_asset = self.services["asset"].create_asset(asset, created_by="e2e-user-001")
             self.assertIsNotNone(created_asset)
             self.assertEqual(created_asset.asset_id, "e2e-asset-001")
 
@@ -243,9 +235,7 @@ class TestCompleteWorkflowE2E(EnhancedE2ETest):
 
             # Step 5: 任务执行
             self.test_result.add_checkpoint("任务执行")
-            running_task = self.services["task"].start_task(
-                "e2e-task-001", "e2e-node-001"
-            )
+            running_task = self.services["task"].start_task("e2e-task-001", "e2e-node-001")
             self.assertEqual(running_task.status, TaskStatus.RUNNING)
             self.assertIsNotNone(running_task.started_at)
 
@@ -415,9 +405,7 @@ class TestCompleteWorkflowE2E(EnhancedE2ETest):
                 user_assets = [a for a in all_assets if a.created_by == user["user_id"]]
                 user_tasks = [t for t in all_tasks if t.created_by == user["user_id"]]
 
-                self.assertEqual(
-                    len(user_assets), 1, f"{user['username']}应该有1个资产"
-                )
+                self.assertEqual(len(user_assets), 1, f"{user['username']}应该有1个资产")
                 self.assertEqual(len(user_tasks), 1, f"{user['username']}应该有1个任务")
 
             self.test_result.add_checkpoint("并发用户验证完成")
@@ -443,9 +431,7 @@ class TestSystemDiagnosticsE2E(EnhancedE2ETest):
             # 检查表结构
             from sqlalchemy import text
 
-            result = session.execute(
-                text("SELECT name FROM sqlite_master WHERE type='table'")
-            )
+            result = session.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
             tables = [row[0] for row in result.fetchall()]
 
             self.assertIn("assets", tables)
@@ -453,14 +439,10 @@ class TestSystemDiagnosticsE2E(EnhancedE2ETest):
             self.assertIn("audit_logs", tables)
 
             # 检查索引
-            result = session.execute(
-                text("SELECT name FROM sqlite_master WHERE type='index'")
-            )
+            result = session.execute(text("SELECT name FROM sqlite_master WHERE type='index'"))
             indexes = [row[0] for row in result.fetchall()]
 
-            self.test_result.add_checkpoint(
-                "数据库结构检查", f"表: {len(tables)}, 索引: {len(indexes)}"
-            )
+            self.test_result.add_checkpoint("数据库结构检查", f"表: {len(tables)}, 索引: {len(indexes)}")
 
             session.close()
 

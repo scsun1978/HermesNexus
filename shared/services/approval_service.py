@@ -125,9 +125,7 @@ class ApprovalService:
         request = self._get_request(request_id)
 
         # 检查状态转换
-        if not ApprovalStateTransition.can_transition(
-            request.status, ApprovalStatus.PENDING
-        ):
+        if not ApprovalStateTransition.can_transition(request.status, ApprovalStatus.PENDING):
             raise ValueError(f"当前状态 {request.status} 不允许提交")
 
         # 更新状态
@@ -180,9 +178,7 @@ class ApprovalService:
 
         # 确定目标状态
         target_status = (
-            ApprovalStatus.APPROVED
-            if decision == "approve"
-            else ApprovalStatus.REJECTED
+            ApprovalStatus.APPROVED if decision == "approve" else ApprovalStatus.REJECTED
         )
 
         # 更新请求状态
@@ -239,9 +235,7 @@ class ApprovalService:
         request = self._get_request(request_id)
 
         # 检查状态转换
-        if not ApprovalStateTransition.can_transition(
-            request.status, ApprovalStatus.WITHDRAWN
-        ):
+        if not ApprovalStateTransition.can_transition(request.status, ApprovalStatus.WITHDRAWN):
             raise ValueError(f"当前状态 {request.status} 不允许撤回")
 
         # 更新状态
@@ -473,9 +467,7 @@ class ApprovalService:
             by_priority[priority_str] = by_priority.get(priority_str, 0) + 1
 
             # 按风险等级统计
-            by_risk_level[request.risk_level] = (
-                by_risk_level.get(request.risk_level, 0) + 1
-            )
+            by_risk_level[request.risk_level] = by_risk_level.get(request.risk_level, 0) + 1
 
             # 按操作类型统计
             by_operation_type[request.operation_type] = (

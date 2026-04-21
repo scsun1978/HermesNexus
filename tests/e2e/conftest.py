@@ -52,9 +52,7 @@ def test_storage() -> Generator[AuditStorage, None, None]:
 async def test_services(test_database, test_storage) -> dict:
     """创建测试服务集合"""
     audit_service = BatchAuditService(storage=test_storage)
-    batch_service = BatchOperationService(
-        database=test_database, audit_service=audit_service
-    )
+    batch_service = BatchOperationService(database=test_database, audit_service=audit_service)
 
     return {
         "database": test_database,
@@ -288,9 +286,7 @@ class SmokeTestSuite:
                     }
                 ]
             )
-            create_response = await self.batch_service.create_assets_batch(
-                create_request
-            )
+            create_response = await self.batch_service.create_assets_batch(create_request)
 
             # 2. 验证创建成功
             assert create_response.summary.successful_items == 1
@@ -300,9 +296,7 @@ class SmokeTestSuite:
             update_request = AssetBatchUpdateRequest(
                 asset_ids=["smoke-e2e-001"], updates={"status": "active"}
             )
-            update_response = await self.batch_service.update_assets_batch(
-                update_request
-            )
+            update_response = await self.batch_service.update_assets_batch(update_request)
 
             # 4. 验证更新成功
             assert update_response.summary.successful_items == 1

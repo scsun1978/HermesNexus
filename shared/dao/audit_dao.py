@@ -78,9 +78,7 @@ class AuditDAO(BaseDAO):
         try:
             # 查询数据库
             audit_model = (
-                session.query(AuditLogModel)
-                .filter(AuditLogModel.audit_id == audit_id)
-                .first()
+                session.query(AuditLogModel).filter(AuditLogModel.audit_id == audit_id).first()
             )
 
             if not audit_model:
@@ -154,21 +152,13 @@ class AuditDAO(BaseDAO):
                 if "actor" in filters:
                     query = query.filter(AuditLogModel.actor == filters["actor"])
                 if "target_type" in filters:
-                    query = query.filter(
-                        AuditLogModel.target_type == filters["target_type"]
-                    )
+                    query = query.filter(AuditLogModel.target_type == filters["target_type"])
                 if "target_id" in filters:
-                    query = query.filter(
-                        AuditLogModel.target_id == filters["target_id"]
-                    )
+                    query = query.filter(AuditLogModel.target_id == filters["target_id"])
                 if "start_time" in filters:
-                    query = query.filter(
-                        AuditLogModel.created_at >= filters["start_time"]
-                    )
+                    query = query.filter(AuditLogModel.created_at >= filters["start_time"])
                 if "end_time" in filters:
-                    query = query.filter(
-                        AuditLogModel.created_at <= filters["end_time"]
-                    )
+                    query = query.filter(AuditLogModel.created_at <= filters["end_time"])
                 if "search" in filters:
                     search_term = f"%{filters['search']}%"
                     query = query.filter(
@@ -231,9 +221,7 @@ class AuditDAO(BaseDAO):
                 if "actor" in filters:
                     query = query.filter(AuditLogModel.actor == filters["actor"])
                 if "target_type" in filters:
-                    query = query.filter(
-                        AuditLogModel.target_type == filters["target_type"]
-                    )
+                    query = query.filter(AuditLogModel.target_type == filters["target_type"])
 
             # 统计数量
             return query.count()
@@ -360,9 +348,7 @@ class AuditDAO(BaseDAO):
         try:
             # 批量查询 - 一次查询获取所有数据
             audit_models = (
-                session.query(AuditLogModel)
-                .filter(AuditLogModel.audit_id.in_(audit_ids))
-                .all()
+                session.query(AuditLogModel).filter(AuditLogModel.audit_id.in_(audit_ids)).all()
             )
 
             # 转换为审计日志对象列表

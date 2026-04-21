@@ -140,21 +140,11 @@ class SQLiteDatabase:
                 )
 
                 # 创建索引
-                conn.execute(
-                    "CREATE INDEX IF NOT EXISTS idx_nodes_status ON nodes(status)"
-                )
-                conn.execute(
-                    "CREATE INDEX IF NOT EXISTS idx_devices_status ON devices(status)"
-                )
-                conn.execute(
-                    "CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status)"
-                )
-                conn.execute(
-                    "CREATE INDEX IF NOT EXISTS idx_events_type ON events(type)"
-                )
-                conn.execute(
-                    "CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp)"
-                )
+                conn.execute("CREATE INDEX IF NOT EXISTS idx_nodes_status ON nodes(status)")
+                conn.execute("CREATE INDEX IF NOT EXISTS idx_devices_status ON devices(status)")
+                conn.execute("CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status)")
+                conn.execute("CREATE INDEX IF NOT EXISTS idx_events_type ON events(type)")
+                conn.execute("CREATE INDEX IF NOT EXISTS idx_events_timestamp ON events(timestamp)")
 
                 conn.commit()
                 logger.info(f"✅ SQLite数据库初始化完成: {self.db_path}")
@@ -182,12 +172,8 @@ class SQLiteDatabase:
                             node_data.get("status", "offline"),
                             json.dumps(node_data.get("capabilities", {})),
                             node_data.get("last_heartbeat"),
-                            node_data.get(
-                                "created_at", datetime.now(timezone.utc).isoformat()
-                            ),
-                            node_data.get(
-                                "updated_at", datetime.now(timezone.utc).isoformat()
-                            ),
+                            node_data.get("created_at", datetime.now(timezone.utc).isoformat()),
+                            node_data.get("updated_at", datetime.now(timezone.utc).isoformat()),
                             json.dumps(node_data.get("tags", [])),
                             node_data.get("cpu_usage", 0.0),
                             node_data.get("memory_usage", 0.0),
@@ -205,9 +191,7 @@ class SQLiteDatabase:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
-                cursor = conn.execute(
-                    "SELECT * FROM nodes WHERE node_id = ?", (node_id,)
-                )
+                cursor = conn.execute("SELECT * FROM nodes WHERE node_id = ?", (node_id,))
                 row = cursor.fetchone()
                 if row:
                     return self._row_to_dict(row)
@@ -239,9 +223,7 @@ class SQLiteDatabase:
                     update_values.append(datetime.now(timezone.utc).isoformat())
                     update_values.append(node_id)
 
-                    sql = (
-                        f"UPDATE nodes SET {', '.join(update_fields)} WHERE node_id = ?"
-                    )
+                    sql = f"UPDATE nodes SET {', '.join(update_fields)} WHERE node_id = ?"
                     conn.execute(sql, update_values)
                     conn.commit()
                     return True
@@ -255,9 +237,7 @@ class SQLiteDatabase:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
                 if status:
-                    cursor = conn.execute(
-                        "SELECT * FROM nodes WHERE status = ?", (status,)
-                    )
+                    cursor = conn.execute("SELECT * FROM nodes WHERE status = ?", (status,))
                 else:
                     cursor = conn.execute("SELECT * FROM nodes")
 
@@ -294,12 +274,8 @@ class SQLiteDatabase:
                             json.dumps(device_data.get("tags", [])),
                             json.dumps(device_data.get("metadata", {})),
                             device_data.get("last_seen"),
-                            device_data.get(
-                                "created_at", datetime.now(timezone.utc).isoformat()
-                            ),
-                            device_data.get(
-                                "updated_at", datetime.now(timezone.utc).isoformat()
-                            ),
+                            device_data.get("created_at", datetime.now(timezone.utc).isoformat()),
+                            device_data.get("updated_at", datetime.now(timezone.utc).isoformat()),
                             1 if device_data.get("enabled", True) else 0,
                         ),
                     )
@@ -314,9 +290,7 @@ class SQLiteDatabase:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
-                cursor = conn.execute(
-                    "SELECT * FROM devices WHERE device_id = ?", (device_id,)
-                )
+                cursor = conn.execute("SELECT * FROM devices WHERE device_id = ?", (device_id,))
                 row = cursor.fetchone()
                 if row:
                     return self._row_to_dict(row)
@@ -366,12 +340,8 @@ class SQLiteDatabase:
                             job_data.get("node_id"),
                             job_data.get("target_host"),
                             job_data.get("created_by", "user"),
-                            job_data.get(
-                                "created_at", datetime.now(timezone.utc).isoformat()
-                            ),
-                            job_data.get(
-                                "updated_at", datetime.now(timezone.utc).isoformat()
-                            ),
+                            job_data.get("created_at", datetime.now(timezone.utc).isoformat()),
+                            job_data.get("updated_at", datetime.now(timezone.utc).isoformat()),
                         ),
                     )
                     conn.commit()
@@ -422,9 +392,7 @@ class SQLiteDatabase:
             logger.error(f"❌ 更新任务失败: {e}")
             return False
 
-    def list_jobs(
-        self, status: Optional[str] = None, node_id: Optional[str] = None
-    ) -> List[Dict]:
+    def list_jobs(self, status: Optional[str] = None, node_id: Optional[str] = None) -> List[Dict]:
         """列出任务"""
         try:
             with sqlite3.connect(self.db_path) as conn:
@@ -478,9 +446,7 @@ class SQLiteDatabase:
                             event_data.get("related_node_id"),
                             event_data.get("related_device_id"),
                             json.dumps(event_data.get("data", {})),
-                            event_data.get(
-                                "timestamp", datetime.now(timezone.utc).isoformat()
-                            ),
+                            event_data.get("timestamp", datetime.now(timezone.utc).isoformat()),
                         ),
                     )
                     conn.commit()
@@ -531,9 +497,7 @@ class SQLiteDatabase:
                             json.dumps(log_data.get("details", {})),
                             log_data.get("ip_address"),
                             log_data.get("user_agent"),
-                            log_data.get(
-                                "timestamp", datetime.now(timezone.utc).isoformat()
-                            ),
+                            log_data.get("timestamp", datetime.now(timezone.utc).isoformat()),
                         ),
                     )
                     conn.commit()
@@ -566,9 +530,7 @@ class SQLiteDatabase:
                 cursor = conn.execute("SELECT COUNT(*) FROM nodes")
                 stats["total_nodes"] = cursor.fetchone()[0]
 
-                cursor = conn.execute(
-                    "SELECT COUNT(*) FROM nodes WHERE status = 'online'"
-                )
+                cursor = conn.execute("SELECT COUNT(*) FROM nodes WHERE status = 'online'")
                 stats["online_nodes"] = cursor.fetchone()[0]
 
                 # 设备统计
@@ -579,19 +541,13 @@ class SQLiteDatabase:
                 cursor = conn.execute("SELECT COUNT(*) FROM jobs")
                 stats["total_jobs"] = cursor.fetchone()[0]
 
-                cursor = conn.execute(
-                    "SELECT COUNT(*) FROM jobs WHERE status = 'pending'"
-                )
+                cursor = conn.execute("SELECT COUNT(*) FROM jobs WHERE status = 'pending'")
                 stats["pending_jobs"] = cursor.fetchone()[0]
 
-                cursor = conn.execute(
-                    "SELECT COUNT(*) FROM jobs WHERE status = 'running'"
-                )
+                cursor = conn.execute("SELECT COUNT(*) FROM jobs WHERE status = 'running'")
                 stats["running_jobs"] = cursor.fetchone()[0]
 
-                cursor = conn.execute(
-                    "SELECT COUNT(*) FROM jobs WHERE status = 'completed'"
-                )
+                cursor = conn.execute("SELECT COUNT(*) FROM jobs WHERE status = 'completed'")
                 stats["completed_jobs"] = cursor.fetchone()[0]
 
                 # 事件统计

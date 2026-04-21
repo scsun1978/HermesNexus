@@ -110,9 +110,7 @@ class Task(BaseModel):
     name: str = Field(..., description="任务名称", min_length=1, max_length=255)
     task_type: TaskType = Field(..., description="任务类型")
     status: TaskStatus = Field(default=TaskStatus.PENDING, description="任务状态")
-    priority: TaskPriority = Field(
-        default=TaskPriority.NORMAL, description="任务优先级"
-    )
+    priority: TaskPriority = Field(default=TaskPriority.NORMAL, description="任务优先级")
 
     # 目标信息
     target_asset_id: str = Field(..., description="目标资产ID")
@@ -195,9 +193,7 @@ class TaskCreateRequest(BaseModel):
     task_id: Optional[str] = Field(None, description="任务ID（不指定则自动生成）")
     name: str = Field(..., description="任务名称", min_length=1, max_length=255)
     task_type: TaskType = Field(default=TaskType.BASIC_EXEC, description="任务类型")
-    priority: TaskPriority = Field(
-        default=TaskPriority.NORMAL, description="任务优先级"
-    )
+    priority: TaskPriority = Field(default=TaskPriority.NORMAL, description="任务优先级")
 
     # 目标信息
     target_asset_id: str = Field(..., description="目标资产ID")
@@ -238,9 +234,7 @@ class TaskCreateRequest(BaseModel):
 class TaskUpdateRequest(BaseModel):
     """任务更新请求"""
 
-    name: Optional[str] = Field(
-        None, description="任务名称", min_length=1, max_length=255
-    )
+    name: Optional[str] = Field(None, description="任务名称", min_length=1, max_length=255)
     priority: Optional[TaskPriority] = Field(None, description="任务优先级")
     status: Optional[TaskStatus] = Field(None, description="任务状态")
     description: Optional[str] = Field(None, description="任务描述", max_length=1000)
@@ -308,9 +302,7 @@ class TaskStats(BaseModel):
     total_tasks: int = Field(..., description="总任务数")
     by_type: Dict[str, int] = Field(default_factory=dict, description="按类型统计")
     by_status: Dict[str, int] = Field(default_factory=dict, description="按状态统计")
-    by_priority: Dict[str, int] = Field(
-        default_factory=dict, description="按优先级统计"
-    )
+    by_priority: Dict[str, int] = Field(default_factory=dict, description="按优先级统计")
 
     # 执行统计
     running_tasks: int = Field(..., description="运行中任务数")
@@ -355,9 +347,7 @@ class TaskDispatchRequest(BaseModel):
 
     task_ids: List[str] = Field(..., description="要分发的任务ID列表")
     target_node_id: str = Field(..., description="目标节点ID")
-    dispatch_strategy: str = Field(
-        "batch", description="分发策略: batch, round_robin, least_loaded"
-    )
+    dispatch_strategy: str = Field("batch", description="分发策略: batch, round_robin, least_loaded")
 
     class Config:
         json_schema_extra = {

@@ -75,9 +75,7 @@ async def create_asset(
 
 # GET /api/v1/assets/{asset_id} - 获取资产详情（需要认证）
 @router.get("/{asset_id}", response_model=Asset)
-async def get_asset(
-    asset_id: str, current_user: dict = Depends(require_auth)  # 🔒 需要认证
-):
+async def get_asset(asset_id: str, current_user: dict = Depends(require_auth)):  # 🔒 需要认证
     """
     获取资产详情
 
@@ -133,9 +131,7 @@ async def delete_asset(
 
 # POST /api/v1/assets/{asset_id}/heartbeat - 更新心跳（需要认证）
 @router.post("/{asset_id}/heartbeat")
-async def update_heartbeat(
-    asset_id: str, current_user: dict = Depends(require_auth)  # 🔒 需要认证
-):
+async def update_heartbeat(asset_id: str, current_user: dict = Depends(require_auth)):  # 🔒 需要认证
     """
     更新资产心跳
 

@@ -1,0 +1,45 @@
+# Prometheus配置文件 - HermesNexus v1.2.0监控
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'hermesnexus-production'
+    environment: 'production'
+
+# 告警规则文件
+rule_files:
+  - 'alerts/*.yml'
+
+# 抓取配置
+scrape_configs:
+  # HermesNexus v1.2.0 Cloud API监控
+  - job_name: 'hermesnexus-v12-cloud'
+    static_configs:
+      - targets: ['localhost:8082']
+        labels:
+          service: 'hermesnexus-cloud'
+          version: '1.2.0'
+          component: 'api'
+    metrics_path: '/monitoring/metrics'
+    scrape_interval: 30s
+
+  # HermesNexus v1.2.0 Edge节点监控
+  - job_name: 'hermesnexus-v12-edge'
+    static_configs:
+      - targets: ['172.16.200.94:8081']
+        labels:
+          service: 'hermesnexus-edge'
+          version: '1.2.0'
+          component: 'edge-node'
+    metrics_path: '/metrics'
+    scrape_interval: 60s
+
+  # 现有Prometheus自监控
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # 系统监控
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']

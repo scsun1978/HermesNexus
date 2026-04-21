@@ -85,9 +85,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
         session = self.db._get_session()
         try:
             # 简单查询验证表存在
-            result = session.execute(
-                text("SELECT name FROM sqlite_master WHERE type='table'")
-            )
+            result = session.execute(text("SELECT name FROM sqlite_master WHERE type='table'"))
             tables = [row[0] for row in result.fetchall()]
             self.assertIn("assets", tables, "assets表应该存在")
             self.assertIn("tasks", tables, "tasks表应该存在")
@@ -164,9 +162,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
         self.assertIsNotNone(retrieved_task, "任务查询应该成功")
 
         # 任务状态变更测试
-        updated_task = self.task_service.assign_node_to_task(
-            "smoke-task-001", "smoke-node-001"
-        )
+        updated_task = self.task_service.assign_node_to_task("smoke-task-001", "smoke-node-001")
         self.assertEqual(updated_task.status, TaskStatus.ASSIGNED, "任务分配应该成功")
 
         print("   ✓ 任务创建成功")
@@ -225,9 +221,7 @@ class TestSmokeHealthCheck(unittest.TestCase):
         self.assertEqual(validated_user["user_id"], "smoke-user-001")
 
         # API Key创建和验证
-        api_key = self.auth_manager.create_api_key(
-            user_id="smoke-user-002", name="smoke-api-key"
-        )
+        api_key = self.auth_manager.create_api_key(user_id="smoke-user-002", name="smoke-api-key")
         self.assertIsNotNone(api_key, "API Key创建应该成功")
 
         validated_key = self.auth_manager.validate_api_key(api_key)

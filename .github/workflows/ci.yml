@@ -25,30 +25,35 @@ jobs:
       - name: 安装依赖
         run: |
           python -m pip install --upgrade pip
-          pip install "black>=24.0,<25.0" flake8 mypy bandit
+          pip install "black>=24.0,<25.0" flake8 mypy bandit safety
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           fi
 
       - name: 代码风格检查 (Black)
         run: |
-          python -m black --check shared/ tests/ cloud/ edge/ || echo "⚠️  Black格式检查发现问题，但不阻塞CI"
-        continue-on-error: true
+          python -m black --check --config pyproject.toml shared/ tests/ cloud/ edge/
+        continue-on-error: false  # ✅ 阻塞式检查 - 代码格式必须符合标准
 
       - name: 代码规范检查 (Flake8)
         run: |
-          python -m flake8 shared/ tests/ cloud/ edge/ || echo "⚠️  Flake8检查发现问题，但不阻塞CI"
-        continue-on-error: true
+          python -m flake8 shared/ tests/ cloud/ edge/ --config .flake8
+        continue-on-error: false  # ✅ 阻塞式检查 - 代码规范必须符合标准
 
       - name: 类型检查 (MyPy)
         run: |
-          mypy shared/ --ignore-missing-imports
-        continue-on-error: true  # 类型检查暂时允许警告，逐步修复
+          mypy shared/ --config-file pyproject.toml
+        continue-on-error: true  # 类型检查暂时警告，逐步修复
 
       - name: 安全扫描 (Bandit)
         run: |
-          bandit -r shared/ -f json -o bandit-report.json
+          bandit -r shared/ -f json -o bandit-report.json --configfile pyproject.toml
         continue-on-error: true  # 安全扫描先警告，逐步修复
+
+      - name: 依赖安全扫描 (Safety)
+        run: |
+          safety check --json > safety-report.json || true
+        continue-on-error: true  # 依赖安全先警告，逐步修复
 
   # 单元测试
   unit-tests:

@@ -112,9 +112,7 @@ class TestSecurityIntegration:
             assert permission_result.allowed is True
 
         # 评估风险
-        risk_level = risk_assessor.assess_risk(
-            action=ActionType.READ, resource=ResourceType.ASSET
-        )
+        risk_level = risk_assessor.assess_risk(action=ActionType.READ, resource=ResourceType.ASSET)
         assert risk_level in [RiskLevel.LOW, RiskLevel.MEDIUM]
 
         # 3. 审批测试（高风险操作）
@@ -314,11 +312,7 @@ class TestSecurityIntegration:
             action=AuditAction.USER_ACTION,
             category=AuditCategory.TASK,
             level=EventLevel.INFO,
-            result=(
-                ActionResult.SUCCESS
-                if permission_result.allowed
-                else ActionResult.FAILURE
-            ),
+            result=(ActionResult.SUCCESS if permission_result.allowed else ActionResult.FAILURE),
             actor=verified_node["node_id"],
             actor_type=ActorType.NODE,
             tenant_id=verified_node["tenant_id"],
@@ -328,9 +322,7 @@ class TestSecurityIntegration:
             details={
                 "action": "execute",
                 "resource": "task",
-                "risk_level": (
-                    risk_level.value if hasattr(risk_level, "value") else risk_level
-                ),
+                "risk_level": (risk_level.value if hasattr(risk_level, "value") else risk_level),
                 "permission_allowed": permission_result.allowed,
             },
         )
@@ -514,9 +506,7 @@ class TestSecurityIntegration:
                 "recovery_action": recovery_plan.recovery_action.value,
                 "recovery_steps": len(recovery_plan.steps),
                 "duration_seconds": (
-                    (
-                        recovery_plan.completed_at - recovery_plan.started_at
-                    ).total_seconds()
+                    (recovery_plan.completed_at - recovery_plan.started_at).total_seconds()
                     if recovery_plan.completed_at and recovery_plan.started_at
                     else 0
                 ),

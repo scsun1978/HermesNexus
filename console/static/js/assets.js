@@ -6,6 +6,32 @@
 // API 基础URL
 const API_BASE = '/api/v1';
 
+// HTML转义函数 - 防止XSS攻击
+function escapeHtml(unsafe) {
+    if (unsafe === null || unsafe === undefined) {
+        return '';
+    }
+    return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+// 安全的属性转义函数
+function escapeAttr(unsafe) {
+    if (unsafe === null || unsafe === undefined) {
+        return '';
+    }
+    return String(unsafe)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 // 当前状态
 let currentPage = 1;
 let pageSize = 20;
@@ -47,14 +73,21 @@ async function loadAssets() {
     if (filterStatus) url += `&status=${filterStatus}`;
     if (filterSearch) url += `&search=${encodeURIComponent(filterSearch)}`;
 
+    // Show loading notification for first load or explicit refresh
+    const isFirstLoad = document.querySelector('.loading-indicator');
+    const loadingId = isFirstLoad ? showLoading('正在加载资产列表...') : null;
+
     try {
         const response = await fetch(url);
         const data = await response.json();
 
         displayAssets(data.assets || []);
         updatePagination(data);
+
+        if (loadingId) hideLoading(loadingId);
     } catch (error) {
         console.error('Failed to load assets:', error);
+        if (loadingId) hideLoading(loadingId);
         showError('加载资产列表失败');
     }
 }
@@ -73,19 +106,19 @@ function displayAssets(assets) {
     }
 
     tbody.innerHTML = assets.map(asset => `
-        <tr data-asset-id="${asset.asset_id}">
-            <td><input type="checkbox" class="asset-checkbox" value="${asset.asset_id}" onchange="updateSelection()"></td>
-            <td><code>${asset.asset_id}</code></td>
-            <td><strong>${asset.name}</strong></td>
+        <tr data-asset-id="${escapeHtml(asset.asset_id)}">
+            <td><input type="checkbox" class="asset-checkbox" value="${escapeHtml(asset.asset_id)}" onchange="updateSelection()"></td>
+            <td><code>${escapeHtml(asset.asset_id)}</code></td>
+            <td><strong>${escapeHtml(asset.name)}</strong></td>
             <td>${getAssetTypeLabel(asset.asset_type)}</td>
             <td>${getStatusBadge(asset.status)}</td>
-            <td>${asset.metadata?.ip_address || '-'}</td>
-            <td>${asset.associated_node_id ? `<code>${asset.associated_node_id}</code>` : '-'}</td>
+            <td>${escapeHtml(asset.metadata?.ip_address || '-')}</td>
+            <td>${asset.associated_node_id ? `<code>${escapeHtml(asset.associated_node_id)}</code>` : '-'}</td>
             <td>${asset.last_heartbeat ? formatDate(asset.last_heartbeat) : '-'}</td>
             <td>
-                <button class="btn btn-sm" onclick="viewAsset('${asset.asset_id}')">查看</button>
-                <button class="btn btn-sm" onclick="editAsset('${asset.asset_id}')">编辑</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteAsset('${asset.asset_id}')">删除</button>
+                <button class="btn btn-sm" onclick="viewAsset('${escapeHtml(asset.asset_id)}')">查看</button>
+                <button class="btn btn-sm" onclick="editAsset('${escapeHtml(asset.asset_id)}')">编辑</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteAsset('${escapeHtml(asset.asset_id)}')">删除</button>
             </td>
         </tr>
     `).join('');
@@ -279,6 +312,9 @@ function setupFormHandlers() {
             }
         };
 
+        // Show loading notification
+        const loadingId = showLoading(isEdit ? '正在更新资产...' : '正在创建资产...');
+
         try {
             const url = isEdit ? `${API_BASE}/assets/${assetId}` : `${API_BASE}/assets`;
             const method = isEdit ? 'PUT' : 'POST';
@@ -292,15 +328,18 @@ function setupFormHandlers() {
             });
 
             if (response.ok) {
+                hideLoading(loadingId);
                 showSuccess(isEdit ? '资产更新成功' : '资产创建成功');
                 closeModal();
                 loadAssets();
             } else {
+                hideLoading(loadingId);
                 const error = await response.json();
                 showError(error.error?.message || '操作失败');
             }
         } catch (error) {
             console.error('Failed to save asset:', error);
+            hideLoading(loadingId);
             showError('保存资产失败');
         }
     });
@@ -343,11 +382,11 @@ function formatDate(dateString) {
 }
 
 function showSuccess(message) {
-    alert(message); // 简化实现，生产环境应使用更好的通知组件
+    return notificationSystem.success(message);
 }
 
 function showError(message) {
-    alert('错误: ' + message);
+    return notificationSystem.error(message);
 }
 
 // ==================== 批量操作功能 ====================

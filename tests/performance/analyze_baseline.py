@@ -152,9 +152,7 @@ class PerformanceAnalyzer:
             if asset is None:
                 raise ValueError(f"资产 analysis-asset-{i:04d} 未找到")
 
-        results["asset_query_by_id"] = self.measure_operation(
-            "资产查询(通过ID)", query_asset, 100
-        )
+        results["asset_query_by_id"] = self.measure_operation("资产查询(通过ID)", query_asset, 100)
 
         # 3. Asset 列表查询性能
         print("  🔍 分析资产列表查询性能...")
@@ -205,9 +203,7 @@ class PerformanceAnalyzer:
             if task is None:
                 raise ValueError(f"任务 analysis-task-{i:04d} 未找到")
 
-        results["task_query_by_id"] = self.measure_operation(
-            "任务查询(通过ID)", query_task, 100
-        )
+        results["task_query_by_id"] = self.measure_operation("任务查询(通过ID)", query_task, 100)
 
         # 7. Audit Log 插入性能
         print("  🔍 分析审计日志插入性能...")
@@ -225,9 +221,7 @@ class PerformanceAnalyzer:
             )
             audit_dao.insert(audit_log)
 
-        results["audit_insert"] = self.measure_operation(
-            "审计日志插入", insert_audit, 100
-        )
+        results["audit_insert"] = self.measure_operation("审计日志插入", insert_audit, 100)
 
         # 8. 批量插入性能测试
         print("  🔍 分析批量插入性能...")
@@ -455,9 +449,7 @@ class PerformanceAnalyzer:
 
             if recommendations:
                 high_priority = [r for r in recommendations if r["priority"] == "HIGH"]
-                medium_priority = [
-                    r for r in recommendations if r["priority"] == "MEDIUM"
-                ]
+                medium_priority = [r for r in recommendations if r["priority"] == "MEDIUM"]
 
                 if high_priority:
                     f.write("### 🔥 高优先级 (本周处理)\n")

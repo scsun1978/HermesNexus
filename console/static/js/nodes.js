@@ -10,6 +10,22 @@ const API_BASE = '/api/v1';
 let nodesData = [];
 let filteredNodes = [];
 
+// 分页和排序状态
+let currentPage = 1;
+let pageSize = 20;
+let sortField = 'last_heartbeat';
+let sortOrder = 'desc';
+let totalPages = 1;
+
+// 筛选条件
+let filters = {
+    status: '',
+    nodeType: '',
+    search: '',
+    location: '',
+    tags: []
+};
+
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
     loadNodes();
@@ -22,17 +38,49 @@ async function loadNodes() {
     try {
         showLoading();
 
-        // 并行加载多个API
-        const [assetsResponse, tasksResponse] = await Promise.all([
-            fetch(`${API_BASE}/assets`),
-            fetch(`${API_BASE}/tasks/stats`)
-        ]);
+        const filterStatus = document.getElementById('filter-status').value;
+        const filterSearch = document.getElementById('filter-search').value.trim();
 
-        const assets = await assetsResponse.json();
-        const taskStats = await tasksResponse.json();
+        filters.status = filterStatus;
+        filters.search = filterSearch;
+
+        // 使用v1.2增强节点查询API
+        const requestBody = {
+            page: currentPage,
+            page_size: pageSize,
+            sort_by: sortField,
+            sort_order: sortOrder,
+            include_heartbeat_stats: true,
+            include_task_summary: true,
+            include_audit_summary: true
+        };
+
+        // 添加筛选参数
+        if (filters.status) {
+            requestBody.status = [filters.status];
+        }
+        if (filters.nodeType) {
+            requestBody.node_type = filters.nodeType;
+        }
+        if (filters.search) {
+            requestBody.search = filters.search;
+        }
+
+        const response = await fetch(`${API_BASE}/nodes/query`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
 
         // 处理节点数据
-        processNodesData(assets, taskStats);
+        processNodesDataV2(data);
 
         hideLoading();
     } catch (error) {
@@ -42,56 +90,33 @@ async function loadNodes() {
     }
 }
 
-// 处理节点数据
-function processNodesData(assets, taskStats) {
-    // 从资产数据中提取节点信息
-    nodesData = assets.assets || [];
-
-    // 统计节点运行任务数
-    const runningTasks = taskStats.running_tasks || 0;
-    const busyNodes = Math.min(runningTasks, nodesData.length);
+// 处理节点数据 (v1.2新版本)
+function processNodesDataV2(data) {
+    // 更新分页信息
+    currentPage = data.page || 1;
+    totalPages = data.total_pages || 1;
+    nodesData = data.nodes || [];
 
     // 更新统计信息
-    document.getElementById('total-nodes').textContent = nodesData.length;
-    document.getElementById('online-nodes').textContent = assets.by_status?.active || 0;
-    document.getElementById('offline-nodes').textContent = assets.by_status?.inactive || 0;
-    document.getElementById('busy-nodes').textContent = busyNodes;
+    document.getElementById('total-nodes').textContent = data.total || 0;
 
-    // 应用当前过滤
-    filterNodes();
+    // 从健康状态摘要中统计
+    const healthSummary = data.health_summary || {};
+    document.getElementById('online-nodes').textContent = healthSummary.healthy || 0;
+    document.getElementById('offline-nodes').textContent = healthSummary.unknown || 0;
+    document.getElementById('busy-nodes').textContent = healthSummary.degraded || 0;
+
+    filteredNodes = nodesData;
+    renderNodes();
+
+    // 更新分页控件
+    updatePaginationControls();
 }
 
 // 过滤节点
 function filterNodes() {
-    const filterStatus = document.getElementById('filter-status').value;
-    const filterSearch = document.getElementById('filter-search').value.toLowerCase();
-
-    filteredNodes = nodesData.filter(node => {
-        // 状态过滤
-        if (filterStatus) {
-            const statusMap = {
-                'online': 'active',
-                'offline': 'inactive',
-                'busy': 'active' // 简化实现，实际需要检查任务状态
-            };
-            if (node.status !== statusMap[filterStatus]) {
-                return false;
-            }
-        }
-
-        // 搜索过滤
-        if (filterSearch) {
-            const searchText = filterSearch.toLowerCase();
-            if (node.name && !node.name.toLowerCase().includes(searchText) &&
-                node.asset_id && !node.asset_id.toLowerCase().includes(searchText)) {
-                return false;
-            }
-        }
-
-        return true;
-    });
-
-    renderNodes();
+    currentPage = 1;
+    loadNodes();
 }
 
 // 渲染节点
@@ -118,46 +143,58 @@ function renderCardsView() {
         return;
     }
 
-    container.innerHTML = filteredNodes.map(node => `
-        <div class="node-card" onclick="viewNodeDetail('${node.asset_id}')">
+    container.innerHTML = filteredNodes.map(node => {
+        const statusSummary = node.status_summary || {};
+        const taskSummary = node.task_summary || {};
+        const healthStatus = statusSummary.health_status || 'unknown';
+        const isOnline = statusSummary.is_online || false;
+        const canAcceptTasks = statusSummary.can_accept_tasks || false;
+        const nodeId = JSON.stringify(node.node_id || '');
+
+        return `
+        <div class="node-card" onclick="viewNodeDetail(${nodeId})">
             <div class="node-card-header">
-                <div class="node-status ${getStatusClass(node.status)}">
-                    ${getStatusText(node.status)}
+                <div class="node-status ${getHealthStatusClass(healthStatus)}">
+                    ${getHealthStatusText(healthStatus)}
                 </div>
                 <div class="node-actions">
-                    <button class="btn btn-icon" onclick="event.stopPropagation(); viewNodeDetail('${node.asset_id}')">
+                    <button class="btn btn-icon" onclick="event.stopPropagation(); viewNodeDetail(${nodeId})">
                         <i class="fas fa-info-circle"></i>
                     </button>
                 </div>
             </div>
 
             <div class="node-card-body">
-                <div class="node-name">${escapeHtml(node.name)}</div>
-                <div class="node-id"><code>${node.asset_id}</code></div>
+                <div class="node-name">${escapeHtml(node.node_name)}</div>
+                <div class="node-id"><code>${escapeHtml(node.node_id)}</code></div>
 
                 <div class="node-info">
                     <div class="info-item">
-                        <i class="fas fa-box"></i>
-                        <span>${getAssetTypeLabel(node.asset_type)}</span>
+                        <i class="fas fa-server"></i>
+                        <span>${getNodeTypeLabel(node.node_type)}</span>
                     </div>
-                    ${node.metadata?.ip_address ? `
+                    ${node.location ? `
                         <div class="info-item">
-                            <i class="fas fa-network-wired"></i>
-                            <span>${node.metadata.ip_address}</span>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${escapeHtml(node.location)}</span>
                         </div>
                     ` : ''}
                 </div>
 
-                ${node.associated_node_id ? `
-                    <div class="node-association">
-                        <i class="fas fa-link"></i>
-                        <span>关联节点: <code>${node.associated_node_id}</code></span>
+                <div class="node-status-info">
+                    <div class="status-item">
+                        <i class="fas fa-heartbeat ${isOnline ? 'text-success' : 'text-danger'}"></i>
+                        <span>${isOnline ? '在线' : '离线'}</span>
                     </div>
-                ` : ''}
+                    <div class="status-item">
+                        <i class="fas fa-tasks ${canAcceptTasks ? 'text-success' : 'text-warning'}"></i>
+                        <span>${taskSummary.running_tasks || 0}/${taskSummary.max_concurrent_tasks || 3} 任务</span>
+                    </div>
+                </div>
 
                 ${node.last_heartbeat ? `
                     <div class="node-heartbeat">
-                        <i class="fas fa-heartbeat"></i>
+                        <i class="fas fa-clock"></i>
                         <span>最后心跳: ${formatDateTime(node.last_heartbeat)}</span>
                     </div>
                 ` : ''}
@@ -165,13 +202,13 @@ function renderCardsView() {
 
             <div class="node-card-footer">
                 <div class="node-tags">
-                    ${(node.metadata?.tags || []).slice(0, 3).map(tag =>
+                    ${(node.tags || []).slice(0, 3).map(tag =>
                         `<span class="tag tag-small">${escapeHtml(tag)}</span>`
                     ).join('')}
                 </div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 // 渲染表格视图
@@ -183,95 +220,106 @@ function renderTableView() {
         return;
     }
 
-    tbody.innerHTML = filteredNodes.map(node => `
+    tbody.innerHTML = filteredNodes.map(node => {
+        const statusSummary = node.status_summary || {};
+        const taskSummary = node.task_summary || {};
+        const healthStatus = statusSummary.health_status || 'unknown';
+        const isOnline = statusSummary.is_online || false;
+        const nodeId = JSON.stringify(node.node_id || '');
+
+        return `
         <tr>
-            <td><code>${node.asset_id}</code></td>
-            <td><strong>${escapeHtml(node.name)}</strong></td>
-            <td>${getStatusBadge(node.status)}</td>
-            <td>${getAssetTypeLabel(node.asset_type)}</td>
-            <td>${node.associated_node_id ? `<code>${node.associated_node_id}</code>` : '-'}</td>
+            <td><code>${escapeHtml(node.node_id)}</code></td>
+            <td><strong>${escapeHtml(node.node_name)}</strong></td>
+            <td>${getHealthStatusBadge(healthStatus)}</td>
+            <td>${getNodeTypeLabel(node.node_type)}</td>
+            <td>${taskSummary.running_tasks || 0}/${taskSummary.max_concurrent_tasks || 3}</td>
+            <td>${isOnline ? '<span class="badge badge-success">在线</span>' : '<span class="badge badge-danger">离线</span>'}</td>
             <td>${node.last_heartbeat ? formatDateTime(node.last_heartbeat) : '-'}</td>
-            <td>${node.metadata?.os_version || '-'}</td>
             <td>
-                <button class="btn btn-sm" onclick="viewNodeDetail('${node.asset_id}')">查看</button>
+                <button class="btn btn-sm" onclick="viewNodeDetail(${nodeId})">查看</button>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
 }
 
 // 查看节点详情
 async function viewNodeDetail(nodeId) {
     try {
-        // 查找节点数据
-        const node = nodesData.find(n => n.asset_id === nodeId);
-        if (!node) {
-            showError('未找到节点数据');
-            return;
+        // 使用新的增强节点详情API
+        const response = await fetch(`${API_BASE}/nodes/${encodeURIComponent(nodeId)}?include_details=true`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // 获取节点的审计日志
-        const auditResponse = await fetch(`${API_BASE}/audit_logs/assets/${nodeId}?limit=10`);
-        const auditLogs = await auditResponse.json();
+        const node = await response.json();
+        const statusSummary = node.status_summary || {};
+        const taskSummary = node.task_summary || {};
+        const heartbeatStats = node.heartbeat_stats || {};
+        const auditSummary = node.audit_summary || {};
 
         const detailHtml = `
             <div class="detail-section">
                 <h3>基本信息</h3>
                 <table class="detail-table">
-                    <tr><th>节点ID:</th><td><code>${node.asset_id}</code></td></tr>
-                    <tr><th>节点名称:</th><td>${escapeHtml(node.name)}</td></tr>
-                    <tr><th>节点类型:</th><td>${getAssetTypeLabel(node.asset_type)}</td></tr>
-                    <tr><th>状态:</th><td>${getStatusBadge(node.status)}</td></tr>
-                    <tr><th>描述:</th><td>${node.description || '-'}</td></tr>
+                    <tr><th>节点ID:</th><td><code>${escapeHtml(node.node_id)}</code></td></tr>
+                    <tr><th>节点名称:</th><td>${escapeHtml(node.node_name)}</td></tr>
+                    <tr><th>节点类型:</th><td>${getNodeTypeLabel(node.node_type)}</td></tr>
+                    <tr><th>状态:</th><td>${getHealthStatusBadge(statusSummary.health_status || 'unknown')}</td></tr>
+                    <tr><th>位置:</th><td>${node.location ? escapeHtml(node.location) : '-'}</td></tr>
+                    <tr><th>描述:</th><td>${node.description ? escapeHtml(node.description) : '-'}</td></tr>
                 </table>
             </div>
 
             <div class="detail-section">
-                <h3>网络信息</h3>
+                <h3>状态摘要</h3>
                 <table class="detail-table">
-                    <tr><th>IP地址:</th><td>${node.metadata?.ip_address || '-'}</td></tr>
-                    <tr><th>主机名:</th><td>${node.metadata?.hostname || '-'}</td></tr>
-                    <tr><th>MAC地址:</th><td>${node.metadata?.mac_address || '-'}</td></tr>
-                </table>
-            </div>
-
-            <div class="detail-section">
-                <h3>系统信息</h3>
-                <table class="detail-table">
-                    <tr><th>操作系统:</th><td>${node.metadata?.os_type || '-'} ${node.metadata?.os_version || ''}</td></tr>
-                    <tr><th>CPU核心:</th><td>${node.metadata?.cpu_cores || '-'}</td></tr>
-                    <tr><th>内存:</th><td>${node.metadata?.memory_gb ? node.metadata.memory_gb + ' GB' : '-'}</td></tr>
-                    <tr><th>磁盘:</th><td>${node.metadata?.disk_gb ? node.metadata.disk_gb + ' GB' : '-'}</td></tr>
-                </table>
-            </div>
-
-            <div class="detail-section">
-                <h3>关联信息</h3>
-                <table class="detail-table">
-                    <tr><th>关联节点:</th><td>${node.associated_node_id ? `<code>${node.associated_node_id}</code>` : '-'}</td></tr>
+                    <tr><th>在线状态:</th><td>${statusSummary.is_online ? '<span class="badge badge-success">在线</span>' : '<span class="badge badge-danger">离线</span>'}</td></tr>
+                    <tr><th>活跃状态:</th><td>${statusSummary.is_active ? '<span class="badge badge-success">活跃</span>' : '<span class="badge badge-secondary">非活跃</span>'}</td></tr>
+                    <tr><th>可接受任务:</th><td>${statusSummary.can_accept_tasks ? '<span class="badge badge-success">是</span>' : '<span class="badge badge-warning">否</span>'}</td></tr>
+                    <tr><th>健康状态:</th><td>${getHealthStatusBadge(statusSummary.health_status || 'unknown')}</td></tr>
                     <tr><th>最后心跳:</th><td>${node.last_heartbeat ? formatDateTime(node.last_heartbeat) : '-'}</td></tr>
-                    <tr><th>注册时间:</th><td>${formatDateTime(node.created_at)}</td></tr>
+                    ${statusSummary.last_heartbeat_age_seconds ? `
+                        <tr><th>心跳距现在:</th><td>${formatDuration(statusSummary.last_heartbeat_age_seconds)}前</td></tr>
+                    ` : ''}
                 </table>
             </div>
 
             <div class="detail-section">
-                <h3>最近活动</h3>
-                <div class="activity-list">
-                    ${auditLogs.length > 0 ? auditLogs.slice(0, 5).map(log => `
-                        <div class="activity-item">
-                            <i class="fas fa-circle status-dot-${log.level}"></i>
-                            <div class="activity-content">
-                                <div class="activity-message">${escapeHtml(log.message)}</div>
-                                <div class="activity-time">${formatDateTime(log.timestamp)}</div>
-                            </div>
-                        </div>
-                    `).join('') : '<div class="no-activity">暂无活动记录</div>'}
-                </div>
+                <h3>任务摘要</h3>
+                <table class="detail-table">
+                    <tr><th>总任务数:</th><td>${taskSummary.total_tasks || 0}</td></tr>
+                    <tr><th>运行中:</th><td>${taskSummary.running_tasks || 0}</td></tr>
+                    <tr><th>已完成:</th><td>${taskSummary.completed_tasks || 0}</td></tr>
+                    <tr><th>失败:</th><td>${taskSummary.failed_tasks || 0}</td></tr>
+                    <tr><th>当前负载:</th><td>${taskSummary.current_task_load || 0}/${taskSummary.max_concurrent_tasks || 3}</td></tr>
+                    <tr><th>任务利用率:</th><td>${taskSummary.task_utilization_percent || 0}%</td></tr>
+                </table>
+            </div>
+
+            <div class="detail-section">
+                <h3>心跳统计</h3>
+                <table class="detail-table">
+                    <tr><th>总心跳次数:</th><td>${heartbeatStats.total_heartbeats || 0}</td></tr>
+                    <tr><th>成功心跳:</th><td>${heartbeatStats.successful_heartbeats || 0}</td></tr>
+                    <tr><th>失败心跳:</th><td>${heartbeatStats.failed_heartbeats || 0}</td></tr>
+                    <tr><th>平均间隔:</th><td>${heartbeatStats.avg_heartbeat_interval_seconds ? Math.round(heartbeatStats.avg_heartbeat_interval_seconds) + '秒' : '-'}</td></tr>
+                </table>
+            </div>
+
+            <div class="detail-section">
+                <h3>能力信息</h3>
+                <table class="detail-table">
+                    <tr><th>最大并发任务:</th><td>${node.max_concurrent_tasks || 3}</td></tr>
+                    <tr><th>支持的协议:</th><td>${(node.capabilities?.protocols || []).map(escapeHtml).join(', ') || '-'}</td></tr>
+                    <tr><th>支持的任务类型:</th><td>${(node.capabilities?.supported_task_types || []).map(escapeHtml).join(', ') || '-'}</td></tr>
+                </table>
             </div>
 
             <div class="detail-section">
                 <h3>标签</h3>
                 <div class="tags">
-                    ${(node.metadata?.tags || []).map(tag =>
+                    ${(node.tags || []).map(tag =>
                         `<span class="tag">${escapeHtml(tag)}</span>`
                     ).join('') || '<span class="no-tags">无标签</span>'}
                 </div>
@@ -317,34 +365,91 @@ function exportNodes() {
 }
 
 // 工具函数
-function getStatusClass(status) {
+function getHealthStatusClass(healthStatus) {
     const statusMap = {
-        'active': 'success',
-        'inactive': 'danger',
-        'registered': 'info',
-        'decommissioned': 'dark'
+        'healthy': 'success',
+        'degraded': 'warning',
+        'error': 'danger',
+        'unknown': 'secondary',
+        'inactive': 'dark'
     };
-    return statusMap[status] || 'secondary';
+    return statusMap[healthStatus] || 'secondary';
 }
 
-function getStatusText(status) {
+function getHealthStatusText(healthStatus) {
     const statusMap = {
-        'active': '在线',
-        'inactive': '离线',
-        'registered': '已注册',
-        'decommissioned': '已退役'
+        'healthy': '健康',
+        'degraded': '降级',
+        'error': '错误',
+        'unknown': '未知',
+        'inactive': '非活跃'
     };
-    return statusMap[status] || status;
+    return statusMap[healthStatus] || escapeHtml(healthStatus);
 }
 
-function getStatusBadge(status) {
+function getHealthStatusBadge(healthStatus) {
     const badges = {
-        'active': '<span class="badge badge-success">在线</span>',
-        'inactive': '<span class="badge badge-danger">离线</span>',
-        'registered': '<span class="badge badge-info">已注册</span>',
-        'decommissioned': '<span class="badge badge-dark">已退役</span>'
+        'healthy': '<span class="badge badge-success">健康</span>',
+        'degraded': '<span class="badge badge-warning">降级</span>',
+        'error': '<span class="badge badge-danger">错误</span>',
+        'unknown': '<span class="badge badge-secondary">未知</span>',
+        'inactive': '<span class="badge badge-dark">非活跃</span>'
     };
-    return badges[status] || status;
+    return badges[healthStatus] || escapeHtml(healthStatus);
+}
+
+function getNodeTypeLabel(nodeType) {
+    const labels = {
+        'physical': '物理机',
+        'vm': '虚拟机',
+        'container': '容器',
+        'edge': '边缘设备'
+    };
+    return labels[nodeType] || escapeHtml(nodeType);
+}
+
+function formatDuration(seconds) {
+    if (seconds < 60) {
+        return `${seconds}秒`;
+    } else if (seconds < 3600) {
+        return `${Math.floor(seconds / 60)}分钟`;
+    } else if (seconds < 86400) {
+        return `${Math.floor(seconds / 3600)}小时`;
+    } else {
+        return `${Math.floor(seconds / 86400)}天`;
+    }
+}
+
+function updatePaginationControls() {
+    const pageInfo = document.getElementById('page-info');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    if (pageInfo) {
+        pageInfo.textContent = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
+    }
+    if (prevBtn) {
+        prevBtn.disabled = currentPage <= 1;
+    }
+    if (nextBtn) {
+        nextBtn.disabled = currentPage >= totalPages;
+    }
+}
+
+// 分页导航函数
+function goToPage(page) {
+    if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        loadNodes();
+    }
+}
+
+function previousPage() {
+    goToPage(currentPage - 1);
+}
+
+function nextPage() {
+    goToPage(currentPage + 1);
 }
 
 function getAssetTypeLabel(type) {
@@ -354,7 +459,7 @@ function getAssetTypeLabel(type) {
         'network_device': '网络设备',
         'iot_device': 'IoT 设备'
     };
-    return labels[type] || type;
+    return labels[type] || escapeHtml(type);
 }
 
 function formatDateTime(dateString) {

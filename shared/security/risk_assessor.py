@@ -158,9 +158,7 @@ class RiskAssessor:
         """
         return action in self.CONFIRMATION_REQUIRED_ACTIONS
 
-    def batch_assess_risk(
-        self, operations: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
+    def batch_assess_risk(self, operations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         批量评估操作风险
 
@@ -196,9 +194,7 @@ class RiskAssessor:
         """获取操作的基础风险等级"""
         return self.risk_mapping.get(action, RiskLevel.MEDIUM)
 
-    def _apply_resource_factor(
-        self, base_risk: RiskLevel, resource: ResourceType
-    ) -> RiskLevel:
+    def _apply_resource_factor(self, base_risk: RiskLevel, resource: ResourceType) -> RiskLevel:
         """应用资源类型风险调整因子"""
         factor = self.RESOURCE_RISK_FACTORS.get(resource, 1.0)
 

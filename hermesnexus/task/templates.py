@@ -16,7 +16,7 @@ class CoreTemplates:
             template_id="inspection",
             name="系统巡检",
             description="检查系统基本健康状态：运行时间、磁盘使用、内存使用、网络连接状态",
-            command_template="echo '=== System Inspection ===' && date && uptime || echo 'uptime completed' && df -h || echo 'disk usage completed' && vm_stat || echo 'memory completed' && echo 'inspection completed'",
+            command_template="uptime && df -h && free -h && netstat -an | head -20",
             default_params={}
         )
 
@@ -49,7 +49,7 @@ class CoreTemplates:
             template_id="rollback-service",
             name="服务回滚",
             description="回滚服务到指定版本（通过systemd的rollback机制）",
-            command_template="systemctl stop {service} && systemctl revert {service} && systemctl start {service}",
+            command_template="systemctl stop {service} && systemctl revert {service} {version} && systemctl start {service}",
             default_params={"service": "nginx", "version": "previous"}
         )
 

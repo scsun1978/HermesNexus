@@ -1,0 +1,119 @@
+# HermesNexus Docker Compose Configuration - Parallel Deployment
+# 并行部署版本 - 使用8082端口避免与现有系统冲突
+
+version: '3.8'
+
+services:
+  # ===================================
+  # Hermes Cloud API (Parallel Production)
+  # ===================================
+  hermes-cloud-v12:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-2026-04-19}
+        VERSION: ${VERSION:-1.2.0}
+        VCS_REF: ${VCS_REF:-main}
+    image: hermesnexus/cloud:${VERSION:-1.2.0}
+    container_name: hermes-cloud-v12
+    restart: unless-stopped
+    ports:
+      - "8082:8082"      # 使用8082端口避免与现有系统冲突
+      - "8445:8443"      # 使用8445端口避免HTTPS冲突
+    environment:
+      - HERMES_ENV=production
+      - DATABASE_URL=sqlite:///app/data/hermesnexus-v12.db
+      - LOG_LEVEL=info
+      - WORKERS=4
+      - CLOUD_HOST=0.0.0.0
+      - CLOUD_PORT=8082
+      - PYTHONPATH=/app
+      - HERMES_HOME=/app
+      - SQLITE_DB_PATH=/app/data/hermesnexus-v12.db
+      - DEPLOY_MODE=parallel
+      - VERSION=1.2.0
+    volumes:
+      - hermes-v12-data:/app/data
+      - hermes-v12-logs:/app/logs
+      - hermes-ssh-keys:/app/ssh_keys
+      - hermes-temp:/app/temp
+    networks:
+      - hermes-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===================================
+  # Hermes Edge Node (For deployment on 172.16.200.94)
+  # ===================================
+  # 注意：Edge节点需要在Edge主机(172.16.200.94)上单独部署
+  # 此处仅作为参考配置，实际部署时需要在Edge端执行
+
+  # ===================================
+  # External Monitoring Integration
+  # ===================================
+  # 连接到现有Prometheus和Grafana
+  # Prometheus: http://172.16.100.101:9090
+  # Grafana: http://172.16.100.101:3000
+
+  # ===================================
+  # Redis (Optional - for enhanced features)
+  # ===================================
+  redis:
+    image: redis:7-alpine
+    container_name: hermes-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"    # 使用6380端口避免与现有Redis冲突
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    networks:
+      - hermes-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    profiles:
+      - enhanced
+
+# ===================================
+# Networks
+# ===================================
+networks:
+  hermes-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16   # 使用不同子网避免冲突
+
+# ===================================
+# Volumes
+# ===================================
+volumes:
+  # Cloud v1.2.0 volumes
+  hermes-v12-data:
+    driver: local
+  hermes-v12-logs:
+    driver: local
+  hermes-ssh-keys:
+    driver: local
+  hermes-temp:
+    driver: local
+
+  # Enhanced volumes
+  redis-data:
+    driver: local

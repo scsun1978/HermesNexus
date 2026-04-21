@@ -93,8 +93,7 @@ class TaskDispatcher:
         """创建测试设备"""
         try:
             device_data = {
-                "device_id": device_id
-                or f"test-device-{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                "device_id": device_id or f"test-device-{datetime.now().strftime('%Y%m%d%H%M%S')}",
                 "name": f"测试设备 {device_id or ''}",
                 "type": "linux",
                 "host": "localhost",
@@ -103,9 +102,7 @@ class TaskDispatcher:
                 "enabled": True,
             }
 
-            response = await self.client.post(
-                f"{self.cloud_url}/api/v1/devices", json=device_data
-            )
+            response = await self.client.post(f"{self.cloud_url}/api/v1/devices", json=device_data)
 
             if response.status_code in [200, 201]:
                 logger.info(f"✅ 创建测试设备: {device_data['device_id']}")
@@ -121,9 +118,7 @@ class TaskDispatcher:
     async def create_job(self, task_config):
         """创建任务"""
         try:
-            response = await self.client.post(
-                f"{self.cloud_url}/api/v1/jobs", json=task_config
-            )
+            response = await self.client.post(f"{self.cloud_url}/api/v1/jobs", json=task_config)
 
             if response.status_code in [200, 201]:
                 job_data = response.json()
@@ -133,9 +128,7 @@ class TaskDispatcher:
                 return job_data
             else:
                 error_detail = response.text
-                logger.error(
-                    f"❌ 创建任务失败: {response.status_code} - {error_detail}"
-                )
+                logger.error(f"❌ 创建任务失败: {response.status_code} - {error_detail}")
                 return None
 
         except Exception as e:
@@ -231,9 +224,7 @@ class TaskDispatcher:
             results = []
             for i, config in enumerate(task_configs):
                 logger.info(f"分发任务 {i+1}/{len(task_configs)}")
-                success, result = await self.dispatch_single_task(
-                    config, wait_for_completion=False
-                )
+                success, result = await self.dispatch_single_task(config, wait_for_completion=False)
                 results.append({"config": config, "success": success, "result": result})
 
                 # 延迟以避免过载
@@ -263,9 +254,7 @@ class TaskDispatcher:
             target_device = None
 
             if device_id:
-                target_device = next(
-                    (d for d in devices if d.get("device_id") == device_id), None
-                )
+                target_device = next((d for d in devices if d.get("device_id") == device_id), None)
             elif devices:
                 target_device = devices[0]
 
@@ -371,9 +360,7 @@ class TaskDispatcher:
 async def main():
     """主函数"""
     parser = argparse.ArgumentParser(description="任务分发模拟脚本")
-    parser.add_argument(
-        "--cloud-url", default="http://localhost:8080", help="云端API URL"
-    )
+    parser.add_argument("--cloud-url", default="http://localhost:8080", help="云端API URL")
     parser.add_argument("--device-id", help="目标设备ID")
     parser.add_argument("--command", help="要执行的命令")
     parser.add_argument("--batch", type=int, help="批量任务数量")

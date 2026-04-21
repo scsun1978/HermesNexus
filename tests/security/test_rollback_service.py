@@ -61,9 +61,7 @@ class TestRollbackService:
             "stack_trace": "Traceback (most recent call last):\n  File 'app.py', line 42",
         }
 
-    def test_create_rollback_plan_config(
-        self, rollback_service, sample_config_plan_data
-    ):
+    def test_create_rollback_plan_config(self, rollback_service, sample_config_plan_data):
         """测试创建配置回滚计划"""
         plan = rollback_service.create_rollback_plan(**sample_config_plan_data)
 
@@ -149,9 +147,7 @@ class TestRollbackService:
             assert step.operation is not None
             assert step.status == RollbackStatus.PLANNED
 
-    def test_rollback_step_validation_criteria(
-        self, rollback_service, sample_config_plan_data
-    ):
+    def test_rollback_step_validation_criteria(self, rollback_service, sample_config_plan_data):
         """测试回滚步骤验证标准"""
         plan = rollback_service.create_rollback_plan(**sample_config_plan_data)
 
@@ -162,16 +158,12 @@ class TestRollbackService:
                 assert len(step.validation_criteria) > 0
 
     @pytest.mark.asyncio
-    async def test_execute_rollback_plan_success(
-        self, rollback_service, sample_config_plan_data
-    ):
+    async def test_execute_rollback_plan_success(self, rollback_service, sample_config_plan_data):
         """测试成功执行回滚计划"""
         plan = rollback_service.create_rollback_plan(**sample_config_plan_data)
 
         # 执行回滚计划（自动确认）
-        result_plan = await rollback_service.execute_rollback_plan(
-            plan.plan_id, auto_confirm=True
-        )
+        result_plan = await rollback_service.execute_rollback_plan(plan.plan_id, auto_confirm=True)
 
         assert result_plan.status == RollbackStatus.COMPLETED
         assert result_plan.started_at is not None
@@ -187,9 +179,7 @@ class TestRollbackService:
         plan = rollback_service.create_rollback_plan(**sample_config_plan_data)
 
         # 执行回滚计划（不自动确认）
-        result_plan = await rollback_service.execute_rollback_plan(
-            plan.plan_id, auto_confirm=False
-        )
+        result_plan = await rollback_service.execute_rollback_plan(plan.plan_id, auto_confirm=False)
 
         # 应该回到就绪状态
         assert result_plan.status == RollbackStatus.READY
@@ -207,9 +197,7 @@ class TestRollbackService:
         assert cancelled_plan.final_status == "cancelled"
         assert cancelled_plan.completed_at is not None
 
-    def test_cancel_rollback_plan_invalid_status(
-        self, rollback_service, sample_config_plan_data
-    ):
+    def test_cancel_rollback_plan_invalid_status(self, rollback_service, sample_config_plan_data):
         """测试取消执行中的回滚计划（应失败）"""
         # 创建一个执行中的计划
         plan = rollback_service.create_rollback_plan(**sample_config_plan_data)
@@ -235,15 +223,11 @@ class TestRollbackService:
         plan = rollback_service.get_rollback_plan("non-existent-plan")
         assert plan is None
 
-    def test_list_rollback_plans_no_filter(
-        self, rollback_service, sample_config_plan_data
-    ):
+    def test_list_rollback_plans_no_filter(self, rollback_service, sample_config_plan_data):
         """测试列出所有回滚计划"""
         # 创建多个计划
         rollback_service.create_rollback_plan(**sample_config_plan_data)
-        rollback_service.create_rollback_plan(
-            **{**sample_config_plan_data, "name": "计划2"}
-        )
+        rollback_service.create_rollback_plan(**{**sample_config_plan_data, "name": "计划2"})
 
         plans = rollback_service.list_rollback_plans()
 
@@ -262,9 +246,7 @@ class TestRollbackService:
         assert len(plans) >= 1
         assert all(p.status == RollbackStatus.PLANNED for p in plans)
 
-    def test_list_rollback_plans_with_type_filter(
-        self, rollback_service, sample_config_plan_data
-    ):
+    def test_list_rollback_plans_with_type_filter(self, rollback_service, sample_config_plan_data):
         """测试按类型过滤回滚计划"""
         # 创建计划
         rollback_service.create_rollback_plan(**sample_config_plan_data)
@@ -274,8 +256,7 @@ class TestRollbackService:
 
         assert len(plans) >= 1
         assert all(
-            any(step.rollback_type == RollbackType.CONFIG for step in p.steps)
-            for p in plans
+            any(step.rollback_type == RollbackType.CONFIG for step in p.steps) for p in plans
         )
 
     def test_create_failure_record(self, rollback_service, sample_failure_data):
@@ -316,9 +297,7 @@ class TestRollbackService:
         created_failure = rollback_service.create_failure_record(**sample_failure_data)
 
         # 获取故障记录
-        retrieved_failure = rollback_service.get_failure_record(
-            created_failure.failure_id
-        )
+        retrieved_failure = rollback_service.get_failure_record(created_failure.failure_id)
 
         assert retrieved_failure is not None
         assert retrieved_failure.failure_id == created_failure.failure_id
@@ -333,17 +312,13 @@ class TestRollbackService:
         """测试列出故障记录"""
         # 创建多个故障记录
         rollback_service.create_failure_record(**sample_failure_data)
-        rollback_service.create_failure_record(
-            **{**sample_failure_data, "task_id": "task-002"}
-        )
+        rollback_service.create_failure_record(**{**sample_failure_data, "task_id": "task-002"})
 
         failures = rollback_service.list_failure_records()
 
         assert len(failures) >= 2
 
-    def test_list_failure_records_with_filters(
-        self, rollback_service, sample_failure_data
-    ):
+    def test_list_failure_records_with_filters(self, rollback_service, sample_failure_data):
         """测试按条件过滤故障记录"""
         # 创建故障记录
         rollback_service.create_failure_record(**sample_failure_data)
@@ -354,9 +329,7 @@ class TestRollbackService:
         assert all(f.task_id == "task-001" for f in failures)
 
         # 按故障类型过滤
-        failures = rollback_service.list_failure_records(
-            failure_type=FailureType.EXECUTION_FAILURE
-        )
+        failures = rollback_service.list_failure_records(failure_type=FailureType.EXECUTION_FAILURE)
         assert len(failures) >= 1
         assert all(f.failure_type == FailureType.EXECUTION_FAILURE for f in failures)
 
@@ -366,9 +339,7 @@ class TestRollbackService:
         plan1 = rollback_service.create_rollback_plan(**sample_config_plan_data)
         plan1.status = RollbackStatus.COMPLETED
 
-        plan2 = rollback_service.create_rollback_plan(
-            **{**sample_config_plan_data, "name": "计划2"}
-        )
+        plan2 = rollback_service.create_rollback_plan(**{**sample_config_plan_data, "name": "计划2"})
         plan2.status = RollbackStatus.FAILED
 
         # 获取统计信息

@@ -56,9 +56,7 @@ class AssetModel(Base):
             "metadata": self.meta_data,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "last_heartbeat": (
-                self.last_heartbeat.isoformat() if self.last_heartbeat else None
-            ),
+            "last_heartbeat": (self.last_heartbeat.isoformat() if self.last_heartbeat else None),
         }
 
 
@@ -131,22 +129,14 @@ class NodeModel(Base):
             ),
             "capabilities": self.capabilities,
             "max_concurrent_tasks": self.max_concurrent_tasks,
-            "managed_devices": (
-                self.managed_devices.split(",") if self.managed_devices else []
-            ),
-            "assigned_tasks": (
-                self.assigned_tasks.split(",") if self.assigned_tasks else []
-            ),
+            "managed_devices": (self.managed_devices.split(",") if self.managed_devices else []),
+            "assigned_tasks": (self.assigned_tasks.split(",") if self.assigned_tasks else []),
             "location": self.location,
             "tags": self.tags.split(",") if self.tags else [],
             "created_by": self.created_by,
-            "registered_at": (
-                self.registered_at.isoformat() if self.registered_at else None
-            ),
+            "registered_at": (self.registered_at.isoformat() if self.registered_at else None),
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "last_heartbeat": (
-                self.last_heartbeat.isoformat() if self.last_heartbeat else None
-            ),
+            "last_heartbeat": (self.last_heartbeat.isoformat() if self.last_heartbeat else None),
         }
 
 
@@ -218,9 +208,7 @@ class TaskModel(Base):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
             "started_at": self.started_at.isoformat() if self.started_at else None,
-            "completed_at": (
-                self.completed_at.isoformat() if self.completed_at else None
-            ),
+            "completed_at": (self.completed_at.isoformat() if self.completed_at else None),
         }
 
 

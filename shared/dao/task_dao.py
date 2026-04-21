@@ -116,9 +116,7 @@ class TaskDAO(BaseDAO):
 
         try:
             # 查询数据库
-            task_model = (
-                session.query(TaskModel).filter(TaskModel.task_id == task_id).first()
-            )
+            task_model = session.query(TaskModel).filter(TaskModel.task_id == task_id).first()
 
             if not task_model:
                 return None
@@ -143,11 +141,7 @@ class TaskDAO(BaseDAO):
 
         try:
             # 查询现有任务
-            task_model = (
-                session.query(TaskModel)
-                .filter(TaskModel.task_id == task.task_id)
-                .first()
-            )
+            task_model = session.query(TaskModel).filter(TaskModel.task_id == task.task_id).first()
 
             if not task_model:
                 raise ValueError(f"Task not found: {task.task_id}")
@@ -203,9 +197,7 @@ class TaskDAO(BaseDAO):
 
         try:
             # 查询并删除任务
-            task_model = (
-                session.query(TaskModel).filter(TaskModel.task_id == task_id).first()
-            )
+            task_model = session.query(TaskModel).filter(TaskModel.task_id == task_id).first()
 
             if not task_model:
                 return False
@@ -259,13 +251,9 @@ class TaskDAO(BaseDAO):
                 if "priority" in filters:
                     query = query.filter(TaskModel.priority == filters["priority"])
                 if "target_asset_id" in filters:
-                    query = query.filter(
-                        TaskModel.target_asset_id == filters["target_asset_id"]
-                    )
+                    query = query.filter(TaskModel.target_asset_id == filters["target_asset_id"])
                 if "target_node_id" in filters:
-                    query = query.filter(
-                        TaskModel.assigned_node_id == filters["target_node_id"]
-                    )
+                    query = query.filter(TaskModel.assigned_node_id == filters["target_node_id"])
                 if "search" in filters:
                     search_term = f"%{filters['search']}%"
                     query = query.filter(
@@ -330,9 +318,7 @@ class TaskDAO(BaseDAO):
                 if "priority" in filters:
                     query = query.filter(TaskModel.priority == filters["priority"])
                 if "target_asset_id" in filters:
-                    query = query.filter(
-                        TaskModel.target_asset_id == filters["target_asset_id"]
-                    )
+                    query = query.filter(TaskModel.target_asset_id == filters["target_asset_id"])
 
             # 统计数量
             return query.count()
@@ -393,9 +379,7 @@ class TaskDAO(BaseDAO):
 
         try:
             # 批量查询 - 一次查询获取所有数据
-            task_models = (
-                session.query(TaskModel).filter(TaskModel.task_id.in_(task_ids)).all()
-            )
+            task_models = session.query(TaskModel).filter(TaskModel.task_id.in_(task_ids)).all()
 
             # 转换为任务对象列表
             return [self._model_to_task(model) for model in task_models]
@@ -490,9 +474,7 @@ class TaskDAO(BaseDAO):
             for task in tasks:
                 # 查询并更新每个任务
                 task_model = (
-                    session.query(TaskModel)
-                    .filter(TaskModel.task_id == task.task_id)
-                    .first()
+                    session.query(TaskModel).filter(TaskModel.task_id == task.task_id).first()
                 )
 
                 if task_model:

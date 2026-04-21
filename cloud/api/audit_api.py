@@ -311,9 +311,7 @@ async def export_audit_logs(request: AuditExportRequest):
         from fastapi.responses import Response
 
         media_type = "application/json" if request.format == "json" else "text/csv"
-        filename = (
-            f"audit_logs_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.{request.format}"
-        )
+        filename = f"audit_logs_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.{request.format}"
 
         return Response(
             content=content,
@@ -323,9 +321,7 @@ async def export_audit_logs(request: AuditExportRequest):
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_error_response(
-                ErrorCode.VALIDATION_ERROR, details={"error": str(e)}
-            ),
+            detail=create_error_response(ErrorCode.VALIDATION_ERROR, details={"error": str(e)}),
         )
     except Exception as e:
         raise HTTPException(

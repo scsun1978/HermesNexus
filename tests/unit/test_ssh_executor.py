@@ -148,9 +148,7 @@ class TestAuditLogger(unittest.TestCase):
         audit_logger = AuditLogger()
 
         # 记录SSH连接
-        audit_logger.log_ssh_connection(
-            host="test-host", username="testuser", success=True
-        )
+        audit_logger.log_ssh_connection(host="test-host", username="testuser", success=True)
 
         # 验证日志被记录
         logs = audit_logger.get_recent_logs(limit=1)
@@ -228,9 +226,7 @@ class TestSSHExecutorValidation(unittest.TestCase):
         valid_timeouts = [10, 30, 60, 120, 300]
 
         for timeout in valid_timeouts:
-            executor = SSHExecutor(
-                host="localhost", username="testuser", timeout=timeout
-            )
+            executor = SSHExecutor(host="localhost", username="testuser", timeout=timeout)
             self.assertEqual(executor.timeout, timeout)
 
     def test_credentials_validation(self):
@@ -238,9 +234,7 @@ class TestSSHExecutorValidation(unittest.TestCase):
         from edge.executors.ssh_executor import SSHExecutor
 
         # 测试用户名
-        executor = SSHExecutor(
-            host="localhost", username="testuser", password="testpass"
-        )
+        executor = SSHExecutor(host="localhost", username="testuser", password="testpass")
 
         self.assertEqual(executor.username, "testuser")
         self.assertEqual(executor.password, "testpass")

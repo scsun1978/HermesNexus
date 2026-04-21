@@ -187,9 +187,7 @@ class TestFaultInjection:
     async def test_network_failure_recovery(self, fault_injector, recovery_service):
         """测试网络故障的恢复"""
         # 1. 注入网络故障
-        fault = fault_injector.inject_network_failure(
-            "node-001", FailureSeverity.MEDIUM
-        )
+        fault = fault_injector.inject_network_failure("node-001", FailureSeverity.MEDIUM)
 
         # 2. 触发故障并创建故障记录
         try:
@@ -218,9 +216,7 @@ class TestFaultInjection:
     async def test_execution_failure_recovery(self, fault_injector, recovery_service):
         """测试执行失败的恢复"""
         # 1. 注入执行失败
-        fault = fault_injector.inject_execution_failure(
-            "task-exec-001", FailureSeverity.HIGH
-        )
+        fault = fault_injector.inject_execution_failure("task-exec-001", FailureSeverity.HIGH)
 
         # 2. 触发故障
         try:
@@ -246,9 +242,7 @@ class TestFaultInjection:
     async def test_timeout_failure_recovery(self, fault_injector, recovery_service):
         """测试超时故障的恢复"""
         # 1. 注入超时故障
-        fault = fault_injector.inject_timeout_failure(
-            "api_call", FailureSeverity.MEDIUM
-        )
+        fault = fault_injector.inject_timeout_failure("api_call", FailureSeverity.MEDIUM)
 
         # 2. 触发故障
         try:
@@ -270,9 +264,7 @@ class TestFaultInjection:
     async def test_approval_rejection_rollback(self, fault_injector, rollback_service):
         """测试审批拒绝触发回滚"""
         # 1. 注入审批拒绝
-        fault = fault_injector.inject_approval_rejection(
-            "approval-001", FailureSeverity.MEDIUM
-        )
+        fault = fault_injector.inject_approval_rejection("approval-001", FailureSeverity.MEDIUM)
 
         # 2. 触发故障
         result = fault_injector.trigger_fault(fault["fault_id"])
@@ -334,9 +326,7 @@ class TestFaultInjection:
     async def test_resource_exhaustion_recovery(self, fault_injector, recovery_service):
         """测试资源耗尽的恢复"""
         # 1. 注入资源耗尽
-        fault = fault_injector.inject_resource_exhaustion(
-            "memory", FailureSeverity.HIGH
-        )
+        fault = fault_injector.inject_resource_exhaustion("memory", FailureSeverity.HIGH)
 
         # 2. 触发故障
         try:
@@ -359,12 +349,8 @@ class TestFaultInjection:
     async def test_cascading_failures(self, fault_injector, recovery_service):
         """测试级联故障"""
         # 1. 注入多个相关故障
-        network_fault = fault_injector.inject_network_failure(
-            "node-001", FailureSeverity.MEDIUM
-        )
-        timeout_fault = fault_injector.inject_timeout_failure(
-            "api_call", FailureSeverity.MEDIUM
-        )
+        network_fault = fault_injector.inject_network_failure("node-001", FailureSeverity.MEDIUM)
+        timeout_fault = fault_injector.inject_timeout_failure("api_call", FailureSeverity.MEDIUM)
         exec_fault = fault_injector.inject_execution_failure(
             "task-cascade-001", FailureSeverity.HIGH
         )
@@ -419,9 +405,7 @@ class TestFaultInjection:
         # 测试每种恢复动作
 
         # 1. RETRY - 针对网络故障
-        network_fault = fault_injector.inject_network_failure(
-            "node-retry", FailureSeverity.LOW
-        )
+        network_fault = fault_injector.inject_network_failure("node-retry", FailureSeverity.LOW)
         try:
             fault_injector.trigger_fault(network_fault["fault_id"])
         except ConnectionError:
@@ -449,9 +433,7 @@ class TestFaultInjection:
             assert failure.recovery_action == RecoveryAction.ROLLBACK
 
         # 3. ESCALATE - 针对资源耗尽
-        resource_fault = fault_injector.inject_resource_exhaustion(
-            "cpu", FailureSeverity.MEDIUM
-        )
+        resource_fault = fault_injector.inject_resource_exhaustion("cpu", FailureSeverity.MEDIUM)
         try:
             fault_injector.trigger_fault(resource_fault["fault_id"])
         except MemoryError:

@@ -22,6 +22,9 @@ class TaskManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
+        # 启用外键约束
+        cursor.execute('PRAGMA foreign_keys = ON')
+
         # 创建任务表（扩展现有jobs表）
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS v2_tasks (

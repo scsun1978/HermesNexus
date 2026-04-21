@@ -59,9 +59,7 @@ class ApprovalRequest(BaseModel):
     risk_reason: str = Field(default="", description="风险评估理由")
 
     # 优先级和状态
-    priority: ApprovalPriority = Field(
-        default=ApprovalPriority.MEDIUM, description="优先级"
-    )
+    priority: ApprovalPriority = Field(default=ApprovalPriority.MEDIUM, description="优先级")
     status: ApprovalStatus = Field(default=ApprovalStatus.DRAFT, description="审批状态")
 
     # 时间信息
@@ -75,9 +73,7 @@ class ApprovalRequest(BaseModel):
     decided_at: Optional[datetime] = Field(None, description="决策时间")
 
     # 超时设置
-    timeout_seconds: int = Field(
-        default=86400, description="超时时间（秒），默认24小时"
-    )
+    timeout_seconds: int = Field(default=86400, description="超时时间（秒），默认24小时")
     expires_at: Optional[datetime] = Field(None, description="过期时间")
 
     # 决策信息
@@ -205,15 +201,9 @@ class ApprovalStatistics(BaseModel):
     min_approval_time_seconds: float = Field(..., description="最短审批时间（秒）")
 
     # 分类统计
-    by_priority: Dict[str, int] = Field(
-        default_factory=dict, description="按优先级分类统计"
-    )
-    by_risk_level: Dict[str, int] = Field(
-        default_factory=dict, description="按风险等级分类统计"
-    )
-    by_operation_type: Dict[str, int] = Field(
-        default_factory=dict, description="按操作类型分类统计"
-    )
+    by_priority: Dict[str, int] = Field(default_factory=dict, description="按优先级分类统计")
+    by_risk_level: Dict[str, int] = Field(default_factory=dict, description="按风险等级分类统计")
+    by_operation_type: Dict[str, int] = Field(default_factory=dict, description="按操作类型分类统计")
 
     class Config:
         json_schema_extra = {
@@ -242,12 +232,8 @@ class ApprovalConfig(BaseModel):
     """审批配置模型"""
 
     # 默认配置
-    default_timeout_seconds: int = Field(
-        default=86400, description="默认超时时间（秒）"
-    )
-    default_approver_role: str = Field(
-        default="tenant_admin", description="默认审批人角色"
-    )
+    default_timeout_seconds: int = Field(default=86400, description="默认超时时间（秒）")
+    default_approver_role: str = Field(default="tenant_admin", description="默认审批人角色")
 
     # 自动处理规则
     auto_expire_enabled: bool = Field(default=True, description="是否启用自动过期")
@@ -260,9 +246,7 @@ class ApprovalConfig(BaseModel):
     )
 
     # 审批规则
-    approval_rules: Dict[str, Any] = Field(
-        default_factory=dict, description="审批规则配置"
-    )
+    approval_rules: Dict[str, Any] = Field(default_factory=dict, description="审批规则配置")
 
     # 工作时间配置
     work_hours_only: bool = Field(default=False, description="仅在工作时间处理审批")
@@ -314,9 +298,7 @@ class ApprovalStateTransition:
     }
 
     @classmethod
-    def can_transition(
-        cls, from_status: ApprovalStatus, to_status: ApprovalStatus
-    ) -> bool:
+    def can_transition(cls, from_status: ApprovalStatus, to_status: ApprovalStatus) -> bool:
         """
         检查是否可以进行状态转换
 

@@ -26,9 +26,35 @@ router = APIRouter(prefix="/api/v1/tasks", tags=["tasks"])
 
 
 def get_current_user(authorization: Optional[str] = None) -> str:
-    """获取当前用户（简化实现）"""
-    # Phase 2 MVP: 简化实现，直接返回固定用户
-    # Phase 2 Full: 从 JWT token 中解析用户信息
+    """获取当前用户（安全增强版）"""
+    # 安全检查：确保Authorization header存在
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization header required"
+        )
+
+    # 简化实现：从Bearer token中提取用户名
+    # 实际生产环境应该验证JWT token签名和过期时间
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authorization format. Expected: Bearer <token>"
+        )
+
+    # Phase 2 MVP: 简化实现，从token中提取用户信息
+    # 格式假设: "Bearer <username>" 或实际JWT token
+    token = authorization[7:].strip()  # 移除 "Bearer " 前缀
+
+    # 如果是简单的用户名token（MVP阶段）
+    if token and not token.count('.') == 2:  # 不是JWT格式
+        return token
+
+    # Phase 2 Full: 解析JWT token获取用户信息
+    # 这里应该验证JWT签名、过期时间等
+    # 暂时返回admin作为fallback，但记录警告
+    import logging
+    logging.warning(f"JWT token validation not implemented, using fallback for token: {token[:10]}...")
     return "admin"
 
 
@@ -39,9 +65,7 @@ def get_current_user(authorization: Optional[str] = None) -> str:
     summary="创建任务",
     description="创建新的任务并添加到调度队列",
 )
-async def create_task(
-    request: TaskCreateRequest, authorization: Optional[str] = Header(None)
-):
+async def create_task(request: TaskCreateRequest, authorization: Optional[str] = Header(None)):
     """
     创建任务
 
@@ -61,9 +85,7 @@ async def create_task(
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=create_error_response(
-                ErrorCode.VALIDATION_ERROR, details={"error": str(e)}
-            ),
+            detail=create_error_response(ErrorCode.VALIDATION_ERROR, details={"error": str(e)}),
         )
     except Exception as e:
         raise HTTPException(
@@ -295,9 +317,7 @@ async def cancel_task(task_id: str):
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_error_response(
-                ErrorCode.TASK_CANCELLED, details={"error": str(e)}
-            ),
+            detail=create_error_response(ErrorCode.TASK_CANCELLED, details={"error": str(e)}),
         )
     except Exception as e:
         raise HTTPException(
@@ -331,9 +351,7 @@ async def dispatch_tasks(request: TaskDispatchRequest):
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=create_error_response(
-                ErrorCode.TASK_INVALID_TARGET, details={"error": str(e)}
-            ),
+            detail=create_error_response(ErrorCode.TASK_INVALID_TARGET, details={"error": str(e)}),
         )
     except Exception as e:
         raise HTTPException(
@@ -424,27 +442,3 @@ async def get_pending_tasks_for_node(
                 ErrorCode.INT_INTERNAL_SERVICE_ERROR, details={"error": str(e)}
             ),
         )
-
-
-# 兼容性端点：支持旧的 /api/v1/jobs 路径
-jobs_router = APIRouter(prefix="/api/v1/jobs", tags=["jobs"])
-
-
-@jobs_router.get("", include_in_schema=False)
-async def list_jobs_legacy(*args, **kwargs):
-    """兼容性端点：列出任务（jobs 别名）"""
-    return await list_tasks(*args, **kwargs)
-
-
-@jobs_router.get("/{job_id}", include_in_schema=False)
-async def get_job_legacy(*args, **kwargs):
-    """兼容性端点：获取任务详情（jobs 别名）"""
-    # 从路径参数中提取 job_id 并重命名为 task_id
-    job_id = kwargs.pop("job_id")
-    return await get_task(task_id=job_id)
-
-
-@jobs_router.post("", include_in_schema=False)
-async def create_job_legacy(*args, **kwargs):
-    """兼容性端点：创建任务（jobs 别名）"""
-    return await create_task(*args, **kwargs)

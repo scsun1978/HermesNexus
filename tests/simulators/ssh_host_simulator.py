@@ -103,9 +103,7 @@ class SSHHostSimulator:
         while self.running:
             # 随机波动CPU和内存使用率
             self.cpu_usage = max(5.0, min(95.0, self.cpu_usage + random.uniform(-5, 5)))
-            self.memory_usage = max(
-                10.0, min(90.0, self.memory_usage + random.uniform(-2, 2))
-            )
+            self.memory_usage = max(10.0, min(90.0, self.memory_usage + random.uniform(-2, 2)))
 
             # 更新负载平均值
             self.load_average = [
@@ -239,7 +237,9 @@ class SSHHostSimulator:
                     if result.returncode == 0:
                         return result.stdout.strip()
                     else:
-                        return f"Command failed with code {result.returncode}: {result.stderr.strip()}"
+                        return (
+                            f"Command failed with code {result.returncode}: {result.stderr.strip()}"
+                        )
                 except subprocess.TimeoutExpired:
                     return "Command timeout"
                 except Exception as e:
@@ -303,7 +303,9 @@ class SSHHostSimulator:
         elif filename == "README.md":
             return "# SSH Simulator\\n\\nThis is a simulated SSH host for testing."
         elif filename == "/proc/cpuinfo":
-            return "processor\\t: 0\\nvendor_id\\t: GenuineIntel\\ncpu family\\t: 6\\nmodel\\t\\t: 158"
+            return (
+                "processor\\t: 0\\nvendor_id\\t: GenuineIntel\\ncpu family\\t: 6\\nmodel\\t\\t: 158"
+            )
         elif filename == "/proc/meminfo":
             return f"MemTotal:\\t{8 * 1024 * 1024} kB\\nMemFree:\\t{4 * 1024 * 1024} kB\\nMemAvailable:\\t{6 * 1024 * 1024} kB"
         else:

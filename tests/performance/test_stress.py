@@ -236,9 +236,7 @@ class TestStressPerformance(unittest.TestCase):
         print("  📈 性能对比:")
         print(f"     单个插入总耗时: {single_summary['duration']:.3f}秒")
         print(f"     批量插入总耗时: {batch_summary['duration']:.3f}秒")
-        print(
-            f"     性能提升: {single_summary['duration'] / batch_summary['duration']:.1f}x"
-        )
+        print(f"     性能提升: {single_summary['duration'] / batch_summary['duration']:.1f}x")
         print(
             f"     时间节省: {((single_summary['duration'] - batch_summary['duration']) / single_summary['duration']) * 100:.1f}%"
         )
@@ -286,9 +284,7 @@ class TestStressPerformance(unittest.TestCase):
             start = time.time()
             try:
                 # 执行带过滤条件的列表查询
-                assets = self.asset_dao.list(
-                    filters={"asset_type": AssetType.LINUX_HOST}, limit=50
-                )
+                assets = self.asset_dao.list(filters={"asset_type": AssetType.LINUX_HOST}, limit=50)
                 duration = time.time() - start
                 result.record_operation(duration, len(assets) > 0)
             except Exception as e:
@@ -371,13 +367,9 @@ def generate_stress_test_report():
 
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("# HermesNexus 压力测试报告\n\n")
-        f.write(
-            f"**生成时间**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n\n"
-        )
+        f.write(f"**生成时间**: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}\n\n")
         f.write("## 测试目的\n\n")
-        f.write(
-            "验证Week 4性能优化在实际高负载场景下的效果，确保系统在压力下稳定运行。\n\n"
-        )
+        f.write("验证Week 4性能优化在实际高负载场景下的效果，确保系统在压力下稳定运行。\n\n")
 
         f.write("## 测试场景\n\n")
         f.write("### 1. 并发资产操作压力测试\n")

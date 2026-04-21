@@ -181,9 +181,7 @@ class TestConsoleBatchUI:
         export_data = {
             "operation_id": result.operation_id,
             "started_at": result.started_at.isoformat() if result.started_at else None,
-            "completed_at": (
-                result.completed_at.isoformat() if result.completed_at else None
-            ),
+            "completed_at": (result.completed_at.isoformat() if result.completed_at else None),
             "status": result.status.value,
             "summary": {
                 "total_items": result.summary.total_items,

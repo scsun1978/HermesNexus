@@ -92,9 +92,7 @@ class PermissionChecker:
         return cls.ROLE_PERMISSIONS.get(role, [])
 
     @classmethod
-    def check_permission(
-        cls, user_permissions: List[str], required_permission: Permission
-    ) -> bool:
+    def check_permission(cls, user_permissions: List[str], required_permission: Permission) -> bool:
         """
         检查用户是否有指定权限
 

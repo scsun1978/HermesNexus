@@ -10,16 +10,21 @@ from enum import Enum
 class NodeStatus(str, Enum):
     """节点状态"""
 
+    UNREGISTERED = "unregistered"
+    REGISTERING = "registering"
+    REGISTERED = "registered"
     ONLINE = "online"
     OFFLINE = "offline"
+    ACTIVE = "active"
+    INACTIVE = "inactive"
     ERROR = "error"
     MAINTENANCE = "maintenance"
-    REGISTERING = "registering"
 
 
 class DeviceType(str, Enum):
     """设备类型"""
 
+    EDGE_NODE = "edge_node"
     LINUX_HOST = "linux_host"
     NETWORK_DEVICE = "network_device"
     IOT_DEVICE = "iot_device"

@@ -93,9 +93,7 @@ class RecoveryService:
 
         # 等待任务结束
         if self._active_recoveries:
-            await asyncio.gather(
-                *self._active_recoveries.values(), return_exceptions=True
-            )
+            await asyncio.gather(*self._active_recoveries.values(), return_exceptions=True)
 
         logger.info("恢复服务已停止")
 
@@ -108,9 +106,7 @@ class RecoveryService:
                 # 从队列获取恢复任务
                 recovery_plan = await self._recovery_queue.get()
 
-                logger.info(
-                    f"工作协程 {worker_id} 开始处理恢复计划: {recovery_plan.plan_id}"
-                )
+                logger.info(f"工作协程 {worker_id} 开始处理恢复计划: {recovery_plan.plan_id}")
 
                 # 处理恢复计划
                 await self._process_recovery_plan(recovery_plan)
@@ -166,9 +162,7 @@ class RecoveryService:
             metadata=metadata,
         )
 
-        logger.info(
-            f"记录故障: {failure.failure_id}, 类型: {failure_type.value}, 严重程度: {severity.value}"
-        )
+        logger.info(f"记录故障: {failure.failure_id}, 类型: {failure_type.value}, 严重程度: {severity.value}")
 
         # 如果启用自动处理且允许自动恢复
         if auto_process and self.config.auto_recovery_enabled:
@@ -190,17 +184,13 @@ class RecoveryService:
         except Exception as e:
             logger.error(f"自动处理故障失败: {str(e)}")
 
-    async def _create_auto_recovery_plan(
-        self, failure: FailureRecord
-    ) -> Optional[RecoveryPlan]:
+    async def _create_auto_recovery_plan(self, failure: FailureRecord) -> Optional[RecoveryPlan]:
         """创建自动恢复计划"""
         # 根据故障类型和严重程度确定恢复策略
         recovery_action = failure.recovery_action
 
         # 生成恢复步骤和验证标准
-        steps, validation_criteria = self._generate_recovery_steps(
-            failure, recovery_action
-        )
+        steps, validation_criteria = self._generate_recovery_steps(failure, recovery_action)
 
         # 创建恢复计划
         plan = self.rollback_service.create_recovery_plan(

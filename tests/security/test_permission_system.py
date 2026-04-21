@@ -146,9 +146,7 @@ class TestRiskAssessor(unittest.TestCase):
 
         self.assertEqual(len(results), 3)
         self.assertEqual(results[0]["risk_level"], RiskLevel.LOW)
-        self.assertEqual(
-            results[1]["risk_level"], RiskLevel.MEDIUM
-        )  # TASK资源的UPDATE操作是中风险
+        self.assertEqual(results[1]["risk_level"], RiskLevel.MEDIUM)  # TASK资源的UPDATE操作是中风险
         self.assertEqual(results[2]["risk_level"], RiskLevel.HIGH)
 
         print("  ✅ 批量风险评估测试通过")
@@ -264,9 +262,7 @@ class TestPermissionChecker(unittest.TestCase):
         print("\n[4/8] 测试黑名单和白名单...")
 
         # 创建普通用户上下文
-        PermissionContext(
-            user_id="user-001", user_type="human", roles=[BuiltInRoles.VIEWER]
-        )
+        PermissionContext(user_id="user-001", user_type="human", roles=[BuiltInRoles.VIEWER])
 
         # 测试白名单（健康检查应该在白名单中）
         # 注意：这里可能需要调整具体的白名单规则
@@ -463,9 +459,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
         print("\n[2/5] 测试角色权限管理...")
 
         # 创建矩阵
-        self.manager.create_matrix(
-            matrix_id="role-test-matrix", name="角色权限测试矩阵"
-        )
+        self.manager.create_matrix(matrix_id="role-test-matrix", name="角色权限测试矩阵")
 
         # 添加角色权限
         permission = Permission(
@@ -475,9 +469,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
             description="读取资产权限",
         )
 
-        result = self.manager.add_role_permission(
-            "role-test-matrix", "test_role", permission
-        )
+        result = self.manager.add_role_permission("role-test-matrix", "test_role", permission)
         self.assertTrue(result)
 
         # 获取角色权限
@@ -548,9 +540,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
         print("\n[5/5] 测试矩阵版本控制...")
 
         # 创建矩阵
-        matrix = self.manager.create_matrix(
-            matrix_id="version-test-matrix", name="版本测试矩阵"
-        )
+        matrix = self.manager.create_matrix(matrix_id="version-test-matrix", name="版本测试矩阵")
 
         original_updated_at = matrix.updated_at
 
@@ -568,9 +558,7 @@ class TestPermissionMatrixManager(unittest.TestCase):
         self.manager.add_role_permission("version-test-matrix", "test_role", permission)
 
         # 重新加载矩阵
-        updated_matrix = self.manager.load_matrix(
-            "version-test-matrix", force_reload=True
-        )
+        updated_matrix = self.manager.load_matrix("version-test-matrix", force_reload=True)
 
         # 验证更新时间变化
         self.assertGreater(updated_matrix.updated_at, original_updated_at)

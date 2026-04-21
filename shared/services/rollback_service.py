@@ -240,9 +240,7 @@ class RollbackService:
         }
         return descriptions.get(operation, f"执行{operation}")
 
-    def _get_step_parameters(
-        self, operation: str, rollback_type: RollbackType
-    ) -> Dict[str, Any]:
+    def _get_step_parameters(self, operation: str, rollback_type: RollbackType) -> Dict[str, Any]:
         """获取步骤参数"""
         # 根据操作类型返回不同的参数
         params = {}
@@ -287,9 +285,7 @@ class RollbackService:
         else:
             return "high"
 
-    async def execute_rollback_plan(
-        self, plan_id: str, auto_confirm: bool = False
-    ) -> RollbackPlan:
+    async def execute_rollback_plan(self, plan_id: str, auto_confirm: bool = False) -> RollbackPlan:
         """
         执行回滚计划
 
@@ -339,9 +335,7 @@ class RollbackService:
                         await self._execute_step(plan, step)
                     else:
                         # 重试次数用完，回滚失败
-                        raise Exception(
-                            f"步骤 {step.step_id} 执行失败: {step.error_message}"
-                        )
+                        raise Exception(f"步骤 {step.step_id} 执行失败: {step.error_message}")
 
             # 所有步骤成功完成
             plan.status = RollbackStatus.COMPLETED
@@ -491,9 +485,7 @@ class RollbackService:
             plans = [p for p in plans if p.status == status]
         if rollback_type:
             plans = [
-                p
-                for p in plans
-                if any(step.rollback_type == rollback_type for step in p.steps)
+                p for p in plans if any(step.rollback_type == rollback_type for step in p.steps)
             ]
 
         # 按触发时间倒序排序

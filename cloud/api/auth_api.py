@@ -16,9 +16,7 @@ class TokenCreateRequest(BaseModel):
     """Token创建请求"""
 
     username: str = Field(..., description="用户名")
-    password: str = Field(
-        ..., description="密码"
-    )  # 开发环境简化，生产环境应该使用真实密码验证
+    password: str = Field(..., description="密码")  # 开发环境简化，生产环境应该使用真实密码验证
 
 
 class TokenCreateResponse(BaseModel):
@@ -82,16 +80,12 @@ async def create_token(request: TokenCreateRequest):
         username=token_info["username"],
         role=token_info["role"],
         permissions=token_info["permissions"],
-        expires_at=(
-            token_info["expires_at"].isoformat() if token_info["expires_at"] else None
-        ),
+        expires_at=(token_info["expires_at"].isoformat() if token_info["expires_at"] else None),
     )
 
 
 @router.post("/api-keys", response_model=ApiKeyCreateResponse)
-async def create_api_key(
-    request: ApiKeyCreateRequest, current_user: dict = Depends(require_admin)
-):
+async def create_api_key(request: ApiKeyCreateRequest, current_user: dict = Depends(require_admin)):
     """
     创建API Key（需要管理员权限）
 

@@ -239,9 +239,7 @@ class ErrorCode(str, Enum):
         }
         return mapping.get(prefix, ErrorCodeCategory.INTERNAL_ERROR)
 
-    def to_dict(
-        self, details: Dict[str, Any] = None, request_id: str = None
-    ) -> Dict[str, Any]:
+    def to_dict(self, details: Dict[str, Any] = None, request_id: str = None) -> Dict[str, Any]:
         """转换为标准错误响应格式"""
         from datetime import datetime, timezone
 

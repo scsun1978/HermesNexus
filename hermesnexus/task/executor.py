@@ -139,9 +139,12 @@ class TaskExecutor:
             '-p', str(port),
         ]
 
-        # 使用密钥认证还是密码认证
+        # 使用密钥认证
         if private_key_path:
             ssh_parts.extend(['-i', private_key_path])
+        # 使用密码认证 - 需要sshpass
+        elif password:
+            ssh_parts = ['sshpass', '-p', password] + ssh_parts
 
         # 添加用户和主机
         ssh_parts.append(f"{username}@{host}")

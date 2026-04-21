@@ -81,9 +81,7 @@ class SSHExecutor:
             self.is_connected = True
             self.connection_time = datetime.now(timezone.utc)
 
-            logger.info(
-                f"✅ SSH 连接成功: {self.username}@{self.host} (耗时: {connection_time:.2f}s)"
-            )
+            logger.info(f"✅ SSH 连接成功: {self.username}@{self.host} (耗时: {connection_time:.2f}s)")
 
             # 发送保持存活信号
             if self.keep_alive:
@@ -175,9 +173,7 @@ class SSHExecutor:
                             logger.warning(
                                 f"⚠️  输出超过大小限制: {len(stdout_str)} > {self.max_output_size}"
                             )
-                            self.client.exec_command(
-                                "pkill -f -f '{command[:20]}'"
-                            )  # 终止命令
+                            self.client.exec_command("pkill -f -f '{command[:20]}'")  # 终止命令
                             break
                 except Exception:
                     pass
@@ -320,9 +316,7 @@ class SSHExecutor:
             "host": self.host,
             "username": self.username,
             "is_connected": self.is_connected,
-            "connection_time": (
-                self.connection_time.isoformat() if self.connection_time else None
-            ),
+            "connection_time": (self.connection_time.isoformat() if self.connection_time else None),
             "last_command_time": (
                 self.last_command_time.isoformat() if self.last_command_time else None
             ),
@@ -391,9 +385,7 @@ class SSHExecutorPool:
         # 检查连接数限制
         current_connections = len(self.executors)
         if current_connections >= self.max_connections:
-            logger.warning(
-                f"⚠️  连接池已满: {current_connections}/{self.max_connections}"
-            )
+            logger.warning(f"⚠️  连接池已满: {current_connections}/{self.max_connections}")
             # 清理最老的连接
             oldest_key = min(self.connection_count.items(), key=lambda x: x[1])[0]
             if oldest_key in self.executors:
@@ -426,9 +418,7 @@ class SSHExecutorPool:
 
     def get_pool_stats(self) -> Dict[str, Any]:
         """获取连接池统计"""
-        active_count = sum(
-            1 for executor in self.executors.values() if executor.is_connected
-        )
+        active_count = sum(1 for executor in self.executors.values() if executor.is_connected)
         return {
             "total_connections": len(self.executors),
             "active_connections": active_count,
@@ -446,9 +436,7 @@ async def main():
     )
 
     # 测试本地连接 (如果可以)
-    executor = SSHExecutor(
-        host="localhost", username="current_user", timeout=10  # 需要根据实际情况修改
-    )
+    executor = SSHExecutor(host="localhost", username="current_user", timeout=10)  # 需要根据实际情况修改
 
     try:
         if await executor.connect():

@@ -147,15 +147,11 @@ class NodeListService:
 
         # 状态筛选
         if request.status:
-            filtered = [
-                node for node in filtered if node.get("status") in request.status
-            ]
+            filtered = [node for node in filtered if node.get("status") in request.status]
 
         # 节点类型筛选
         if request.node_type:
-            filtered = [
-                node for node in filtered if node.get("node_type") == request.node_type
-            ]
+            filtered = [node for node in filtered if node.get("node_type") == request.node_type]
 
         # 标签筛选
         if request.tags:
@@ -167,9 +163,7 @@ class NodeListService:
 
         # 位置筛选
         if request.location:
-            filtered = [
-                node for node in filtered if node.get("location") == request.location
-            ]
+            filtered = [node for node in filtered if node.get("location") == request.location]
 
         # 搜索筛选
         if request.search:
@@ -211,30 +205,20 @@ class NodeListService:
 
         # 根据字段排序
         if sort_field == "created_at":
-            sorted_nodes = sorted(
-                nodes, key=lambda x: x.get("created_at", ""), reverse=reverse
-            )
+            sorted_nodes = sorted(nodes, key=lambda x: x.get("created_at", ""), reverse=reverse)
         elif sort_field == "updated_at":
-            sorted_nodes = sorted(
-                nodes, key=lambda x: x.get("updated_at", ""), reverse=reverse
-            )
+            sorted_nodes = sorted(nodes, key=lambda x: x.get("updated_at", ""), reverse=reverse)
         elif sort_field == "node_name":
-            sorted_nodes = sorted(
-                nodes, key=lambda x: x.get("node_name", ""), reverse=reverse
-            )
+            sorted_nodes = sorted(nodes, key=lambda x: x.get("node_name", ""), reverse=reverse)
         elif sort_field == "last_heartbeat":
             sorted_nodes = sorted(
                 nodes, key=lambda x: x.get("last_heartbeat") or "", reverse=reverse
             )
         elif sort_field == "status":
-            sorted_nodes = sorted(
-                nodes, key=lambda x: x.get("status", ""), reverse=reverse
-            )
+            sorted_nodes = sorted(nodes, key=lambda x: x.get("status", ""), reverse=reverse)
         else:
             # 默认按创建时间排序
-            sorted_nodes = sorted(
-                nodes, key=lambda x: x.get("created_at", ""), reverse=True
-            )
+            sorted_nodes = sorted(nodes, key=lambda x: x.get("created_at", ""), reverse=True)
 
         return sorted_nodes
 
@@ -254,27 +238,19 @@ class NodeListService:
             node_dict = node_input.dict()
 
         # 添加状态摘要
-        node_dict["status_summary"] = self._get_status_summary_for_node(
-            node_input
-        ).dict()
+        node_dict["status_summary"] = self._get_status_summary_for_node(node_input).dict()
 
         # 添加心跳统计
         if include_heartbeat_stats:
-            node_dict["heartbeat_stats"] = self._get_heartbeat_stats_for_node(
-                node_input
-            ).dict()
+            node_dict["heartbeat_stats"] = self._get_heartbeat_stats_for_node(node_input).dict()
 
         # 添加任务摘要
         if include_task_summary:
-            node_dict["task_summary"] = self._get_task_summary_for_node(
-                node_input
-            ).dict()
+            node_dict["task_summary"] = self._get_task_summary_for_node(node_input).dict()
 
         # 添加审计摘要
         if include_audit_summary:
-            node_dict["audit_summary"] = self._get_audit_summary_for_node(
-                node_input
-            ).dict()
+            node_dict["audit_summary"] = self._get_audit_summary_for_node(node_input).dict()
 
         return node_dict
 
@@ -295,9 +271,7 @@ class NodeListService:
             node_dict = node_input.dict()
             status_str = node_input.status.value
             last_heartbeat_str = (
-                node_input.last_heartbeat.isoformat()
-                if node_input.last_heartbeat
-                else None
+                node_input.last_heartbeat.isoformat() if node_input.last_heartbeat else None
             )
             assigned_tasks = node_input.assigned_tasks or []
             max_concurrent = node_input.max_concurrent_tasks
@@ -328,9 +302,7 @@ class NodeListService:
         is_active = status == NodeStatus.ACTIVE
 
         # 判断是否能接受任务
-        can_accept_tasks = (
-            is_online and is_active and len(assigned_tasks) < max_concurrent
-        )
+        can_accept_tasks = is_online and is_active and len(assigned_tasks) < max_concurrent
 
         # 计算健康状态
         health_status = "unknown"
@@ -392,9 +364,7 @@ class NodeListService:
             last_heartbeat_str = node_input.get("last_heartbeat")
         else:
             last_heartbeat_str = (
-                node_input.last_heartbeat.isoformat()
-                if node_input.last_heartbeat
-                else None
+                node_input.last_heartbeat.isoformat() if node_input.last_heartbeat else None
             )
 
         return NodeHeartbeatStats(
@@ -413,9 +383,7 @@ class NodeListService:
             last_heartbeat_str = node_input.get("last_heartbeat")
         else:
             last_heartbeat_str = (
-                node_input.last_heartbeat.isoformat()
-                if node_input.last_heartbeat
-                else None
+                node_input.last_heartbeat.isoformat() if node_input.last_heartbeat else None
             )
 
         return NodeAuditSummary(

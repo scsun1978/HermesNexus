@@ -126,10 +126,7 @@ class AuthManager:
             token_info = self._tokens[token]
 
             # 检查是否过期
-            if (
-                token_info["expires_at"]
-                and datetime.utcnow() > token_info["expires_at"]
-            ):
+            if token_info["expires_at"] and datetime.utcnow() > token_info["expires_at"]:
                 del self._tokens[token]
                 return None
 

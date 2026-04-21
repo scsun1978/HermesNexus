@@ -185,9 +185,7 @@ class TestAuditSmoke:
                 "asset_type": "linux_host",
             }
         ]
-        response = await batch_service.create_assets_batch(
-            AssetBatchCreateRequest(assets=assets)
-        )
+        response = await batch_service.create_assets_batch(AssetBatchCreateRequest(assets=assets))
 
         # 等待审计记录
         await asyncio.sleep(0.1)
@@ -271,9 +269,7 @@ class TestPerformanceSmoke:
         assert elapsed_time < 5.0  # 50个资产应该在5秒内完成
 
         throughput = asset_count / elapsed_time
-        print(
-            f"✅ 批量操作性能测试通过: {asset_count}个资产, {elapsed_time:.2f}s, {throughput:.1f} assets/s"
-        )
+        print(f"✅ 批量操作性能测试通过: {asset_count}个资产, {elapsed_time:.2f}s, {throughput:.1f} assets/s")
 
     @pytest.mark.asyncio
     async def test_concurrent_operations(self, test_services):
@@ -294,9 +290,7 @@ class TestPerformanceSmoke:
 
         # 并发执行多个批量操作
         start_time = time.time()
-        results = await asyncio.gather(
-            create_batch(1), create_batch(2), create_batch(3)
-        )
+        results = await asyncio.gather(create_batch(1), create_batch(2), create_batch(3))
         elapsed_time = time.time() - start_time
 
         # 验证所有操作都成功
@@ -304,9 +298,7 @@ class TestPerformanceSmoke:
         assert total_assets == 30  # 3个操作，每个10个资产
         assert elapsed_time < 10.0  # 并发操作应该在10秒内完成
 
-        print(
-            f"✅ 并发操作性能测试通过: 3个并发操作, {total_assets}个资产, {elapsed_time:.2f}s"
-        )
+        print(f"✅ 并发操作性能测试通过: 3个并发操作, {total_assets}个资产, {elapsed_time:.2f}s")
 
 
 class TestIntegrationSmoke:
@@ -343,12 +335,8 @@ class TestIntegrationSmoke:
         await asyncio.sleep(0.1)
 
         # 3. 验证审计记录
-        create_audit = await audit_service.get_audit_by_operation_id(
-            create_response.operation_id
-        )
-        update_audit = await audit_service.get_audit_by_operation_id(
-            update_response.operation_id
-        )
+        create_audit = await audit_service.get_audit_by_operation_id(create_response.operation_id)
+        update_audit = await audit_service.get_audit_by_operation_id(update_response.operation_id)
 
         assert create_audit is not None
         assert update_audit is not None

@@ -35,9 +35,7 @@ class TestBatchOperationModels:
 
     def test_batch_item_result(self):
         """测试单项结果模型"""
-        result = BatchItemResult(
-            id="test-001", success=True, message="操作成功", data={"key": "value"}
-        )
+        result = BatchItemResult(id="test-001", success=True, message="操作成功", data={"key": "value"})
 
         assert result.success is True
         assert result.id == "test-001"
@@ -193,9 +191,7 @@ class TestBatchOperationService:
     @pytest.mark.asyncio
     async def test_delete_assets_batch(self, service):
         """测试批量删除资产"""
-        request = AssetBatchDeleteRequest(
-            asset_ids=["asset-001", "asset-002"], force=False
-        )
+        request = AssetBatchDeleteRequest(asset_ids=["asset-001", "asset-002"], force=False)
 
         # 这里会失败因为资产不存在，但可以测试错误处理
         result = await service.delete_assets_batch(request)
@@ -236,10 +232,7 @@ class TestErrorClassification:
 
     def test_duplicate_error(self):
         """测试重复错误分类"""
-        assert (
-            _classify_error("Duplicate entry: asset already exists")
-            == "duplicate_error"
-        )
+        assert _classify_error("Duplicate entry: asset already exists") == "duplicate_error"
 
     def test_not_found_error(self):
         """测试未找到错误分类"""

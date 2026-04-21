@@ -9,9 +9,7 @@ import os
 import unittest
 
 # 添加项目路径
-PROJECT_ROOT = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_ROOT)
 
 from shared.security.auth_manager import AuthManager
@@ -63,9 +61,7 @@ class TestAuthentication(unittest.TestCase):
     def test_create_and_validate_api_key(self):
         """测试API Key创建和验证"""
         # 创建API Key
-        api_key = self.auth_manager.create_api_key(
-            user_id="user-001", name="Test API Key"
-        )
+        api_key = self.auth_manager.create_api_key(user_id="user-001", name="Test API Key")
 
         self.assertIsNotNone(api_key)
         self.assertTrue(api_key.startswith("sk-"))
@@ -97,9 +93,7 @@ class TestAuthentication(unittest.TestCase):
     def test_revoke_token(self):
         """测试Token撤销"""
         # 创建Token
-        token = self.auth_manager.create_token(
-            user_id="user-001", username="testuser", role="user"
-        )
+        token = self.auth_manager.create_token(user_id="user-001", username="testuser", role="user")
 
         # 验证Token有效
         token_info = self.auth_manager.validate_token(token)
@@ -118,9 +112,7 @@ class TestAuthentication(unittest.TestCase):
     def test_revoke_api_key(self):
         """测试API Key撤销"""
         # 创建API Key
-        api_key = self.auth_manager.create_api_key(
-            user_id="user-001", name="Test API Key"
-        )
+        api_key = self.auth_manager.create_api_key(user_id="user-001", name="Test API Key")
 
         # 验证API Key有效
         api_key_info = self.auth_manager.validate_api_key(api_key)
@@ -145,9 +137,7 @@ class TestPermissions(unittest.TestCase):
         user_permissions = ["asset:read", "task:read"]
 
         # 检查有权限
-        has_permission = PermissionChecker.check_permission(
-            user_permissions, Permission.ASSET_READ
-        )
+        has_permission = PermissionChecker.check_permission(user_permissions, Permission.ASSET_READ)
         self.assertTrue(has_permission)
 
         # 检查无权限

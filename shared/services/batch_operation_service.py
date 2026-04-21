@@ -83,9 +83,7 @@ class BatchOperationService:
 
         return parameters
 
-    def _capture_asset_snapshots(
-        self, asset_ids: List[str]
-    ) -> Dict[str, Optional[Dict[str, Any]]]:
+    def _capture_asset_snapshots(self, asset_ids: List[str]) -> Dict[str, Optional[Dict[str, Any]]]:
         """捕获资产当前状态，用于失败回滚"""
         snapshots: Dict[str, Optional[Dict[str, Any]]] = {}
         if not self.database or not hasattr(self.database, "get_device"):
@@ -99,9 +97,7 @@ class BatchOperationService:
 
         return snapshots
 
-    def _restore_asset_snapshots(
-        self, snapshots: Dict[str, Optional[Dict[str, Any]]]
-    ) -> None:
+    def _restore_asset_snapshots(self, snapshots: Dict[str, Optional[Dict[str, Any]]]) -> None:
         """恢复资产到捕获时的状态"""
         if not snapshots or not self.database:
             return
@@ -124,9 +120,7 @@ class BatchOperationService:
                         pass
                 continue
 
-            if hasattr(self.database, "get_device") and hasattr(
-                self.database, "update_device"
-            ):
+            if hasattr(self.database, "get_device") and hasattr(self.database, "update_device"):
                 current_data = self.database.get_device(asset_id)
                 if isinstance(current_data, dict):
                     current_data.clear()
@@ -169,9 +163,7 @@ class BatchOperationService:
         except Exception as audit_error:
             logger.warning(f"记录审计日志失败: {audit_error}")
 
-    async def create_assets_batch(
-        self, request: AssetBatchCreateRequest
-    ) -> BatchOperationResponse:
+    async def create_assets_batch(self, request: AssetBatchCreateRequest) -> BatchOperationResponse:
         """
         批量创建资产
 
@@ -202,15 +194,11 @@ class BatchOperationService:
             self._schedule_batch_audit(response, request)
             return response
 
-        logger.info(
-            f"🚀 开始批量创建资产: operation_id={operation_id}, items={len(request.assets)}"
-        )
+        logger.info(f"🚀 开始批量创建资产: operation_id={operation_id}, items={len(request.assets)}")
 
         # 检查幂等性
         if request.idempotency_key:
-            idempotency_result = self._check_idempotency(
-                request.idempotency_key, "asset_create"
-            )
+            idempotency_result = self._check_idempotency(request.idempotency_key, "asset_create")
             if idempotency_result.is_idempotent:
                 logger.info(f"✅ 幂等性命中: {request.idempotency_key}")
                 return idempotency_result.cached_result
@@ -361,18 +349,14 @@ class BatchOperationService:
 
         # 批量创建阶段：使用批量数据库操作
         if valid_assets and not (request.stop_on_first_error and validation_errors):
-            original_asset_snapshots = self._capture_asset_snapshots(
-                list(valid_assets.keys())
-            )
+            original_asset_snapshots = self._capture_asset_snapshots(list(valid_assets.keys()))
             try:
                 # 如果要求遇错停止，使用逐个创建而非批量创建
                 if request.stop_on_first_error:
                     # 逐个创建，遇错即止
                     for asset_id, asset_data in valid_assets.items():
                         try:
-                            result = await _create_single_asset(
-                                asset_data, self.database
-                            )
+                            result = await _create_single_asset(asset_data, self.database)
                             successful_count += 1
                             item_result = BatchItemResult(
                                 id=asset_id,
@@ -393,15 +377,11 @@ class BatchOperationService:
                             )
                             results.append(item_result)
                             # 遇错停止
-                            logger.warning(
-                                f"⚠️ 遇到创建错误，停止处理: {str(single_error)}"
-                            )
+                            logger.warning(f"⚠️ 遇到创建错误，停止处理: {str(single_error)}")
                             break
                 else:
                     # 使用批量数据库操作替代逐个操作
-                    batch_results = await _create_assets_batch(
-                        valid_assets, self.database
-                    )
+                    batch_results = await _create_assets_batch(valid_assets, self.database)
 
                     for asset_id, success in batch_results.items():
                         if success:
@@ -458,9 +438,7 @@ class BatchOperationService:
         completed_at = datetime.now(timezone.utc)
         elapsed_time = time.time() - start_time  # 计算耗时
         total_items = len(request.assets)
-        success_rate = (
-            (successful_count / total_items * 100) if total_items > 0 else 0.0
-        )
+        success_rate = (successful_count / total_items * 100) if total_items > 0 else 0.0
 
         # 性能监控日志
         if elapsed_time > PERFORMANCE_LOG_THRESHOLD:
@@ -501,18 +479,14 @@ class BatchOperationService:
         # 记录操作历史
         self._operation_history[operation_id] = response
 
-        logger.info(
-            f"✅ 批量创建资产完成: 成功={successful_count}, 失败={failed_count}"
-        )
+        logger.info(f"✅ 批量创建资产完成: 成功={successful_count}, 失败={failed_count}")
 
         # 记录审计日志（异步，不影响操作性能）
         self._schedule_batch_audit(response, request)
 
         return response
 
-    async def update_assets_batch(
-        self, request: AssetBatchUpdateRequest
-    ) -> BatchOperationResponse:
+    async def update_assets_batch(self, request: AssetBatchUpdateRequest) -> BatchOperationResponse:
         """
         批量更新资产
 
@@ -543,15 +517,11 @@ class BatchOperationService:
             self._schedule_batch_audit(response, request)
             return response
 
-        logger.info(
-            f"🔄 开始批量更新资产: operation_id={operation_id}, items={len(request.asset_ids)}"
-        )
+        logger.info(f"🔄 开始批量更新资产: operation_id={operation_id}, items={len(request.asset_ids)}")
 
         # 检查幂等性
         if request.idempotency_key:
-            idempotency_result = self._check_idempotency(
-                request.idempotency_key, "asset_update"
-            )
+            idempotency_result = self._check_idempotency(request.idempotency_key, "asset_update")
             if idempotency_result.is_idempotent:
                 logger.info(f"✅ 幂等性命中: {request.idempotency_key}")
                 return idempotency_result.cached_result
@@ -607,9 +577,7 @@ class BatchOperationService:
                         break
             else:
                 # 使用批量数据库操作（带回滚机制）
-                updates_dict = {
-                    asset_id: request.updates for asset_id in request.asset_ids
-                }
+                updates_dict = {asset_id: request.updates for asset_id in request.asset_ids}
                 batch_results = await _update_assets_batch_with_rollback(
                     updates_dict, self.database
                 )
@@ -649,9 +617,7 @@ class BatchOperationService:
             # 逐个处理
             for asset_id in request.asset_ids:
                 try:
-                    result = await _update_single_asset(
-                        asset_id, request.updates, self.database
-                    )
+                    result = await _update_single_asset(asset_id, request.updates, self.database)
                     successful_count += 1
                     item_result = BatchItemResult(
                         id=asset_id, success=True, message="资产更新成功", data=result
@@ -677,9 +643,7 @@ class BatchOperationService:
         completed_at = datetime.now(timezone.utc)
         elapsed_time = time.time() - start_time  # 计算耗时
         total_items = len(request.asset_ids)
-        success_rate = (
-            (successful_count / total_items * 100) if total_items > 0 else 0.0
-        )
+        success_rate = (successful_count / total_items * 100) if total_items > 0 else 0.0
 
         # 性能监控日志
         if elapsed_time > PERFORMANCE_LOG_THRESHOLD:
@@ -717,18 +681,14 @@ class BatchOperationService:
         if request.idempotency_key:
             self._save_idempotency_result(request.idempotency_key, response)
 
-        logger.info(
-            f"✅ 批量更新资产完成: 成功={successful_count}, 失败={failed_count}"
-        )
+        logger.info(f"✅ 批量更新资产完成: 成功={successful_count}, 失败={failed_count}")
 
         # 记录审计日志（异步，不影响操作性能）
         self._schedule_batch_audit(response, request)
 
         return response
 
-    async def create_tasks_batch(
-        self, request: TaskBatchCreateRequest
-    ) -> BatchOperationResponse:
+    async def create_tasks_batch(self, request: TaskBatchCreateRequest) -> BatchOperationResponse:
         """
         批量创建任务
 
@@ -761,9 +721,7 @@ class BatchOperationService:
 
         # 并行任务数限制验证
         parallel_tasks = (
-            min(request.max_parallel_tasks, MAX_PARALLEL_TASKS)
-            if request.parallel_execution
-            else 1
+            min(request.max_parallel_tasks, MAX_PARALLEL_TASKS) if request.parallel_execution else 1
         )
 
         logger.info(
@@ -772,9 +730,7 @@ class BatchOperationService:
 
         # 检查幂等性
         if request.idempotency_key:
-            idempotency_result = self._check_idempotency(
-                request.idempotency_key, "task_create"
-            )
+            idempotency_result = self._check_idempotency(request.idempotency_key, "task_create")
             if idempotency_result.is_idempotent:
                 logger.info(f"✅ 幂等性命中: {request.idempotency_key}")
                 return idempotency_result.cached_result
@@ -807,9 +763,7 @@ class BatchOperationService:
         # 构建响应
         completed_at = datetime.now(timezone.utc)
         total_items = len(request.tasks)
-        success_rate = (
-            (successful_count / total_items * 100) if total_items > 0 else 0.0
-        )
+        success_rate = (successful_count / total_items * 100) if total_items > 0 else 0.0
 
         status = BatchOperationStatus.COMPLETED
         if failed_count > 0 and successful_count > 0:
@@ -839,17 +793,13 @@ class BatchOperationService:
         if request.idempotency_key:
             self._save_idempotency_result(request.idempotency_key, response)
 
-        logger.info(
-            f"✅ 批量创建任务完成: 成功={successful_count}, 失败={failed_count}"
-        )
+        logger.info(f"✅ 批量创建任务完成: 成功={successful_count}, 失败={failed_count}")
 
         self._schedule_batch_audit(response, request)
 
         return response
 
-    async def delete_assets_batch(
-        self, request: AssetBatchDeleteRequest
-    ) -> BatchOperationResponse:
+    async def delete_assets_batch(self, request: AssetBatchDeleteRequest) -> BatchOperationResponse:
         """
         批量删除资产
 
@@ -860,15 +810,11 @@ class BatchOperationService:
             批量操作响应
         """
         operation_id = f"asset-delete-batch-{uuid.uuid4().hex[:8]}"
-        logger.info(
-            f"🗑️ 开始批量删除资产: operation_id={operation_id}, items={len(request.asset_ids)}"
-        )
+        logger.info(f"🗑️ 开始批量删除资产: operation_id={operation_id}, items={len(request.asset_ids)}")
 
         # 检查幂等性
         if request.idempotency_key:
-            idempotency_result = self._check_idempotency(
-                request.idempotency_key, "asset_delete"
-            )
+            idempotency_result = self._check_idempotency(request.idempotency_key, "asset_delete")
             if idempotency_result.is_idempotent:
                 logger.info(f"✅ 幂等性命中: {request.idempotency_key}")
                 return idempotency_result.cached_result
@@ -883,9 +829,7 @@ class BatchOperationService:
         for asset_id in request.asset_ids:
             try:
                 # 调用资产删除逻辑
-                result = await _delete_single_asset(
-                    asset_id, request.force, self.database
-                )
+                result = await _delete_single_asset(asset_id, request.force, self.database)
 
                 item_result = BatchItemResult(
                     id=asset_id, success=True, message="资产删除成功", data=result
@@ -914,9 +858,7 @@ class BatchOperationService:
         # 构建响应
         completed_at = datetime.now(timezone.utc)
         total_items = len(request.asset_ids)
-        success_rate = (
-            (successful_count / total_items * 100) if total_items > 0 else 0.0
-        )
+        success_rate = (successful_count / total_items * 100) if total_items > 0 else 0.0
 
         status = BatchOperationStatus.COMPLETED
         if failed_count > 0 and successful_count > 0:
@@ -946,9 +888,7 @@ class BatchOperationService:
         if request.idempotency_key:
             self._save_idempotency_result(request.idempotency_key, response)
 
-        logger.info(
-            f"✅ 批量删除资产完成: 成功={successful_count}, 失败={failed_count}"
-        )
+        logger.info(f"✅ 批量删除资产完成: 成功={successful_count}, 失败={failed_count}")
 
         self._schedule_batch_audit(response, request)
 
@@ -976,15 +916,11 @@ class BatchOperationService:
             批量操作响应
         """
         operation_id = f"asset-deactivate-batch-{uuid.uuid4().hex[:8]}"
-        logger.info(
-            f"⏸️ 开始批量停用资产: operation_id={operation_id}, items={len(asset_ids)}"
-        )
+        logger.info(f"⏸️ 开始批量停用资产: operation_id={operation_id}, items={len(asset_ids)}")
 
         # 检查幂等性
         if idempotency_key:
-            idempotency_result = self._check_idempotency(
-                idempotency_key, "asset_deactivate"
-            )
+            idempotency_result = self._check_idempotency(idempotency_key, "asset_deactivate")
             if idempotency_result.is_idempotent:
                 logger.info(f"✅ 幂等性命中: {idempotency_key}")
                 return idempotency_result.cached_result
@@ -1028,9 +964,7 @@ class BatchOperationService:
         # 构建响应
         completed_at = datetime.now(timezone.utc)
         total_items = len(asset_ids)
-        success_rate = (
-            (successful_count / total_items * 100) if total_items > 0 else 0.0
-        )
+        success_rate = (successful_count / total_items * 100) if total_items > 0 else 0.0
 
         status = BatchOperationStatus.COMPLETED
         if failed_count > 0 and successful_count > 0:
@@ -1060,9 +994,7 @@ class BatchOperationService:
         if idempotency_key:
             self._save_idempotency_result(idempotency_key, response)
 
-        logger.info(
-            f"✅ 批量停用资产完成: 成功={successful_count}, 失败={failed_count}"
-        )
+        logger.info(f"✅ 批量停用资产完成: 成功={successful_count}, 失败={failed_count}")
 
         self._schedule_batch_audit(
             response,
@@ -1098,9 +1030,7 @@ class BatchOperationService:
 
         # 检查幂等性
         if request.idempotency_key:
-            idempotency_result = self._check_idempotency(
-                request.idempotency_key, "task_dispatch"
-            )
+            idempotency_result = self._check_idempotency(request.idempotency_key, "task_dispatch")
             if idempotency_result.is_idempotent:
                 logger.info(f"✅ 幂等性命中: {request.idempotency_key}")
                 return idempotency_result.cached_result
@@ -1152,9 +1082,7 @@ class BatchOperationService:
         # 构建响应
         completed_at = datetime.now(timezone.utc)
         total_items = len(dispatch_pairs)
-        success_rate = (
-            (successful_count / total_items * 100) if total_items > 0 else 0.0
-        )
+        success_rate = (successful_count / total_items * 100) if total_items > 0 else 0.0
 
         status = BatchOperationStatus.COMPLETED
         if failed_count > 0 and successful_count > 0:
@@ -1184,17 +1112,13 @@ class BatchOperationService:
         if request.idempotency_key:
             self._save_idempotency_result(request.idempotency_key, response)
 
-        logger.info(
-            f"✅ 批量下发任务完成: 成功={successful_count}, 失败={failed_count}"
-        )
+        logger.info(f"✅ 批量下发任务完成: 成功={successful_count}, 失败={failed_count}")
 
         self._schedule_batch_audit(response, request)
 
         return response
 
-    def _check_idempotency(
-        self, idempotency_key: str, operation_type: str
-    ) -> IdempotencyResult:
+    def _check_idempotency(self, idempotency_key: str, operation_type: str) -> IdempotencyResult:
         """检查幂等性"""
         cache_key = f"{operation_type}:{idempotency_key}"
 
@@ -1207,13 +1131,9 @@ class BatchOperationService:
                 message="操作已存在，返回缓存结果",
             )
 
-        return IdempotencyResult(
-            is_idempotent=False, message="幂等性检查通过，可以执行新操作"
-        )
+        return IdempotencyResult(is_idempotent=False, message="幂等性检查通过，可以执行新操作")
 
-    def _save_idempotency_result(
-        self, idempotency_key: str, result: BatchOperationResponse
-    ):
+    def _save_idempotency_result(self, idempotency_key: str, result: BatchOperationResponse):
         """保存幂等性结果"""
         operation_type = result.operation_type
         cache_key = f"{operation_type}:{idempotency_key}"
@@ -1223,9 +1143,7 @@ class BatchOperationService:
 # ==================== 辅助函数 ====================
 
 
-async def _create_assets_batch(
-    assets_data: Dict[str, Dict], database
-) -> Dict[str, bool]:
+async def _create_assets_batch(assets_data: Dict[str, Dict], database) -> Dict[str, bool]:
     """
     批量创建资产（优化版）
 
@@ -1240,9 +1158,7 @@ async def _create_assets_batch(
     if database and hasattr(database, "get_device"):
         for asset_id in assets_data.keys():
             try:
-                original_snapshots[asset_id] = copy.deepcopy(
-                    database.get_device(asset_id)
-                )
+                original_snapshots[asset_id] = copy.deepcopy(database.get_device(asset_id))
             except Exception:
                 original_snapshots[asset_id] = None
 
@@ -1253,11 +1169,7 @@ async def _create_assets_batch(
         except Exception as e:
             # 批量操作失败，回退到逐个操作
             logger.warning(f"批量创建操作失败，回退到逐个处理: {str(e)}")
-            if (
-                original_snapshots
-                and hasattr(database, "lock")
-                and hasattr(database, "devices")
-            ):
+            if original_snapshots and hasattr(database, "lock") and hasattr(database, "devices"):
                 with database.lock:
                     for asset_id, original_data in original_snapshots.items():
                         if original_data is None:
@@ -1320,9 +1232,7 @@ async def _update_assets_batch(updates: Dict[str, Dict], database) -> Dict[str, 
         return results
 
 
-async def _update_assets_batch_with_rollback(
-    updates: Dict[str, Dict], database
-) -> Dict[str, bool]:
+async def _update_assets_batch_with_rollback(updates: Dict[str, Dict], database) -> Dict[str, bool]:
     """
     批量更新资产（带回滚机制）
 
@@ -1337,9 +1247,7 @@ async def _update_assets_batch_with_rollback(
     if database and hasattr(database, "get_device"):
         for asset_id in updates.keys():
             try:
-                original_snapshots[asset_id] = copy.deepcopy(
-                    database.get_device(asset_id)
-                )
+                original_snapshots[asset_id] = copy.deepcopy(database.get_device(asset_id))
             except Exception:
                 original_snapshots[asset_id] = None
 
@@ -1350,11 +1258,7 @@ async def _update_assets_batch_with_rollback(
         except Exception as e:
             # 批量操作失败，回退到逐个操作（这样可以在失败时回滚）
             logger.warning(f"批量更新操作失败，回退到逐个处理: {str(e)}")
-            if (
-                original_snapshots
-                and hasattr(database, "lock")
-                and hasattr(database, "devices")
-            ):
+            if original_snapshots and hasattr(database, "lock") and hasattr(database, "devices"):
                 with database.lock:
                     for asset_id, original_data in original_snapshots.items():
                         if original_data is None:
@@ -1373,10 +1277,7 @@ async def _update_assets_batch_with_rollback(
                         # 这里假设所有资产都存在（简化逻辑）
                         # 但为了测试一致性，我们应该正确处理
                         # 检查是否有预先创建的资产（通过检查是否有devices字典）
-                        if (
-                            hasattr(database, "devices")
-                            and asset_id not in database.devices
-                        ):
+                        if hasattr(database, "devices") and asset_id not in database.devices:
                             results[asset_id] = False
                         else:
                             results[asset_id] = True
@@ -1434,9 +1335,7 @@ async def _rollback_asset_updates(
         return False
 
 
-async def _update_single_asset(
-    asset_id: str, updates: Dict[str, Any], database
-) -> Dict[str, Any]:
+async def _update_single_asset(asset_id: str, updates: Dict[str, Any], database) -> Dict[str, Any]:
     """更新单个资产"""
     if database:
         # 使用数据库更新资产
@@ -1468,9 +1367,7 @@ async def _validate_assets_batch(
             )
         else:
             results.append(
-                BatchItemResult(
-                    id=asset_id, success=True, message="验证通过", data=asset_data
-                )
+                BatchItemResult(id=asset_id, success=True, message="验证通过", data=asset_data)
             )
 
     successful_count = sum(1 for r in results if r.success)
@@ -1531,9 +1428,7 @@ async def _validate_assets_update_batch(
             successful_items=successful_count,
             failed_items=failed_count,
             skipped_items=0,
-            success_rate=(
-                (successful_count / len(asset_ids) * 100) if asset_ids else 0.0
-            ),
+            success_rate=((successful_count / len(asset_ids) * 100) if asset_ids else 0.0),
             operation_id=operation_id,
         ),
         results=results,
@@ -1563,9 +1458,7 @@ async def _create_tasks_parallel(
                 else:
                     result = task_data
 
-                return BatchItemResult(
-                    id=task_id, success=True, message="任务创建成功", data=result
-                )
+                return BatchItemResult(id=task_id, success=True, message="任务创建成功", data=result)
             except Exception as e:
                 return BatchItemResult(
                     id=task_data.get("task_id", f"task-{index}"),
@@ -1575,9 +1468,7 @@ async def _create_tasks_parallel(
                 )
 
     # 创建所有任务
-    tasks_to_create = [
-        create_with_semaphore(task_data, i) for i, task_data in enumerate(tasks)
-    ]
+    tasks_to_create = [create_with_semaphore(task_data, i) for i, task_data in enumerate(tasks)]
 
     # 并行执行
     completed_results = await asyncio.gather(*tasks_to_create, return_exceptions=True)
@@ -1619,11 +1510,7 @@ async def _create_tasks_sequential(
             else:
                 result = task_data
 
-            results.append(
-                BatchItemResult(
-                    id=task_id, success=True, message="任务创建成功", data=result
-                )
-            )
+            results.append(BatchItemResult(id=task_id, success=True, message="任务创建成功", data=result))
 
         except Exception as e:
             results.append(
@@ -1641,7 +1528,7 @@ async def _create_tasks_sequential(
     return results
 
 
-def _delete_single_asset(asset_id: str, force: bool, database) -> Dict[str, Any]:
+async def _delete_single_asset(asset_id: str, force: bool, database) -> Dict[str, Any]:
     """删除单个资产"""
     if database:
         # 使用数据库删除资产
@@ -1734,9 +1621,7 @@ def _validate_asset_data(asset_data: Dict[str, Any]) -> Dict[str, Any]:
     # 检查必需字段
     required_fields = ["asset_id", "name", "asset_type"]
     missing_fields = [
-        field
-        for field in required_fields
-        if field not in asset_data or not asset_data[field]
+        field for field in required_fields if field not in asset_data or not asset_data[field]
     ]
 
     if missing_fields:

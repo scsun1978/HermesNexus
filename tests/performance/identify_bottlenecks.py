@@ -255,12 +255,8 @@ class PerformanceBottleneckAnalyzer:
         all_issues = dao_issues + service_issues + schema_issues + api_issues
 
         # 按严重程度排序
-        high_priority = [
-            issue for issue in all_issues if issue.get("severity") == "HIGH"
-        ]
-        medium_priority = [
-            issue for issue in all_issues if issue.get("severity") == "MEDIUM"
-        ]
+        high_priority = [issue for issue in all_issues if issue.get("severity") == "HIGH"]
+        medium_priority = [issue for issue in all_issues if issue.get("severity") == "MEDIUM"]
         low_priority = [issue for issue in all_issues if issue.get("severity") == "LOW"]
 
         return {
@@ -342,22 +338,14 @@ class PerformanceBottleneckAnalyzer:
 
             if plan["high_priority"]:
                 f.write("### 🔥 必做项\n")
-                for i, issue in enumerate(
-                    plan["high_priority"][:3], 1
-                ):  # 最多3个必做项
-                    f.write(
-                        f"{i}. **{issue['component']}**: {issue['recommendation']}\n"
-                    )
+                for i, issue in enumerate(plan["high_priority"][:3], 1):  # 最多3个必做项
+                    f.write(f"{i}. **{issue['component']}**: {issue['recommendation']}\n")
                 f.write("\n")
 
             if plan["medium_priority"]:
                 f.write("### 🟡 尽量做\n")
-                for i, issue in enumerate(
-                    plan["medium_priority"][:2], 1
-                ):  # 最多2个尽量做项
-                    f.write(
-                        f"{i}. **{issue['component']}**: {issue['recommendation']}\n"
-                    )
+                for i, issue in enumerate(plan["medium_priority"][:2], 1):  # 最多2个尽量做项
+                    f.write(f"{i}. **{issue['component']}**: {issue['recommendation']}\n")
                 f.write("\n")
 
             f.write("### 📈 验收标准\n")

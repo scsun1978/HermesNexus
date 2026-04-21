@@ -241,14 +241,10 @@ async def submit_approval_request(
         # 权限检查：只有申请人能提交自己的请求
         request = service.get_request(submit_data.request_id)
         if not request:
-            raise HTTPException(
-                status_code=404, detail=f"审批请求不存在: {submit_data.request_id}"
-            )
+            raise HTTPException(status_code=404, detail=f"审批请求不存在: {submit_data.request_id}")
 
         if request.requester_id != current_user["user_id"]:
-            raise HTTPException(
-                status_code=403, detail="权限不足：只能提交自己创建的审批请求"
-            )
+            raise HTTPException(status_code=403, detail="权限不足：只能提交自己创建的审批请求")
 
         # 提交请求
         request = service.submit_request(submit_data.request_id)
@@ -321,14 +317,10 @@ async def withdraw_approval_request(
         # 权限检查：只有申请人能撤回自己的请求
         request = service.get_request(withdraw_data.request_id)
         if not request:
-            raise HTTPException(
-                status_code=404, detail=f"审批请求不存在: {withdraw_data.request_id}"
-            )
+            raise HTTPException(status_code=404, detail=f"审批请求不存在: {withdraw_data.request_id}")
 
         if request.requester_id != current_user["user_id"]:
-            raise HTTPException(
-                status_code=403, detail="权限不足：只能撤回自己创建的审批请求"
-            )
+            raise HTTPException(status_code=403, detail="权限不足：只能撤回自己创建的审批请求")
 
         # 撤回请求
         request = service.withdraw_request(
@@ -367,9 +359,7 @@ async def cancel_approval_request(
             raise HTTPException(status_code=404, detail=f"审批请求不存在: {request_id}")
 
         if request.requester_id != current_user["user_id"]:
-            raise HTTPException(
-                status_code=403, detail="权限不足：只能取消自己创建的审批请求"
-            )
+            raise HTTPException(status_code=403, detail="权限不足：只能取消自己创建的审批请求")
 
         # 取消请求
         request = service.cancel_request(request_id)
@@ -409,9 +399,7 @@ async def get_approval_request(
                 request.requester_id != current_user["user_id"]
                 and request.approver_id != current_user["user_id"]
             ):
-                raise HTTPException(
-                    status_code=403, detail="权限不足：只能查看自己相关的审批请求"
-                )
+                raise HTTPException(status_code=403, detail="权限不足：只能查看自己相关的审批请求")
 
         return request
 

@@ -368,9 +368,7 @@ class TestDatabaseEdgeCases(unittest.TestCase):
         """测试事件列表限制"""
         # 添加超过限制的事件
         for i in range(1500):  # 超过1000的限制
-            self.db.add_event(
-                {"event_id": f"event-{i}", "type": "test", "level": "info"}
-            )
+            self.db.add_event({"event_id": f"event-{i}", "type": "test", "level": "info"})
 
         # 事件数量应该被限制在1000
         all_events = self.db.list_events(limit=2000)
@@ -380,9 +378,7 @@ class TestDatabaseEdgeCases(unittest.TestCase):
         """测试审计日志限制"""
         # 添加超过限制的审计日志
         for i in range(1500):  # 超过1000的限制
-            self.db.add_audit_log(
-                {"action": "test", "actor": f"user-{i}", "resource_type": "test"}
-            )
+            self.db.add_audit_log({"action": "test", "actor": f"user-{i}", "resource_type": "test"})
 
         # 审计日志数量应该被限制在1000
         all_logs = self.db.list_audit_logs(limit=2000)

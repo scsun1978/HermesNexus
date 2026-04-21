@@ -100,9 +100,7 @@ class TestBatchAuditService:
         await audit_service.log_batch_operation(response)
 
         # 查询审计
-        found_audit = await audit_service.get_audit_by_operation_id(
-            response.operation_id
-        )
+        found_audit = await audit_service.get_audit_by_operation_id(response.operation_id)
 
         # 验证查询结果
         assert found_audit is not None
@@ -306,9 +304,7 @@ class TestAuditQueryFunctionality:
         assert failed_results.total_count == 2
 
         # 测试4：按错误类型查询
-        error_query = AuditQueryRequest(
-            error_type="validation_error", page=1, page_size=10
-        )
+        error_query = AuditQueryRequest(error_type="validation_error", page=1, page_size=10)
         error_results = await audit_service.query_audits(error_query)
         assert error_results.total_count == 1
 
@@ -373,9 +369,7 @@ class TestAuditIntegration:
 
         storage = AuditStorage()
         audit_service = BatchAuditService(storage=storage)
-        batch_service = BatchOperationService(
-            database=Database(), audit_service=audit_service
-        )
+        batch_service = BatchOperationService(database=Database(), audit_service=audit_service)
 
         return batch_service, audit_service
 

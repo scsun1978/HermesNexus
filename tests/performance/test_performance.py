@@ -92,9 +92,7 @@ class PerformanceTester:
                     for i in range(requests_per_user):
                         try:
                             start = time.time()
-                            response = await client.get(
-                                f"{self.cloud_url}/api/v1/nodes"
-                            )
+                            response = await client.get(f"{self.cloud_url}/api/v1/nodes")
                             end = time.time()
 
                             if response.status_code == 200:
@@ -163,9 +161,7 @@ class PerformanceTester:
             write_times = []
             for i in range(operations):
                 start = time.time()
-                db.add_node(
-                    f"perf-test-{i}", {"node_id": f"perf-test-{i}", "status": "online"}
-                )
+                db.add_node(f"perf-test-{i}", {"node_id": f"perf-test-{i}", "status": "online"})
                 end = time.time()
                 write_times.append((end - start) * 1000)  # 毫秒
 
@@ -297,9 +293,7 @@ class PerformanceTester:
             print(f"{status} {test_name}")
 
         # 计算总体评分
-        excellent_count = sum(
-            1 for result in self.results.values() if result == "excellent"
-        )
+        excellent_count = sum(1 for result in self.results.values() if result == "excellent")
         good_count = sum(1 for result in self.results.values() if result == "good")
         total_count = len(self.results)
 
@@ -320,9 +314,7 @@ async def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="HermesNexus 性能测试")
-    parser.add_argument(
-        "--cloud-url", default="http://localhost:8080", help="云端API URL"
-    )
+    parser.add_argument("--cloud-url", default="http://localhost:8080", help="云端API URL")
     parser.add_argument("--quick", action="store_true", help="快速性能测试")
 
     args = parser.parse_args()

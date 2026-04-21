@@ -42,12 +42,8 @@ class NodeDAO(BaseDAO):
                 max_concurrent_tasks=node.max_concurrent_tasks,
                 registered_at=node.registered_at,
                 last_heartbeat=node.last_heartbeat,
-                managed_devices=(
-                    ",".join(node.managed_devices) if node.managed_devices else None
-                ),
-                assigned_tasks=(
-                    ",".join(node.assigned_tasks) if node.assigned_tasks else None
-                ),
+                managed_devices=(",".join(node.managed_devices) if node.managed_devices else None),
+                assigned_tasks=(",".join(node.assigned_tasks) if node.assigned_tasks else None),
                 description=node.description,
                 location=node.location,
                 tags=",".join(node.tags) if node.tags else None,
@@ -83,9 +79,7 @@ class NodeDAO(BaseDAO):
 
         try:
             # 查询数据库
-            node_model = (
-                session.query(NodeModel).filter(NodeModel.node_id == node_id).first()
-            )
+            node_model = session.query(NodeModel).filter(NodeModel.node_id == node_id).first()
 
             if not node_model:
                 return None
@@ -110,11 +104,7 @@ class NodeDAO(BaseDAO):
 
         try:
             # 查询现有节点
-            node_model = (
-                session.query(NodeModel)
-                .filter(NodeModel.node_id == node.node_id)
-                .first()
-            )
+            node_model = session.query(NodeModel).filter(NodeModel.node_id == node.node_id).first()
 
             if not node_model:
                 raise ValueError(f"Node not found: {node.node_id}")
@@ -242,9 +232,7 @@ class NodeDAO(BaseDAO):
 
         try:
             # 查询节点
-            node_model = (
-                session.query(NodeModel).filter(NodeModel.node_id == node_id).first()
-            )
+            node_model = session.query(NodeModel).filter(NodeModel.node_id == node_id).first()
 
             if not node_model:
                 return False
@@ -300,24 +288,16 @@ class NodeDAO(BaseDAO):
             auth_token=model.auth_token,
             token_expires_at=self._ensure_aware_datetime(model.token_expires_at),
             public_key=model.public_key,
-            capabilities=(
-                model.capabilities if isinstance(model.capabilities, dict) else {}
-            ),
+            capabilities=(model.capabilities if isinstance(model.capabilities, dict) else {}),
             max_concurrent_tasks=model.max_concurrent_tasks or 3,
             registered_at=self._ensure_aware_datetime(model.registered_at),
             last_heartbeat=self._ensure_aware_datetime(model.last_heartbeat),
-            managed_devices=(
-                model.managed_devices.split(",") if model.managed_devices else []
-            ),
-            assigned_tasks=(
-                model.assigned_tasks.split(",") if model.assigned_tasks else []
-            ),
+            managed_devices=(model.managed_devices.split(",") if model.managed_devices else []),
+            assigned_tasks=(model.assigned_tasks.split(",") if model.assigned_tasks else []),
             description=model.description,
             location=model.location,
             tags=model.tags.split(",") if model.tags else [],
-            node_metadata=(
-                model.node_metadata if isinstance(model.node_metadata, dict) else {}
-            ),
+            node_metadata=(model.node_metadata if isinstance(model.node_metadata, dict) else {}),
             created_by=model.created_by,
             created_at=self._ensure_aware_datetime(
                 model.registered_at

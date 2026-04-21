@@ -68,9 +68,7 @@ class EdgeRuntime:
 
         try:
             # 初始化组件
-            self.cloud_client = CloudClient(
-                self.cloud_server_url, self.api_key, self.node_id
-            )
+            self.cloud_client = CloudClient(self.cloud_server_url, self.api_key, self.node_id)
             await self.cloud_client.start()
 
             self.storage = EdgeStorage()
@@ -98,9 +96,7 @@ class EdgeRuntime:
                 # 启动后台任务
                 self.running = True
                 self.heartbeat_task = asyncio.create_task(self._heartbeat_loop())
-                self.task_processor_task = asyncio.create_task(
-                    self._task_processor_loop()
-                )
+                self.task_processor_task = asyncio.create_task(self._task_processor_loop())
 
                 logger.info(f"✅ 边缘节点启动完成: {self.node_id}")
             else:

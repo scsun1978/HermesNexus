@@ -42,9 +42,7 @@ class Database:
         with self.lock:
             if node_id in self.nodes:
                 self.nodes[node_id].update(updates)
-                self.nodes[node_id]["updated_at"] = datetime.now(
-                    timezone.utc
-                ).isoformat()
+                self.nodes[node_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
                 return True
             return False
 
@@ -73,9 +71,7 @@ class Database:
         with self.lock:
             if device_id in self.devices:
                 self.devices[device_id].update(updates)
-                self.devices[device_id]["updated_at"] = datetime.now(
-                    timezone.utc
-                ).isoformat()
+                self.devices[device_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
                 return True
             return False
 
@@ -135,9 +131,7 @@ class Database:
             for device_id, device_updates in updates.items():
                 if device_id in self.devices:
                     self.devices[device_id].update(device_updates)
-                    self.devices[device_id]["updated_at"] = datetime.now(
-                        timezone.utc
-                    ).isoformat()
+                    self.devices[device_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
                     results[device_id] = True
                 else:
                     results[device_id] = False
@@ -166,9 +160,32 @@ class Database:
                 return True
             return False
 
-    def list_jobs(
-        self, status: Optional[str] = None, node_id: Optional[str] = None
-    ) -> List[Dict]:
+    def list_jobs(self, status: Optional[str] = None, limit: Optional[int] = None) -> List[Dict]:
+        with self.lock:
+            jobs = list(self.jobs.values())
+            if status:
+                jobs = [job for job in jobs if job.get("status") == status]
+            if limit:
+                jobs = jobs[:limit]
+            return jobs
+
+    def get_task(self, task_id: str) -> Optional[Dict]:
+        """获取任务（兼容方法，映射到get_job）"""
+        return self.get_job(task_id)
+
+    def add_task(self, task_id: str, task_data: Dict) -> bool:
+        """添加任务（兼容方法，映射到add_job）"""
+        return self.add_job(task_id, task_data)
+
+    def update_task(self, task_id: str, updates: Dict) -> bool:
+        """更新任务（兼容方法，映射到update_job）"""
+        return self.update_job(task_id, updates)
+
+    def list_tasks(self, status: Optional[str] = None, limit: Optional[int] = None) -> List[Dict]:
+        """列出任务（兼容方法，映射到list_jobs）"""
+        return self.list_jobs(status=status, limit=limit)
+
+    def list_jobs(self, status: Optional[str] = None, node_id: Optional[str] = None) -> List[Dict]:
         with self.lock:
             jobs = list(self.jobs.values())
 
@@ -252,11 +269,7 @@ class Database:
                     [j for j in self.jobs.values() if j.get("status") == "running"]
                 ),
                 "completed_jobs": len(
-                    [
-                        j
-                        for j in self.jobs.values()
-                        if j.get("status") in ["success", "failed"]
-                    ]
+                    [j for j in self.jobs.values() if j.get("status") in ["success", "failed"]]
                 ),
                 "total_events": len(self.events),
                 "total_audit_logs": len(self.audit_logs),

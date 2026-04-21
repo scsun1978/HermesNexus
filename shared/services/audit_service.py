@@ -90,9 +90,7 @@ class AuditService:
             elif audit_log.target_type == "node" and audit_log.target_id:
                 self._index_by_node.setdefault(audit_log.target_id, []).append(audit_id)
             elif audit_log.target_type == "asset" and audit_log.target_id:
-                self._index_by_asset.setdefault(audit_log.target_id, []).append(
-                    audit_id
-                )
+                self._index_by_asset.setdefault(audit_log.target_id, []).append(audit_id)
             saved = audit_log
 
         return saved
@@ -175,11 +173,7 @@ class AuditService:
                 filters=filters,
                 limit=params.page_size,
                 offset=(params.page - 1) * params.page_size,
-                order_by=(
-                    f"-{params.sort_by}"
-                    if params.sort_order == "desc"
-                    else params.sort_by
-                ),
+                order_by=(f"-{params.sort_by}" if params.sort_order == "desc" else params.sort_by),
             )
             total = self.audit_dao.count(filters)
         else:
@@ -209,12 +203,10 @@ class AuditService:
                 for category in AuditCategory
             }
             level_stats = {
-                level.value: self.audit_dao.count({"level": level})
-                for level in EventLevel
+                level.value: self.audit_dao.count({"level": level}) for level in EventLevel
             }
             action_stats = {
-                action.value: self.audit_dao.count({"action": action})
-                for action in AuditAction
+                action.value: self.audit_dao.count({"action": action}) for action in AuditAction
             }
         else:
             audit_logs = self._audit_logs
@@ -223,13 +215,9 @@ class AuditService:
             level_stats = {}
             action_stats = {}
             for log in audit_logs:
-                category_stats[log.category.value] = (
-                    category_stats.get(log.category.value, 0) + 1
-                )
+                category_stats[log.category.value] = category_stats.get(log.category.value, 0) + 1
                 level_stats[log.level.value] = level_stats.get(log.level.value, 0) + 1
-                action_stats[log.action.value] = (
-                    action_stats.get(log.action.value, 0) + 1
-                )
+                action_stats[log.action.value] = action_stats.get(log.action.value, 0) + 1
 
         last_hour = datetime.now(timezone.utc) - timedelta(hours=1)
         last_day = datetime.now(timezone.utc) - timedelta(days=1)
@@ -241,13 +229,9 @@ class AuditService:
             error_events = self.audit_dao.count({"level": EventLevel.ERROR})
             critical_events = self.audit_dao.count({"level": EventLevel.CRITICAL})
         else:
-            events_last_hour = sum(
-                1 for log in audit_logs if log.created_at >= last_hour
-            )
+            events_last_hour = sum(1 for log in audit_logs if log.created_at >= last_hour)
             events_last_day = sum(1 for log in audit_logs if log.created_at >= last_day)
-            events_last_week = sum(
-                1 for log in audit_logs if log.created_at >= last_week
-            )
+            events_last_week = sum(1 for log in audit_logs if log.created_at >= last_week)
             error_events = level_stats.get(EventLevel.ERROR.value, 0)
             critical_events = level_stats.get(EventLevel.CRITICAL.value, 0)
 
@@ -278,9 +262,7 @@ class AuditService:
             return self.audit_dao.query_by_task(task_id, limit)
         else:
             audits = []
-            for log in sorted(
-                self._audit_logs, key=lambda item: item.created_at, reverse=True
-            ):
+            for log in sorted(self._audit_logs, key=lambda item: item.created_at, reverse=True):
                 meta = log.details or {}
                 if (
                     (log.target_type == "task" and log.target_id == task_id)
@@ -306,9 +288,7 @@ class AuditService:
             return self.audit_dao.query_by_node(node_id, limit)
         else:
             audits = []
-            for log in sorted(
-                self._audit_logs, key=lambda item: item.created_at, reverse=True
-            ):
+            for log in sorted(self._audit_logs, key=lambda item: item.created_at, reverse=True):
                 meta = log.details or {}
                 if (
                     (log.target_type == "node" and log.target_id == node_id)
@@ -334,9 +314,7 @@ class AuditService:
             return self.audit_dao.query_by_asset(asset_id, limit)
         else:
             audits = []
-            for log in sorted(
-                self._audit_logs, key=lambda item: item.created_at, reverse=True
-            ):
+            for log in sorted(self._audit_logs, key=lambda item: item.created_at, reverse=True):
                 meta = log.details or {}
                 if (
                     (log.target_type == "asset" and log.target_id == asset_id)
@@ -347,6 +325,226 @@ class AuditService:
                 ):
                     audits.append(log)
             return audits[:limit] if limit else audits
+
+    def get_asset_history(self, asset_id: str, limit: int = None) -> List[AuditLog]:
+        """
+        获取资产历史审计记录（别名方法，兼容E2E测试）
+
+        Args:
+            asset_id: 资产ID
+            limit: 返回数量限制
+
+        Returns:
+            审计日志列表
+        """
+        return self.query_by_asset(asset_id, limit)
+
+    async def get_audit_by_operation_id(self, operation_id: str) -> Optional[AuditLog]:
+        """
+        根据操作ID获取审计日志
+
+        Args:
+            operation_id: 操作ID
+
+        Returns:
+            审计日志或None
+        """
+        if self.audit_dao:
+            # 查询包含此operation_id的审计日志
+            query_result = self.audit_dao.query({"operation_id": operation_id}, limit=1)
+            return query_result[0] if query_result else None
+        else:
+            # 在内存日志中查找
+            for log in self._audit_logs:
+                details = log.details or {}
+                if details.get("operation_id") == operation_id:
+                    return log
+            return None
+
+    async def get_failed_operations(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        获取失败的操作列表
+
+        Args:
+            limit: 返回数量限制
+
+        Returns:
+            失败操作列表
+        """
+        if self.audit_dao:
+            # 查询错误级别的审计日志
+            error_logs = self.audit_dao.query({"level": EventLevel.ERROR}, limit=limit)
+            return [
+                {
+                    "audit_id": log.audit_id,
+                    "operation_id": (log.details or {}).get("operation_id"),
+                    "action": log.action.value,
+                    "message": log.message,
+                    "created_at": log.created_at,
+                }
+                for log in error_logs
+            ]
+        else:
+            # 在内存日志中查找错误级别的日志
+            failed_ops = []
+            for log in sorted(self._audit_logs, key=lambda item: item.created_at, reverse=True):
+                if log.level == EventLevel.ERROR:
+                    details = log.details or {}
+                    failed_ops.append(
+                        {
+                            "audit_id": log.audit_id,
+                            "operation_id": details.get("operation_id"),
+                            "action": log.action.value,
+                            "message": log.message,
+                            "created_at": log.created_at,
+                        }
+                    )
+                    if len(failed_ops) >= limit:
+                        break
+            return failed_ops
+
+    async def get_statistics(self, start_time: datetime, end_time: datetime) -> Dict[str, int]:
+        """
+        获取指定时间范围的统计信息
+
+        Args:
+            start_time: 开始时间
+            end_time: 结束时间
+
+        Returns:
+            统计信息字典
+        """
+        if self.audit_dao:
+            # 查询时间范围内的审计日志
+            time_filter = {"start_time": {"$gte": start_time, "$lte": end_time}}
+            total = self.audit_dao.count(time_filter)
+            success = self.audit_dao.count({**time_filter, "level": EventLevel.INFO})
+            errors = self.audit_dao.count({**time_filter, "level": EventLevel.ERROR})
+        else:
+            # 在内存日志中统计
+            total = 0
+            success = 0
+            errors = 0
+            for log in self._audit_logs:
+                if start_time <= log.created_at <= end_time:
+                    total += 1
+                    if log.level == EventLevel.INFO:
+                        success += 1
+                    elif log.level == EventLevel.ERROR:
+                        errors += 1
+
+        return {
+            "total_operations": total,
+            "successful_operations": success,
+            "failed_operations": errors,
+        }
+
+    async def log_batch_operation(
+        self, operation: Any, user_id: Optional[str] = None, extra: Optional[Dict[str, Any]] = None
+    ) -> Optional[List[AuditLog]]:
+        """
+        记录批量操作审计日志
+
+        Args:
+            operation: 批量操作响应对象
+            user_id: 操作用户ID
+            extra: 额外信息
+
+        Returns:
+            创建的审计日志列表（包含批量操作日志和每个个体的日志）
+        """
+        try:
+            # 从操作响应中提取信息
+            operation_id = getattr(operation, "operation_id", "unknown")
+            operation_type = getattr(operation, "operation_type", "unknown")
+            status = getattr(operation, "status", "unknown")
+            summary = getattr(operation, "summary", None)
+            results = getattr(operation, "results", [])
+
+            # 构建审计日志详情
+            details = {
+                "operation_id": operation_id,
+                "operation_type": operation_type,
+                "user_id": user_id,
+            }
+            if summary:
+                details["summary"] = {
+                    "total_items": summary.total_items,
+                    "successful_items": summary.successful_items,
+                    "failed_items": summary.failed_items,
+                    "success_rate": summary.success_rate,
+                }
+            if extra:
+                details.update(extra)
+
+            # 确定审计动作和类别
+            from shared.models.audit import AuditAction, AuditCategory
+
+            action_map = {
+                "asset_create": AuditAction.ASSET_REGISTERED,
+                "asset_update": AuditAction.ASSET_UPDATED,
+                "asset_delete": AuditAction.ASSET_DECOMMISSIONED,
+                "task_create": AuditAction.TASK_CREATED,
+            }
+            action = action_map.get(operation_type, AuditAction.ASSET_UPDATED)
+
+            # 创建批量操作总体审计日志
+            batch_audit_log = AuditLog(
+                audit_id=f"audit-batch-{uuid.uuid4().hex[:8]}",
+                action=action,
+                category=AuditCategory.ASSET if "asset" in operation_type else AuditCategory.TASK,
+                level=EventLevel.INFO if status == "completed" else EventLevel.ERROR,
+                actor=user_id or "system",
+                target_type="batch_operation",
+                target_id=operation_id,
+                message=f"Batch {operation_type} completed: {summary.successful_items if summary else 0} successful",
+                details=details,
+                created_at=datetime.now(timezone.utc),
+            )
+
+            # 保存批量操作审计日志
+            if self.audit_dao:
+                self.audit_dao.create(batch_audit_log)
+            else:
+                self._audit_logs.append(batch_audit_log)
+
+            audit_logs = [batch_audit_log]
+
+            # 为每个成功的个体操作创建审计日志
+            for result in results:
+                if result.success:  # 只为成功的操作创建个体审计日志
+                    asset_id = result.id
+                    individual_audit_log = AuditLog(
+                        audit_id=f"audit-individual-{uuid.uuid4().hex[:8]}",
+                        action=action,
+                        category=AuditCategory.ASSET
+                        if "asset" in operation_type
+                        else AuditCategory.TASK,
+                        level=EventLevel.INFO,
+                        actor=user_id or "system",
+                        target_type="asset" if "asset" in operation_type else "task",
+                        target_id=asset_id,
+                        details={
+                            "operation_id": operation_id,
+                            "operation_type": operation_type,
+                            "individual_result": result.message,
+                        },
+                        created_at=datetime.now(timezone.utc),
+                    )
+
+                    # 保存个体审计日志
+                    if self.audit_dao:
+                        self.audit_dao.create(individual_audit_log)
+                    else:
+                        self._audit_logs.append(individual_audit_log)
+
+                    audit_logs.append(individual_audit_log)
+
+            return audit_logs
+
+        except Exception as e:
+            logger.error(f"Failed to log batch operation: {e}")
+            return None
 
 
 # 便捷函数
@@ -507,9 +705,7 @@ class SecurityAuditService:
 
         # 应用过滤条件
         if "event_types" in filters and filters["event_types"]:
-            logs = [
-                log for log in logs if log.security_event_type in filters["event_types"]
-            ]
+            logs = [log for log in logs if log.security_event_type in filters["event_types"]]
         if "actor_types" in filters and filters["actor_types"]:
             logs = [log for log in logs if log.actor_type in filters["actor_types"]]
         if "result" in filters and filters["result"]:
@@ -521,9 +717,7 @@ class SecurityAuditService:
         if "target_id" in filters and filters["target_id"]:
             logs = [log for log in logs if log.target_id == filters["target_id"]]
         if "correlation_id" in filters and filters["correlation_id"]:
-            logs = [
-                log for log in logs if log.correlation_id == filters["correlation_id"]
-            ]
+            logs = [log for log in logs if log.correlation_id == filters["correlation_id"]]
 
         # 时间范围过滤
         if "start_time" in filters and filters["start_time"]:
@@ -617,9 +811,7 @@ class SecurityAuditService:
         for log in logs:
             if log.risk_level:
                 risk_str = log.risk_level.value
-                events_by_risk_level[risk_str] = (
-                    events_by_risk_level.get(risk_str, 0) + 1
-                )
+                events_by_risk_level[risk_str] = events_by_risk_level.get(risk_str, 0) + 1
 
         # 时间统计
         events_by_hour = {}
@@ -637,9 +829,7 @@ class SecurityAuditService:
 
         top_actors = [
             {"actor": actor, "count": count}
-            for actor, count in sorted(
-                actor_counts.items(), key=lambda x: x[1], reverse=True
-            )[:10]
+            for actor, count in sorted(actor_counts.items(), key=lambda x: x[1], reverse=True)[:10]
         ]
 
         # 操作者类型统计
@@ -652,16 +842,13 @@ class SecurityAuditService:
         failed_auth_count = sum(
             1
             for log in logs
-            if log.action
-            and log.action.value in ["auth_denied"]
-            and log.result.value == "failure"
+            if log.action and log.action.value in ["auth_denied"] and log.result.value == "failure"
         )
 
         permission_denied_count = sum(
             1
             for log in logs
-            if log.security_event_type
-            and log.security_event_type.value == "permission_denied"
+            if log.security_event_type and log.security_event_type.value == "permission_denied"
         )
 
         security_events_count = len(self._security_events)

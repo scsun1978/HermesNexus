@@ -162,9 +162,7 @@ class TestRollbackAPI:
             return_value={"user_id": "test-user-001", "roles": ["operator"]},
         ):
             with patch("cloud.api.rollback_api.get_rollback_service") as mock_service:
-                mock_service.return_value.execute_rollback_plan = AsyncMock(
-                    return_value=mock_plan
-                )
+                mock_service.return_value.execute_rollback_plan = AsyncMock(return_value=mock_plan)
                 mock_service.return_value.get_rollback_plan.return_value = mock_plan
 
                 response = client.post(
@@ -186,9 +184,7 @@ class TestRollbackAPI:
             return_value={"user_id": "test-user-001", "roles": ["operator"]},
         ):
             with patch("cloud.api.rollback_api.get_rollback_service") as mock_service:
-                mock_service.return_value.execute_rollback_plan.side_effect = (
-                    ValueError("回滚计划不存在")
-                )
+                mock_service.return_value.execute_rollback_plan.side_effect = ValueError("回滚计划不存在")
 
                 response = client.post(
                     "/api/v1/rollback/plans/execute",
@@ -274,9 +270,7 @@ class TestRollbackAPI:
             with patch("cloud.api.rollback_api.get_rollback_service") as mock_service:
                 mock_service.return_value.list_rollback_plans.return_value = mock_plans
 
-                response = client.get(
-                    "/api/v1/rollback/plans", headers=mock_auth_headers
-                )
+                response = client.get("/api/v1/rollback/plans", headers=mock_auth_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -313,9 +307,7 @@ class TestRollbackAPI:
 
         assert response.status_code == 400
 
-    def test_create_failure_record_success(
-        self, client, mock_auth_headers, sample_failure_data
-    ):
+    def test_create_failure_record_success(self, client, mock_auth_headers, sample_failure_data):
         """测试成功创建故障记录"""
         mock_failure = MagicMock(spec=FailureRecord)
         mock_failure.failure_id = "failure-test001"
@@ -328,9 +320,7 @@ class TestRollbackAPI:
             return_value={"user_id": "test-user-001", "roles": ["operator"]},
         ):
             with patch("cloud.api.rollback_api.get_recovery_service") as mock_service:
-                mock_service.return_value.handle_failure = AsyncMock(
-                    return_value=mock_failure
-                )
+                mock_service.return_value.handle_failure = AsyncMock(return_value=mock_failure)
 
                 response = client.post(
                     "/api/v1/rollback/failures",
@@ -411,13 +401,9 @@ class TestRollbackAPI:
             return_value={"user_id": "test-user-001", "roles": ["operator"]},
         ):
             with patch("cloud.api.rollback_api.get_rollback_service") as mock_service:
-                mock_service.return_value.list_failure_records.return_value = (
-                    mock_failures
-                )
+                mock_service.return_value.list_failure_records.return_value = mock_failures
 
-                response = client.get(
-                    "/api/v1/rollback/failures", headers=mock_auth_headers
-                )
+                response = client.get("/api/v1/rollback/failures", headers=mock_auth_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -525,9 +511,7 @@ class TestRollbackAPI:
             with patch("cloud.api.rollback_api.get_rollback_service") as mock_service:
                 mock_service.return_value.get_statistics.return_value = mock_stats
 
-                response = client.get(
-                    "/api/v1/rollback/statistics", headers=mock_auth_headers
-                )
+                response = client.get("/api/v1/rollback/statistics", headers=mock_auth_headers)
 
         assert response.status_code == 200
         data = response.json()
@@ -541,9 +525,7 @@ class TestRollbackAPI:
             mock_stats.total_rollback_plans = 50
             mock_service.return_value.get_statistics.return_value = mock_stats
 
-            with patch(
-                "cloud.api.rollback_api.get_recovery_service"
-            ) as mock_recovery_service:
+            with patch("cloud.api.rollback_api.get_recovery_service") as mock_recovery_service:
                 mock_recovery_service.return_value._active_recoveries = {}
 
                 response = client.get("/api/v1/rollback/health")
@@ -620,9 +602,7 @@ class TestRollbackAPIIntegration:
             assert get_response.status_code == 200
 
             # 4. 列出故障记录
-            list_response = client.get(
-                "/api/v1/rollback/failures", headers=mock_auth_headers
-            )
+            list_response = client.get("/api/v1/rollback/failures", headers=mock_auth_headers)
 
             assert list_response.status_code == 200
 

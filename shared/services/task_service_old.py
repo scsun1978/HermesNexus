@@ -290,15 +290,11 @@ class TaskService:
         running_tasks = sum(1 for t in tasks if t.status == TaskStatus.RUNNING)
         pending_tasks = sum(1 for t in tasks if t.status == TaskStatus.PENDING)
         completed_tasks = sum(1 for t in tasks if t.status == TaskStatus.SUCCEEDED)
-        failed_tasks = sum(
-            1 for t in tasks if t.status in [TaskStatus.FAILED, TaskStatus.TIMEOUT]
-        )
+        failed_tasks = sum(1 for t in tasks if t.status in [TaskStatus.FAILED, TaskStatus.TIMEOUT])
 
         # 成功率计算
         total_finished = completed_tasks + failed_tasks
-        success_rate = (
-            (completed_tasks / total_finished * 100) if total_finished > 0 else 0.0
-        )
+        success_rate = (completed_tasks / total_finished * 100) if total_finished > 0 else 0.0
 
         return TaskStats(
             total_tasks=len(tasks),
@@ -370,9 +366,7 @@ class TaskService:
 
         # 状态转换
         if task.status != TaskStatus.ASSIGNED:
-            raise ValueError(
-                f"Task '{task_id}' is not in ASSIGNED status (current: {task.status})"
-            )
+            raise ValueError(f"Task '{task_id}' is not in ASSIGNED status (current: {task.status})")
 
         task.status = TaskStatus.RUNNING
         task.started_at = datetime.utcnow()

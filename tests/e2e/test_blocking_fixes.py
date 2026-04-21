@@ -129,9 +129,7 @@ class BlockingFixesE2ETest:
                 self.created_tasks.append(task.task_id)
                 return True
             else:
-                logger.error(
-                    f"❌ created_by 参数未正确设置: {task.created_by if task else 'No task'}"
-                )
+                logger.error(f"❌ created_by 参数未正确设置: {task.created_by if task else 'No task'}")
                 return False
 
         except Exception as e:
@@ -182,9 +180,7 @@ class BlockingFixesE2ETest:
             task_service = get_task_service()
 
             # 测试 get_pending_tasks_for_node 方法
-            pending_tasks = task_service.get_pending_tasks_for_node(
-                "test-node-001", limit=10
-            )
+            pending_tasks = task_service.get_pending_tasks_for_node("test-node-001", limit=10)
 
             if pending_tasks is not None:
                 logger.info("✅ TaskService.get_pending_tasks_for_node 方法存在")
@@ -273,9 +269,7 @@ class BlockingFixesE2ETest:
                     "command": "hostname",
                 }
 
-                response = await client.post(
-                    f"{self.cloud_url}/api/v1/tasks", json=task_data
-                )
+                response = await client.post(f"{self.cloud_url}/api/v1/tasks", json=task_data)
 
                 if response.status_code in [200, 201]:
                     task = response.json()

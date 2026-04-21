@@ -255,16 +255,12 @@ class AlertManager:
         # 按严重级别统计
         severity_count = {}
         for alert in active_alerts:
-            severity_count[alert.severity.value] = (
-                severity_count.get(alert.severity.value, 0) + 1
-            )
+            severity_count[alert.severity.value] = severity_count.get(alert.severity.value, 0) + 1
 
         # 按分类统计
         category_count = {}
         for alert in active_alerts:
-            category_count[alert.category.value] = (
-                category_count.get(alert.category.value, 0) + 1
-            )
+            category_count[alert.category.value] = category_count.get(alert.category.value, 0) + 1
 
         return {
             "total_active_alerts": len(active_alerts),
@@ -276,9 +272,7 @@ class AlertManager:
             "low_count": severity_count.get("low", 0),
         }
 
-    def _get_metric_value(
-        self, metrics: Dict[str, Any], metric_name: str
-    ) -> Optional[float]:
+    def _get_metric_value(self, metrics: Dict[str, Any], metric_name: str) -> Optional[float]:
         """获取指标值"""
         # 直接获取指标值
         if metric_name in metrics:
@@ -295,9 +289,7 @@ class AlertManager:
 
         return None
 
-    def _should_trigger_alert(
-        self, rule: AlertRule, value: float, metrics: Dict[str, Any]
-    ) -> bool:
+    def _should_trigger_alert(self, rule: AlertRule, value: float, metrics: Dict[str, Any]) -> bool:
         """判断是否应该触发告警"""
         if rule.condition == "greater_than":
             return value > rule.threshold

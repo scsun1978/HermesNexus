@@ -75,9 +75,7 @@ class NodeAuthMiddleware:
 
         return None
 
-    def check_permission(
-        self, payload: Dict[str, Any], required_permission: str
-    ) -> bool:
+    def check_permission(self, payload: Dict[str, Any], required_permission: str) -> bool:
         """
         检查节点是否具有所需权限
 
@@ -111,13 +109,9 @@ class NodeAuthMiddleware:
         method = request.method
 
         if success:
-            logger.info(
-                f"Node access granted: node={node_id} method={method} url={url}"
-            )
+            logger.info(f"Node access granted: node={node_id} method={method} url={url}")
         else:
-            logger.warning(
-                f"Node access denied: node={node_id} method={method} url={url}"
-            )
+            logger.warning(f"Node access denied: node={node_id} method={method} url={url}")
 
 
 # 全局中间件实例
@@ -238,9 +232,7 @@ class NodeAuthValidator:
 
         return payload
 
-    def check_node_permission(
-        self, payload: Dict[str, Any], required_permission: str
-    ) -> bool:
+    def check_node_permission(self, payload: Dict[str, Any], required_permission: str) -> bool:
         """
         检查节点权限
 

@@ -10,9 +10,7 @@ import unittest
 from datetime import datetime
 
 # 添加项目路径
-PROJECT_ROOT = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_ROOT)
 
 from shared.database import SQLiteBackend
@@ -58,9 +56,7 @@ class TestDatabasePersistence(unittest.TestCase):
             name="Test Persistence Asset",
             asset_type=AssetType.LINUX_HOST,
             status=AssetStatus.REGISTERED,
-            metadata=AssetMetadata(
-                ip_address="192.168.1.100", hostname="persist.local"
-            ),
+            metadata=AssetMetadata(ip_address="192.168.1.100", hostname="persist.local"),
             description="Testing data persistence",
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -164,9 +160,7 @@ class TestDatabasePersistence(unittest.TestCase):
                 name=f"Test Asset {i}",
                 asset_type=AssetType.LINUX_HOST,
                 status=AssetStatus.REGISTERED,
-                metadata=AssetMetadata(
-                    ip_address=f"192.168.1.{100+i}", hostname=f"asset{i}.local"
-                ),
+                metadata=AssetMetadata(ip_address=f"192.168.1.{100+i}", hostname=f"asset{i}.local"),
                 description=f"Test asset {i}",
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),

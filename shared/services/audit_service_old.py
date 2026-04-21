@@ -124,19 +124,13 @@ class AuditService:
             logs = [log for log in logs if log.target_id == params.target_id]
 
         if params.related_task_id:
-            logs = [
-                log for log in logs if log.related_task_id == params.related_task_id
-            ]
+            logs = [log for log in logs if log.related_task_id == params.related_task_id]
 
         if params.related_node_id:
-            logs = [
-                log for log in logs if log.related_node_id == params.related_node_id
-            ]
+            logs = [log for log in logs if log.related_node_id == params.related_node_id]
 
         if params.related_asset_id:
-            logs = [
-                log for log in logs if log.related_asset_id == params.related_asset_id
-            ]
+            logs = [log for log in logs if log.related_asset_id == params.related_asset_id]
 
         if params.search:
             search_lower = params.search.lower()
@@ -261,15 +255,9 @@ class AuditService:
             by_level[level.value] = count
 
         # 时间范围统计
-        events_last_hour = sum(
-            1 for log in logs if log.timestamp >= now - timedelta(hours=1)
-        )
-        events_last_day = sum(
-            1 for log in logs if log.timestamp >= now - timedelta(days=1)
-        )
-        events_last_week = sum(
-            1 for log in logs if log.timestamp >= now - timedelta(weeks=1)
-        )
+        events_last_hour = sum(1 for log in logs if log.timestamp >= now - timedelta(hours=1))
+        events_last_day = sum(1 for log in logs if log.timestamp >= now - timedelta(days=1))
+        events_last_week = sum(1 for log in logs if log.timestamp >= now - timedelta(weeks=1))
 
         # 错误统计
         error_events = sum(
@@ -382,9 +370,7 @@ def get_audit_service() -> AuditService:
 
 
 # 便捷函数：记录常用事件
-def log_task_created(
-    task_id: str, task_name: str, actor: str, details: Dict[str, Any] = None
-):
+def log_task_created(task_id: str, task_name: str, actor: str, details: Dict[str, Any] = None):
     """记录任务创建事件"""
     service = get_audit_service()
     return service.log_action(
@@ -455,9 +441,7 @@ def log_task_failed(
     )
 
 
-def log_node_online(
-    node_id: str, node_name: str, actor: str, details: Dict[str, Any] = None
-):
+def log_node_online(node_id: str, node_name: str, actor: str, details: Dict[str, Any] = None):
     """记录节点上线事件"""
     service = get_audit_service()
     return service.log_action(
@@ -476,9 +460,7 @@ def log_node_online(
     )
 
 
-def log_node_offline(
-    node_id: str, node_name: str, actor: str, details: Dict[str, Any] = None
-):
+def log_node_offline(node_id: str, node_name: str, actor: str, details: Dict[str, Any] = None):
     """记录节点离线事件"""
     service = get_audit_service()
     return service.log_action(

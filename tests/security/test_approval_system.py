@@ -34,43 +34,27 @@ class TestApprovalModels(unittest.TestCase):
 
         # 测试有效转换
         self.assertTrue(
-            ApprovalStateTransition.can_transition(
-                ApprovalStatus.DRAFT, ApprovalStatus.PENDING
-            )
+            ApprovalStateTransition.can_transition(ApprovalStatus.DRAFT, ApprovalStatus.PENDING)
         )
         self.assertTrue(
-            ApprovalStateTransition.can_transition(
-                ApprovalStatus.PENDING, ApprovalStatus.APPROVED
-            )
+            ApprovalStateTransition.can_transition(ApprovalStatus.PENDING, ApprovalStatus.APPROVED)
         )
         self.assertTrue(
-            ApprovalStateTransition.can_transition(
-                ApprovalStatus.PENDING, ApprovalStatus.REJECTED
-            )
+            ApprovalStateTransition.can_transition(ApprovalStatus.PENDING, ApprovalStatus.REJECTED)
         )
 
         # 测试无效转换
         self.assertFalse(
-            ApprovalStateTransition.can_transition(
-                ApprovalStatus.APPROVED, ApprovalStatus.PENDING
-            )
+            ApprovalStateTransition.can_transition(ApprovalStatus.APPROVED, ApprovalStatus.PENDING)
         )
         self.assertFalse(
-            ApprovalStateTransition.can_transition(
-                ApprovalStatus.DRAFT, ApprovalStatus.APPROVED
-            )
+            ApprovalStateTransition.can_transition(ApprovalStatus.DRAFT, ApprovalStatus.APPROVED)
         )
 
         # 测试终态
-        self.assertTrue(
-            ApprovalStateTransition.is_terminal_state(ApprovalStatus.APPROVED)
-        )
-        self.assertTrue(
-            ApprovalStateTransition.is_terminal_state(ApprovalStatus.REJECTED)
-        )
-        self.assertFalse(
-            ApprovalStateTransition.is_terminal_state(ApprovalStatus.PENDING)
-        )
+        self.assertTrue(ApprovalStateTransition.is_terminal_state(ApprovalStatus.APPROVED))
+        self.assertTrue(ApprovalStateTransition.is_terminal_state(ApprovalStatus.REJECTED))
+        self.assertFalse(ApprovalStateTransition.is_terminal_state(ApprovalStatus.PENDING))
 
         print("  ✅ 审批状态转换测试通过")
 
@@ -445,9 +429,7 @@ class TestApprovalService(unittest.TestCase):
         self.assertEqual(pending_requests[0].request_id, request1.request_id)
 
         # 按优先级过滤
-        high_priority_requests = self.service.list_requests(
-            priority=ApprovalPriority.HIGH
-        )
+        high_priority_requests = self.service.list_requests(priority=ApprovalPriority.HIGH)
         self.assertGreaterEqual(len(high_priority_requests), 1)
 
         # 按申请人过滤
@@ -528,9 +510,7 @@ class TestApprovalStatistics(unittest.TestCase):
         self.assertGreater(stats.avg_approval_time_seconds, 0)
 
         # 最大时间应该大于等于最小时间
-        self.assertGreaterEqual(
-            stats.max_approval_time_seconds, stats.min_approval_time_seconds
-        )
+        self.assertGreaterEqual(stats.max_approval_time_seconds, stats.min_approval_time_seconds)
 
         print("  ✅ 审批时间统计测试通过")
 

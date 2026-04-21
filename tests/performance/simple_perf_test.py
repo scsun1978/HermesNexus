@@ -94,9 +94,7 @@ async def test_api_performance():
                 return user_success, user_times
 
             start_time = time.time()
-            user_results = await asyncio.gather(
-                *[concurrent_requests(i) for i in range(5)]
-            )
+            user_results = await asyncio.gather(*[concurrent_requests(i) for i in range(5)])
             end_time = time.time()
 
             total_time = end_time - start_time
@@ -193,14 +191,10 @@ async def test_api_performance():
                 print(f"{status} {test_name}")
 
             # 计算总体评分
-            excellent_count = sum(
-                1 for grade in results.values() if grade == "excellent"
-            )
+            excellent_count = sum(1 for grade in results.values() if grade == "excellent")
             good_count = sum(1 for grade in results.values() if grade == "good")
             total_tested = sum(
-                1
-                for grade in results.values()
-                if grade in ["excellent", "good", "average"]
+                1 for grade in results.values() if grade in ["excellent", "good", "average"]
             )
 
             if total_tested > 0:

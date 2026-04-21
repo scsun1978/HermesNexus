@@ -86,9 +86,7 @@ class TestCloudEdgeIntegration(unittest.TestCase):
                 "active_tasks": 2,
             }
 
-            self.db.update_node(
-                node_id, {"last_heartbeat": time.time(), **heartbeat_data}
-            )
+            self.db.update_node(node_id, {"last_heartbeat": time.time(), **heartbeat_data})
 
             # 验证心跳更新
             updated_node = self.db.get_node(node_id)
@@ -143,9 +141,7 @@ class TestCloudEdgeIntegration(unittest.TestCase):
         async def run_test():
             # 创建任务
             job_id = "exec-job-1"
-            self.db.add_job(
-                job_id, {"job_id": job_id, "status": "pending", "command": "uptime"}
-            )
+            self.db.add_job(job_id, {"job_id": job_id, "status": "pending", "command": "uptime"})
 
             # 模拟任务开始执行
             self.db.update_job(job_id, {"status": "running"})
@@ -240,9 +236,7 @@ class TestTaskLifecycle(unittest.TestCase):
 
         async def run_test():
             # 准备环境
-            self.db.add_node(
-                "lifecycle-node", {"node_id": "lifecycle-node", "status": "online"}
-            )
+            self.db.add_node("lifecycle-node", {"node_id": "lifecycle-node", "status": "online"})
             self.db.add_device(
                 "lifecycle-device",
                 {"device_id": "lifecycle-device", "host": "localhost"},
@@ -394,9 +388,7 @@ class TestMultiNodeScenarios(unittest.TestCase):
         async def run_test():
             # 注册多个节点
             for i in range(3):
-                self.db.add_node(
-                    f"node-{i}", {"node_id": f"node-{i}", "status": "online"}
-                )
+                self.db.add_node(f"node-{i}", {"node_id": f"node-{i}", "status": "online"})
 
             # 创建任务并分配到不同节点
             for i in range(5):
@@ -445,9 +437,7 @@ class TestMultiNodeScenarios(unittest.TestCase):
             self.assertEqual(node["status"], "offline")
 
             # 3. 节点恢复
-            self.db.update_node(
-                node_id, {"status": "online", "last_heartbeat": time.time()}
-            )
+            self.db.update_node(node_id, {"status": "online", "last_heartbeat": time.time()})
 
             node = self.db.get_node(node_id)
             self.assertEqual(node["status"], "online")

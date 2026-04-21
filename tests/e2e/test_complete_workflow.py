@@ -69,15 +69,11 @@ class TestCompleteWorkflow(unittest.TestCase):
                     )
 
                     if registration_response.status_code not in [200, 201]:
-                        self.skipTest(
-                            f"节点注册失败: {registration_response.status_code}"
-                        )
+                        self.skipTest(f"节点注册失败: {registration_response.status_code}")
                         return
 
                     # 2. 验证节点注册
-                    node_response = await client.get(
-                        f"{self.cloud_url}/api/v1/nodes/{node_id}"
-                    )
+                    node_response = await client.get(f"{self.cloud_url}/api/v1/nodes/{node_id}")
                     if node_response.status_code != 200:
                         self.skipTest(f"获取节点失败: {node_response.status_code}")
                         return
@@ -86,9 +82,7 @@ class TestCompleteWorkflow(unittest.TestCase):
                     self.assertEqual(node_data["node_id"], node_id)
 
                     # 3. 创建设备（如果需要）
-                    device_response = await client.get(
-                        f"{self.cloud_url}/api/v1/devices"
-                    )
+                    device_response = await client.get(f"{self.cloud_url}/api/v1/devices")
                     if device_response.status_code == 200:
                         devices = device_response.json().get("devices", [])
                         if devices:
@@ -150,9 +144,7 @@ class TestCompleteWorkflow(unittest.TestCase):
                             self.assertIsNotNone(status_data["node_id"])
 
                     # 7. 检查事件日志
-                    events_response = await client.get(
-                        f"{self.cloud_url}/api/v1/events"
-                    )
+                    events_response = await client.get(f"{self.cloud_url}/api/v1/events")
                     if events_response.status_code == 200:
                         events_data = events_response.json()
                         self.assertGreater(len(events_data.get("events", [])), 0)
@@ -299,9 +291,7 @@ class TestErrorHandling(unittest.TestCase):
             try:
                 async with httpx.AsyncClient(timeout=10.0) as client:
                     # 请求不存在的节点
-                    response = await client.get(
-                        f"{self.cloud_url}/api/v1/nodes/non-existent-node"
-                    )
+                    response = await client.get(f"{self.cloud_url}/api/v1/nodes/non-existent-node")
                     self.assertEqual(response.status_code, 404)
 
                     return True
@@ -319,9 +309,7 @@ class TestErrorHandling(unittest.TestCase):
             try:
                 async with httpx.AsyncClient(timeout=10.0) as client:
                     # 请求不存在的任务
-                    response = await client.get(
-                        f"{self.cloud_url}/api/v1/jobs/non-existent-job"
-                    )
+                    response = await client.get(f"{self.cloud_url}/api/v1/jobs/non-existent-job")
                     self.assertEqual(response.status_code, 404)
 
                     return True
@@ -409,9 +397,7 @@ class TestDataIntegrity(unittest.TestCase):
                     await asyncio.sleep(2)
 
                     # 检查事件是否被记录
-                    events_response = await client.get(
-                        f"{self.cloud_url}/api/v1/events"
-                    )
+                    events_response = await client.get(f"{self.cloud_url}/api/v1/events")
                     if events_response.status_code == 200:
                         events_data = events_response.json()
                         events = events_data.get("events", [])

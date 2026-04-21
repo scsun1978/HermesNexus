@@ -1,11 +1,16 @@
 # Hermes 分布式边缘设备管理系统 Week/Day 执行计划
 
 Date: 2026-04-12
-Version: 1.0.1
+Version: 1.0.2
 
 ## 结论先行
 
-当前规划没有偏离主线。下一步应继续围绕“最小可验证闭环”推进：设备注册 → 心跳 → 任务下发 → 结果回传 → 断线重连。
+当前规划已经从“从零开发”转入“核心已实现，补缺口、验收、固化流程”的阶段。
+
+graphify-out 与源码核对后可以确认：
+- 注册、心跳、任务下发、结果回传的核心链路已经存在
+- 边缘执行面与云端控制面已经打通
+- 现在的重点不是继续扩展大功能，而是把已实现能力补完整、测稳定、写清楚
 
 本计划刻意不引入以下内容：
 - 多机房
@@ -14,27 +19,27 @@ Version: 1.0.1
 - 大规模调度优化
 - 完整监控平台
 
-目标不是把系统做“大”，而是先把系统做“可管、可验、可恢复”。
+目标不是把系统做“大”，而是把系统做“完整、可验、可恢复”。
 
 ## 总目标
 
-在 2 个工作周内，完成一个最小可验证的云-边闭环，让开发服务器上能够稳定演示：
+在 2 个工作周内，完成“核心闭环验收 + 缺口补齐 + 部署与测试固化”，让开发服务器上能够稳定演示：
 1. 节点注册成功
 2. 节点持续心跳
 3. 云端能下发任务
 4. 边缘节点能执行并回传结果
 5. 节点断线后可重新接入并恢复状态
+6. 脚本类任务至少达到可用或明确降级状态
 
 ## 规划边界
 
 ### 本轮必须完成
-- 最小控制面协议冻结
-- 节点注册和心跳
-- 任务创建、下发、结果回传
-- 断线与重连处理
-- 开发服务器部署方式
-- 最小集成测试
-- 最小运维文档
+- 复核当前核心实现
+- 补齐明确缺口
+- 统一状态流转与错误码
+- 固化本机和开发服务器验证流程
+- 固化最小集成测试
+- 同步最小运维文档
 
 ### 本轮不做
 - 多地域/多机房
@@ -47,196 +52,146 @@ Version: 1.0.1
 
 建议优先触达的文件：
 
-- 新建协议与模型：
-  - `shared/models/protocol.py`
-  - `shared/models/node.py`
-  - `shared/models/task.py`
-- 复用和调整的数据访问层：
-  - `shared/dao/task_dao.py`
-  - `shared/dao/node_dao.py`（如不存在则创建）
-- 云端服务入口与接口：
-  - `cloud/__init__.py`
-  - `cloud/app.py`（如不存在则创建）
-  - `cloud/api.py`（如需要拆分则创建）
-- 边缘节点入口与执行器：
-  - `edge/__init__.py`
-  - `edge/agent.py`（如不存在则创建）
-  - `edge/transport.py`（如需要拆分则创建）
+- 已有核心实现：
+  - `cloud/api/main.py`
+  - `cloud/database/db.py`
+  - `edge/runtime/core.py`
+  - `edge/cloud/client.py`
+  - `edge/storage/storage.py`
+  - `shared/protocol/messages.py`
+  - `shared/protocol/error_codes.py`
+  - `shared/schemas/models.py`
+- 需要补齐/修正：
+  - `edge/runtime/core.py`
+  - `shared/models/*`（如有命名/结构不一致）
+  - `cloud/api/*`（如有接口命名或状态字段不一致）
 - 测试：
   - `tests/test_edge_protocol.py`
   - `tests/test_edge_registration.py`
   - `tests/test_edge_heartbeat.py`
   - `tests/test_edge_task_flow.py`
   - `tests/integration/test_edge_e2e.py`
+  - `tests/e2e/test_complete_workflow.py`
 - 文档：
   - `docs/specs/edge-control-protocol.md`
-  - `docs/plans/2026-04-12-edge-management-weekday-execution-plan.md`
+  - `docs/plans/2026-04-12-edge-management-next-steps.md`
   - `docs/runbooks/edge-management-ops.md`（如不存在则创建）
 
-## Week 1：协议、注册、心跳
+## Week 1：复核、补缺、对齐
 
-### Day 1：冻结最小控制面协议
+### Day 1：复核当前实现与缺口
 
-**目标**：先把云端和边缘节点“最少要说清楚的话”定下来，避免后续接口反复改。
+**目标**：确认哪些已经完成，哪些还需要补，避免重复开发。
 
 **要产出**：
-- 协议说明文档
-- 最小 JSON 示例
-- 错误码约定
-- 字段约束说明
+- 已完成清单
+- 缺口清单
+- 优先级清单
 
 **文件**：
+- 读取：`cloud/api/main.py`
+- 读取：`edge/runtime/core.py`
+- 读取：`shared/protocol/messages.py`
+- 读取：`shared/schemas/models.py`
+- 读取：`graphify-out/GRAPH_REPORT.md`
+
+**本机验证**：
+- 对照源码和 graphify 结果，列出“已存在 / 部分存在 / 未实现”三类项
+
+**服务器验证**：
+- 在开发服务器上确认当前版本能启动云端与边缘端
+- 记录一次完整链路的启动日志
+
+### Day 2：补脚本类任务执行缺口
+
+**目标**：把当前明确未完成的脚本执行路径处理掉，或者明确降级策略。
+
+**文件**：
+- 修改：`edge/runtime/core.py`
+- 新建或修改：`edge/executors/*`（如需统一执行接口）
+- 新建：`tests/test_edge_script_task.py`
+
+**本机验证**：
+- `python -m pytest tests/test_edge_script_task.py -q`
+- 确认脚本任务要么可执行，要么按明确错误码失败
+
+**服务器验证**：
+- 在开发服务器上跑一次脚本任务
+- 确认结果回传与错误码符合预期
+
+### Day 3：统一状态流转与错误码
+
+**目标**：避免注册、任务、结果、重连的状态字段彼此不一致。
+
+**文件**：
+- 修改：`shared/protocol/error_codes.py`
+- 修改：`shared/protocol/messages.py`
+- 修改：`cloud/api/main.py`
+- 修改：`edge/runtime/core.py`
+- 新建：`tests/test_edge_status_transitions.py`
+
+**本机验证**：
+- `python -m pytest tests/test_edge_status_transitions.py -q`
+- 确认成功、失败、超时、重试、离线状态都能稳定流转
+
+**服务器验证**：
+- 造一次失败任务
+- 确认云边两侧状态展示一致
+
+### Day 4：补幂等与断线恢复边界
+
+**目标**：确保断线、重复回传、重复注册不会污染状态。
+
+**文件**：
+- 修改：`cloud/api/main.py`
+- 修改：`edge/cloud/client.py`
+- 新建：`tests/test_edge_idempotency.py`
+
+**本机验证**：
+- `python -m pytest tests/test_edge_idempotency.py -q`
+- 确认重复回传不会产生重复状态写入
+
+**服务器验证**：
+- 模拟网络抖动
+- 确认恢复后任务状态仍然正确
+
+### Day 5：整理当前实现与文档一致性
+
+**目标**：把“已经实现的东西”写进文档，把“还没做的东西”写成缺口。
+
+**文件**：
+- 修改：`docs/plans/2026-04-12-edge-management-next-steps.md`
+- 修改：`docs/plans/2026-04-12-edge-management-weekday-execution-plan.md`
 - 新建：`docs/specs/edge-control-protocol.md`
-- 新建：`shared/models/protocol.py`
-- 新建：`tests/test_edge_protocol.py`
 
 **本机验证**：
-- `python -m pytest tests/test_edge_protocol.py -q`
-- 确认注册、心跳、任务、结果、离线/重连消息的 JSON 样例都能通过序列化/反序列化测试
+- 文档中的“已完成 / 部分完成 / 待确认”与代码一致
 
 **服务器验证**：
-- 在开发服务器上打开协议文档，确认云端和边缘端对字段含义一致
-- 用真实配置跑一次样例请求，确认日志中的字段和文档一致
+- 在开发服务器上复核一遍核心链路的日志与文档字段
 
-### Day 2：实现共享消息模型
+## Week 2：联调、测试、部署固化
 
-**目标**：把协议落成可复用的数据结构，后续云端和边缘端都从这里读写。
+### Day 6：补齐核心集成测试
 
-**文件**：
-- 新建：`shared/models/node.py`
-- 新建：`shared/models/task.py`
-- 修改：`shared/models/protocol.py`
-- 新建：`tests/test_edge_model_serialization.py`
-
-**本机验证**：
-- `python -m pytest tests/test_edge_model_serialization.py -q`
-- 确认模型字段、默认值、必填项、错误字段输出都正确
-
-**服务器验证**：
-- 在开发服务器上跑一个最小的序列化样例，确认日志、API payload、数据库字段没有命名偏差
-
-### Day 3：建立云端节点注册与状态存储
-
-**目标**：让云端知道节点是谁、是否在线、最后一次心跳是什么时候。
+**目标**：把现有链路变成可回归的测试。
 
 **文件**：
-- 新建：`cloud/app.py`
-- 新建：`cloud/node_registry.py`
-- 修改：`shared/dao/task_dao.py`
-- 新建：`shared/dao/node_dao.py`
+- 新建：`tests/integration/test_edge_e2e.py`
+- 新建：`tests/integration/test_edge_restart_recovery.py`
 - 新建：`tests/test_edge_registration.py`
-
-**本机验证**：
-- `python -m pytest tests/test_edge_registration.py -q`
-- 确认注册接口能生成或确认 `node_id`
-- 确认节点状态能落库
-
-**服务器验证**：
-- 在开发服务器启动云端服务后，手动注册一个模拟节点
-- 检查节点列表、在线状态、最后心跳时间是否正确显示
-
-### Day 4：实现边缘节点自动注册与心跳
-
-**目标**：让边缘节点启动后自动接入，并持续保持在线。
-
-**文件**：
-- 新建：`edge/agent.py`
-- 新建：`edge/heartbeat.py`
-- 新建：`edge/config.py`
 - 新建：`tests/test_edge_heartbeat.py`
 
 **本机验证**：
-- `python -m pytest tests/test_edge_heartbeat.py -q`
-- 确认启动后自动注册
-- 确认心跳定时器按间隔发送
-- 确认心跳失败会进入重试逻辑
+- `python -m pytest tests/test_edge_registration.py tests/test_edge_heartbeat.py -q`
+- `python -m pytest tests/integration/test_edge_e2e.py -q`
 
 **服务器验证**：
-- 在开发服务器上启动一个模拟边缘节点
-- 确认云端能持续看到心跳刷新
-- 停掉节点后，确认云端在线状态切到离线
+- 在开发服务器上完整跑一遍注册、心跳、任务、回传、重连
 
-### Day 5：断线重连与状态恢复
+### Day 7：固化开发服务器部署方式
 
-**目标**：节点掉线后能重新接入，且云端状态不会长期脏掉。
-
-**文件**：
-- 修改：`edge/agent.py`
-- 修改：`edge/heartbeat.py`
-- 修改：`cloud/node_registry.py`
-- 新建：`tests/test_edge_reconnect.py`
-
-**本机验证**：
-- `python -m pytest tests/test_edge_reconnect.py -q`
-- 确认断线后自动重连
-- 确认重连后可复用原节点身份或按规则重新注册
-
-**服务器验证**：
-- 在开发服务器上手动断开模拟节点网络
-- 恢复网络后确认节点自动回连
-- 检查离线/在线切换记录是否正确
-
-## Week 2：任务闭环、部署、测试
-
-### Day 6：定义任务模型与下发接口
-
-**目标**：云端可以创建任务，并明确下发到指定节点。
-
-**文件**：
-- 新建：`shared/models/task_command.py`
-- 修改：`shared/models/task.py`
-- 新建：`cloud/task_service.py`
-- 新建：`tests/test_edge_task_dispatch.py`
-
-**本机验证**：
-- `python -m pytest tests/test_edge_task_dispatch.py -q`
-- 确认任务对象字段完整
-- 确认下发接口能定位目标节点
-
-**服务器验证**：
-- 在开发服务器上创建一个测试任务
-- 确认目标节点能收到任务元数据
-
-### Day 7：边缘节点执行任务并回传结果
-
-**目标**：节点不只是“在线”，而是真的能“干活”。
-
-**文件**：
-- 新建：`edge/task_worker.py`
-- 修改：`edge/agent.py`
-- 新建：`tests/test_edge_task_result.py`
-
-**本机验证**：
-- `python -m pytest tests/test_edge_task_result.py -q`
-- 确认任务执行成功会回传结果
-- 确认执行失败会回传 error 和状态码
-
-**服务器验证**：
-- 在开发服务器上让节点执行一个测试任务
-- 确认结果回传到云端
-- 确认云端任务状态从 pending/running 变为 success/failed
-
-### Day 8：补齐任务状态跟踪与失败处理
-
-**目标**：云端能准确知道任务生命周期，而不是只知道“发过了”。
-
-**文件**：
-- 修改：`cloud/task_service.py`
-- 修改：`shared/dao/task_dao.py`
-- 新建：`tests/test_edge_task_lifecycle.py`
-
-**本机验证**：
-- `python -m pytest tests/test_edge_task_lifecycle.py -q`
-- 确认任务状态流转符合预期
-- 确认重复回传、超时回传、失败回传不会污染状态
-
-**服务器验证**：
-- 在开发服务器上模拟超时和失败任务
-- 检查任务列表是否正确标记为超时或失败
-
-### Day 9：建立开发服务器部署方式
-
-**目标**：把云端和边缘模拟器变成可重复启动、可重复清理的环境。
+**目标**：把联调环境固定下来，减少手工操作。
 
 **文件**：
 - 新建：`scripts/dev_start_cloud.sh`
@@ -247,62 +202,79 @@ Version: 1.0.1
 **本机验证**：
 - `bash scripts/dev_start_cloud.sh --dry-run`
 - `bash scripts/dev_start_edge.sh --dry-run`
-- 确认脚本能正确打印配置、日志和数据目录
 
 **服务器验证**：
-- 在开发服务器上一键启动云端与模拟节点
-- 重启后确认状态可恢复
-- 确认日志路径固定且可直接定位问题
+- 一键启动云端与模拟节点
+- 重启后状态可恢复
 
-### Day 10：最小集成测试与收尾文档
+### Day 8：做一次完整验收演练
 
-**目标**：把核心链路固化成自动测试，并把操作方式写清楚。
+**目标**：确认当前实现已经达到“可演示、可恢复、可复现”。
 
 **文件**：
-- 新建：`tests/integration/test_edge_e2e.py`
-- 新建：`tests/integration/test_edge_restart_recovery.py`
-- 新建：`docs/runbooks/edge-management-ops.md`
-- 新建：`docs/plans/2026-04-12-edge-management-weekday-execution-plan.md`（如需迭代更新）
+- 复用现有测试与脚本
 
 **本机验证**：
-- `python -m pytest tests/integration/test_edge_e2e.py -q`
-- `python -m pytest tests/integration/test_edge_restart_recovery.py -q`
-- 确认本机单测和集成测试都能跑通
+- 先跑单测，再跑集成测试
+- 确认失败点能定位到具体模块
 
 **服务器验证**：
-- 在开发服务器上完整跑一遍注册、心跳、任务下发、结果回传、断线重连
-- 失败时能从日志快速定位到具体步骤
+- 完整演练一次：注册 → 心跳 → 任务下发 → 执行 → 回传 → 断线 → 重连
+
+### Day 9：整理验收结论和剩余缺口
+
+**目标**：把当前阶段结论写清楚，避免下阶段误判为“还在起步”。
+
+**文件**：
+- 修改：`docs/plans/2026-04-12-edge-management-next-steps.md`
+- 新建：`docs/plans/2026-04-12-edge-management-phase-review.md`（如需要）
+
+**本机验证**：
+- 缺口清单与测试结果一致
+
+**服务器验证**：
+- 开发服务器结果与本机结果一致
+
+### Day 10：收尾与下一阶段入口
+
+**目标**：给下一阶段留一个明确入口，不把本阶段遗留问题带过去。
+
+**文件**：
+- 修改：`docs/plans/2026-04-12-edge-management-next-steps.md`
+- 修改：`docs/plans/2026-04-12-edge-management-weekday-execution-plan.md`
+
+**本机验证**：
+- 核心闭环、部署、测试、文档都能对应到明确状态
+
+**服务器验证**：
+- 核心链路可稳定演示，剩余缺口有明确负责人/优先级
 
 ## 验收标准
 
 满足以下条件时，可认为这一轮没有跑偏：
-- 本机可开发、可单测
-- 开发服务器可部署、可联调
-- 节点可注册、可心跳
-- 服务端可下发任务
-- 节点可回传结果
-- 断线后可恢复
-- 测试失败时能定位到具体环节
+- 已实现能力和文档描述一致
+- 剩余缺口明确且可追踪
+- 核心链路可重复验证
+- 本机与开发服务器结论一致
+- 脚本任务缺口处理清楚
 
 ## 推荐推进顺序
 
 严格按顺序执行：
-1. 协议
-2. 注册/心跳
-3. 断线重连
-4. 任务闭环
-5. 部署脚本
-6. 集成测试
-7. 运维文档
+1. 复核当前实现
+2. 补脚本任务与状态缺口
+3. 固化集成测试
+4. 固化部署脚本
+5. 做完整验收演练
+6. 更新文档与下一阶段入口
 
 ## 风险提示
 
-- 如果协议没冻结就开写实现，后面会反复返工
-- 如果只做云端不做边缘端，系统仍然不完整
-- 如果先做 HA、监控、权限扩展，会把主线拖偏
-- 如果没有开发服务器验证，本机通过不代表链路可用
+- 如果继续按“从零开发”推进，会重复已有工作
+- 如果不先补脚本任务缺口，当前闭环仍然不是完全闭合
+- 如果文档不跟代码同步，后续计划会继续偏差
+- 如果没有开发服务器验证，本机通过不代表真实可用
 
 ## 下一步建议
 
-先执行 Day 1 和 Day 2，尽快把协议与模型定死，然后再往注册/心跳推进。
-
+先执行 Day 1 和 Day 2：先确认当前实现状态，再把最明确的缺口补掉。
