@@ -218,12 +218,30 @@ class EnhancedEdgeNodeV2:
             print(f"❌ v1任务执行失败: {job_id} - {e}")
 
     def _execute_command(self, command: str) -> Dict[str, Any]:
-        """执行命令"""
+        """执行命令（生产安全模式）"""
         try:
+            # 生产安全处理：强制使用安全模式
+            import shlex
+
+            # 尝试安全解析命令
+            try:
+                command_args = shlex.split(command)
+                logger.info(f"Using safe execution mode for: {command}")
+            except ValueError as e:
+                # 解析失败 - 拒绝执行
+                error_msg = f"Command parsing failed (contains shell syntax): {command}. Error: {e}"
+                logger.error(error_msg)
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "reason": "UNSAFE_COMMAND_SYNTAX",
+                    "duration": 0
+                }
+
             start_time = time.time()
             process = subprocess.Popen(
-                command,
-                shell=True,  # 注意：生产环境应使用更安全的执行方式
+                command_args,
+                shell=False,  # 强制安全模式
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
@@ -237,7 +255,8 @@ class EnhancedEdgeNodeV2:
                 "stdout": stdout,
                 "stderr": stderr,
                 "exit_code": process.returncode,
-                "duration": duration
+                "duration": duration,
+                "security_mode": "enforced"  # 标记强制安全模式
             }
 
         except subprocess.TimeoutExpired:

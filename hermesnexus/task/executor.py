@@ -156,35 +156,33 @@ class TaskExecutor:
         return ssh_parts
 
     def execute_local(self, command: str) -> Dict[str, Any]:
-        """本地执行命令（用于测试，安全模式）"""
+        """本地执行命令（生产安全模式）"""
         try:
             logger.info(f"Executing local command: {command}")
 
-            # 安全处理：检测是否包含shell元字符
-            shell_metachars = ['|', '&', ';', '$', '(', ')', '<', '>', '`', '\\', '\n', '\r']
-            has_shell_syntax = any(char in command for char in shell_metachars)
+            # 生产安全处理：严格禁止shell=True
+            import shlex
 
-            if has_shell_syntax:
-                # 复杂命令：警告但仍使用shell=True（向后兼容）
-                logger.warning(f"Command contains shell syntax, using shell=True: {command}")
-                use_shell = True
-                command_args = [command]
-            else:
-                # 简单命令：安全解析为列表形式
-                import shlex
-                try:
-                    command_args = shlex.split(command)
-                    use_shell = False
-                except ValueError:
-                    # 解析失败（如引号不匹配），回退到shell模式
-                    logger.warning(f"Command parsing failed, using shell=True: {command}")
-                    use_shell = True
-                    command_args = [command]
+            # 尝试安全解析命令
+            try:
+                command_args = shlex.split(command)
+                use_shell = False
+                logger.info(f"Using safe execution mode for: {command}")
+            except ValueError as e:
+                # 解析失败 - 拒绝执行而不是回退到不安全模式
+                error_msg = f"Command parsing failed (contains shell syntax): {command}. Error: {e}"
+                logger.error(error_msg)
+                return {
+                    'success': False,
+                    'error': error_msg,
+                    'reason': 'UNSAFE_COMMAND_SYNTAX',
+                    'completed_at': datetime.now().isoformat()
+                }
 
             start_time = datetime.now()
             process = subprocess.Popen(
                 command_args,
-                shell=use_shell,  # 优先使用shell=False，仅在必要时启用
+                shell=False,  # 强制安全模式
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True
@@ -204,7 +202,8 @@ class TaskExecutor:
                 'completed_at': end_time.isoformat(),
                 'command': command,
                 'execution_type': 'local',
-                'safe_execution': not use_shell  # 标记是否使用了安全执行
+                'safe_execution': True,  # 现在总是使用安全执行
+                'security_mode': 'enforced'  # 标记强制安全模式
             }
 
             if process.returncode != 0:
