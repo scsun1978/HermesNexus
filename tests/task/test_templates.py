@@ -143,10 +143,13 @@ class TestTemplateManager:
 
     def test_template_manager_initialization(self, template_manager):
         """模板管理器初始化"""
-        # 验证内置模板已自动注册
-        assert len(template_manager.templates) == 4
+        # 验证内置模板已自动注册 (4个MVP核心模板 + 4个Aruba模板)
+        assert len(template_manager.templates) == 8
         assert "inspection" in template_manager.templates
         assert "restart-service" in template_manager.templates
+        # 验证Aruba模板也注册了
+        assert "aruba-inspection" in template_manager.templates
+        assert "aruba-ap-restart" in template_manager.templates
 
     def test_register_template(self, template_manager):
         """注册自定义模板"""
@@ -164,7 +167,7 @@ class TestTemplateManager:
 
         # 验证模板已注册
         assert "custom-test" in template_manager.templates
-        assert len(template_manager.templates) == 5
+        assert len(template_manager.templates) == 9  # 8个内置模板(4 MVP + 4 Aruba) + 1个自定义
 
     def test_get_template(self, template_manager):
         """获取模板"""
@@ -181,8 +184,8 @@ class TestTemplateManager:
         """列出所有模板"""
         templates = template_manager.list_templates()
 
-        # 验证列表结构
-        assert len(templates) == 4
+        # 验证列表结构 (4个MVP核心模板 + 4个Aruba模板)
+        assert len(templates) == 8
         assert all(isinstance(t, dict) for t in templates)
 
         # 验证每个模板包含必要字段

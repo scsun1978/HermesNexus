@@ -73,8 +73,14 @@ class TemplateManager:
 
     def _register_builtin_templates(self):
         """注册内置模板"""
+        # 注册核心MVP模板
         builtin_templates = CoreTemplates.get_all_templates()
         for template_id, template in builtin_templates.items():
+            self.register_template(template)
+
+        # 注册Aruba专用模板 - Phase 4B
+        aruba_templates = ArubaTemplates.get_all_templates()
+        for template_id, template in aruba_templates.items():
             self.register_template(template)
 
     def register_template(self, template: TaskTemplate) -> bool:
@@ -177,6 +183,64 @@ class MVPTaskTemplates:
         """创建回滚任务命令"""
         template = CoreTemplates.get_rollback_service_template()
         return template.render(service=service, version=version)
+
+
+class ArubaTemplates:
+    """Aruba专用任务模板库 - Phase 4B"""
+
+    @staticmethod
+    def get_aruba_inspection_template() -> TaskTemplate:
+        """Aruba设备巡检模板"""
+        return TaskTemplate.create(
+            template_id="aruba-inspection",
+            name="Aruba设备巡检",
+            description="检查Aruba设备状态：版本信息、AP数据库、客户端摘要、无线网络",
+            command_template="show version && show ap database && show client summary && show wlan ssid",
+            default_params={}
+        )
+
+    @staticmethod
+    def get_aruba_ap_restart_template() -> TaskTemplate:
+        """Aruba AP重启模板"""
+        return TaskTemplate.create(
+            template_id="aruba-ap-restart",
+            name="Aruba AP重启",
+            description="重启指定的Aruba接入点",
+            command_template="ap restart {ap_name}",
+            default_params={"ap_name": "ap-01"}
+        )
+
+    @staticmethod
+    def get_aruba_config_backup_template() -> TaskTemplate:
+        """Aruba配置备份模板"""
+        return TaskTemplate.create(
+            template_id="aruba-config-backup",
+            name="Aruba配置备份",
+            description="备份Aruba设备配置",
+            command_template="show running-config",
+            default_params={}
+        )
+
+    @staticmethod
+    def get_aruba_client_check_template() -> TaskTemplate:
+        """Aruba客户端检查模板"""
+        return TaskTemplate.create(
+            template_id="aruba-client-check",
+            name="Aruba客户端检查",
+            description="检查连接到Aruba设备的客户端信息",
+            command_template="show client summary && show user-table",
+            default_params={}
+        )
+
+    @staticmethod
+    def get_all_templates() -> Dict[str, TaskTemplate]:
+        """获取所有Aruba模板"""
+        return {
+            "aruba-inspection": ArubaTemplates.get_aruba_inspection_template(),
+            "aruba-ap-restart": ArubaTemplates.get_aruba_ap_restart_template(),
+            "aruba-config-backup": ArubaTemplates.get_aruba_config_backup_template(),
+            "aruba-client-check": ArubaTemplates.get_aruba_client_check_template()
+        }
 
 
 # 扩展模板库 - 为未来Phase准备

@@ -28,6 +28,12 @@ from cloud.database.db import db
 # 导入新的 API 路由
 from cloud.api import task_api, asset_api
 
+# Phase 4 Day 4-5: 导入v2 API
+from cloud.api import task_v2_api
+
+# Week 5-6: 导入批量任务API
+from cloud.api import batch_api
+
 # Phase 4 Day 2: 导入监控API
 from cloud.api import monitoring_api
 
@@ -123,6 +129,12 @@ async def health_check():
 # 注册新的 API 路由
 app.include_router(task_api.router, prefix="")
 app.include_router(asset_api.router, prefix="")
+
+# Phase 4 Day 4-5: 注册v2 API路由
+app.include_router(task_v2_api.router, prefix="")
+
+# Week 5-6: 注册批量任务API路由
+app.include_router(batch_api.router, prefix="")
 
 # Phase 3 Day 3: 注册审批API路由
 app.include_router(approval_api.router, prefix="")
